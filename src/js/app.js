@@ -2,20 +2,28 @@ import { LitElement, css, html } from 'lit-element'
 import './tosc-scroll.js'
 import './tosc-button.js'
 
+
 const pronouns = [ 'ze/hir', 'ze/zir', 'she', 'he', 'they/them/themselves',
   'they/them/themself', 'xey', 'sie', 'it', 'ey', 'e', 'hu', 'peh', 'per', 'thon' ];
 
 class TOSC extends LitElement {
   static get styles() {
     return css`
-      .container {
+      :host {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
 
+      }
+
+      .container {
         background-color: #232329;
         border-radius: 10px;
 
-        flex-direction: column;
-        width: 350px;
-        height: 300px;
+        width: 60%;
+        height: 90%;
       }
 
       .name {
@@ -37,29 +45,30 @@ class TOSC extends LitElement {
 
       .hint {
         text-align: center;
-        font-size: 30px;
+        font-size: 50px;
       }
 
       .controls {
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 500px;
+        margin: auto;
       }
 
       .scrolls, .extra {
         display: flex;
+        width: 100%;
+        justify-content: space-between;
       }
 
       tosc-scroll {
-        width: 70px;
-        height: 150px;
+        height: 600px;
       }
 
       tosc-button {
-        margin: 0 10px;
-        margin-top: 10px;
-        width: 50px;
-        height: 20px;
+        width: 100px;
+        height: 50px;
       }
 
     `;
@@ -75,7 +84,7 @@ class TOSC extends LitElement {
     this.name = 'demiler';
     this.pronoun = 'he';
     this.hint = 'This is the hint';
-    this.tosk = { 
+    this.tosk = {
       "T": ["blue", false],
       "O": ["blue", false],
       "S": ["red", true],
@@ -86,8 +95,10 @@ class TOSC extends LitElement {
   render() {
     return html`
       <div class='container'>
-        <input class='name' value=${this.name}>
-        <div class='pronoun'>${this.pronoun}</div>
+        <div class='personal'>
+          <input class='name' value=${this.name}>
+          <div class='pronoun'>${this.pronoun}</div>
+        </div>
 
         <div class='hint'>${this.hint}</div>
 
@@ -111,7 +122,6 @@ class TOSC extends LitElement {
 
   toggleExtra(e) {
     this.tosk[e.detail.letter][1] = e.detail.state;
-    console.log(this.tosk);
     this.requestUpdate();
   }
 };
