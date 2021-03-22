@@ -13,7 +13,7 @@ export const hints = {
       "Personal questions hurt me. Mind your own business!" ],
     "blue": [ "Ask me if I am ready for personal questions before asking them.",
       "I want to talk about personal things, but not with everyone - ask first." ],
-    "green": [ "I am readdyd for personal questions",
+    "green": [ "I am ready for personal questions",
       "Please ask me personal questions!" ],
   },
 

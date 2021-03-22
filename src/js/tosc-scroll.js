@@ -21,40 +21,43 @@ class ToscScroll extends LitElement {
 
       }
 
-      :host::after {
+      :host::before {
         content: '';
 
         position: absolute;
         left: calc(50% - 40px);
-        top: calc(50% - 1.3 * var(--text-size) / 2);
+        top: calc(50% - 1.35 * var(--text-size) / 2);
 
         width: 80px;
-        height: calc(1.3 * var(--text-size));
+        height: calc(1.35 * var(--text-size));
 
-        border: 1px solid silver;
+        /*border: 1px solid silver;
         border-left: none;
         border-right: none;
+        */
+        background-color: #4444446a;
+        border-radius: 5px;
         box-sizing: border-box;
       }
 
       #scroll {
         transform: translateY(0);
-        transition: all 0.5s cubic-bezier(0.01, 0.51, 0.43, 1.03) 0s;
+        transition: 0.1s;
         display: flex;
         flex-direction: column;
         justify-content: space-around;
-        height: calc(100% / 3);
+        height: 66.666%;
       }
 
       #scroll.extra .pick::before {
         content: '';
-        width: calc(1.1 * var(--text-size));
-        height: calc(1.1 * var(--text-size));
+        width: calc(1.2 * var(--text-size));
+        height: calc(1.2 * var(--text-size));
         border: 2px solid transparent;
         position: absolute;
         border-radius: 100%;
-        top: calc(50% - 1.1 * var(--text-size) / 2);
-        left: calc(50% - 1.1 * var(--text-size) / 2);
+        top: calc(50% - 1.2 * var(--text-size) / 2);
+        left: calc(50% - 1.2 * var(--text-size) / 2);
         box-sizing: border-box;
       }
 
@@ -120,7 +123,6 @@ class ToscScroll extends LitElement {
       this.isMDown = true;
       this.startY = e.pageY - this.offsetTop - this.scroll.offsetTop;
       this.scrollUp = this.cur;
-      console.log(this.startY);
     });
 
     this.addEventListener('mouseup', () => {
@@ -137,8 +139,21 @@ class ToscScroll extends LitElement {
 
       const y = e.pageY - this.offsetTop - this.scroll.offsetTop;
       const scroll = this.startY - y;
+
+      if (!this.block && Math.abs(scroll) < 10)
+        return;
+
       const pos = clamp(this.scrollUp - scroll, this.bottom, this.top);
       this.updateScroll(pos);
+
+      const letId = this.getLetId(pos);
+      if (letId != this.curLetId) {
+        this.curLetId = letId;
+        this.updateValue();
+      }
+
+      clearTimeout(this.blockTo);
+      this.blockTo = setTimeout(() => this.block = false, 300);
       this.stableLetter(pos);
     });
     /* enables dragabillity for scrolls */
@@ -154,8 +169,7 @@ class ToscScroll extends LitElement {
   render() {
     return html`
       <div id='scroll' class=${this.extra ? 'extra' : ''}>
-        <div class='pick' id='red' 
-          @click=${this.chooseMe}>${this.letter}</div>
+        <div class='pick' id='red' @click=${this.chooseMe}>${this.letter}</div>
         <div class='pick' id='blue' @click=${this.chooseMe}>${this.letter}</div>
         <div class='pick' id='green' @click=${this.chooseMe}>${this.letter}</div>
       </div>
@@ -171,6 +185,7 @@ class ToscScroll extends LitElement {
   }
 
   chooseMe(e) {
+    if (this.block) return;
     const who = e.currentTarget.id;
     this.updateScroll(this.letterPos(who));
     this.updateValue();
@@ -178,7 +193,12 @@ class ToscScroll extends LitElement {
 
   updateValue() {
     this.active = ["red", "blue", "green"][this.getLetId(this.cur, 0)];
-    console.log(this.active);
+
+    const updateEv = new CustomEvent('update', {
+      detail: { extra: this.extra, color: this.active, letter: this.letter },
+      bubbles: true,
+      composed: true });
+    this.dispatchEvent(updateEv);
   }
 
   //to get more intuitive stabalization - rework it to calculate
@@ -215,7 +235,7 @@ class ToscScroll extends LitElement {
 
   stableLetter(pos) {
     clearTimeout(this.stabletm);
-    this.stabletm = setTimeout(() => this.stabilize(pos, 0), 300);
+    this.stabletm = setTimeout(() => this.stabilize(pos, 0), 600);
   }
 
   stabilize(pos, direction) {
