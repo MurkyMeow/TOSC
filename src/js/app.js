@@ -56,8 +56,8 @@ class TOSCapp extends LitElement {
       tosc: new TOSC("BBBB")
     };
     this.hint = '';
-    this.showList = true;
-    //this.showList = false;
+    //this.showList = true;
+    this.showList = false;
   }
 
   render() {

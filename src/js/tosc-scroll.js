@@ -43,10 +43,19 @@ class ToscScroll extends LitElement {
       #scroll {
         transform: translateY(0);
         transition: 0.1s;
-        display: flex;
+        /*display: flex;
         flex-direction: column;
-        justify-content: space-around;
-        height: 66.666%;
+        justify-content: space-around;*/
+        height: 100%;
+        width: 100%;
+
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+        scrollbar-width: none;
+      }
+
+      #scroll::-webkit-scrollbar {
+        display: none;
       }
 
       #scroll.extra .pick::before {
@@ -73,10 +82,23 @@ class ToscScroll extends LitElement {
         border-color: var(--green);
       }
 
+      .pick.void {
+        height: calc((400px - var(--text-size)) / 2);
+      }
+
       .pick {
         user-select: none;
         position: relative;
         font-size: var(--text-size);
+        height: var(--text-size);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .pick[id] {
+        scroll-snap-align: center;
       }
 
       .pick#red {
@@ -85,6 +107,7 @@ class ToscScroll extends LitElement {
 
       .pick#blue {
         color: var(--blue);
+        margin: var(--text-size) 0;
       }
 
       .pick#green {
@@ -169,9 +192,11 @@ class ToscScroll extends LitElement {
   render() {
     return html`
       <div id='scroll' class=${this.extra ? 'extra' : ''}>
+        <div class='pick void'></div>
         <div class='pick' id='red' @click=${this.chooseMe}>${this.letter}</div>
         <div class='pick' id='blue' @click=${this.chooseMe}>${this.letter}</div>
         <div class='pick' id='green' @click=${this.chooseMe}>${this.letter}</div>
+        <div class='pick void'></div>
       </div>
   `;
   }
@@ -215,8 +240,8 @@ class ToscScroll extends LitElement {
   }
 
   updateScroll(pos) {
-    this.cur = pos;
-    this.scroll.style.transform = `translateY(${pos}px)`;
+    //this.cur = pos;
+    //this.scroll.style.transform = `translateY(${pos}px)`;
   }
 
   scrolling(e) {
