@@ -3,9 +3,6 @@ import './tosc-list.js'
 import './tosc-create.js'
 import { TOSC } from './tosc.js'
 
-const pronouns = [ 'ze/hir', 'ze/zir', 'she', 'he', 'they/them/themselves',
-  'they/them/themself', 'xey', 'sie', 'it', 'ey', 'e', 'hu', 'peh', 'per', 'thon' ];
-
 const examples = [
   { name: "Example 0", pronoun: "xey", tosc: new TOSC("RG+B+B+") },
   { name: "Example 1", pronoun: "sie", tosc: new TOSC("RGBB") },

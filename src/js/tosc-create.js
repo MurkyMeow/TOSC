@@ -3,6 +3,7 @@ import { hints } from './hints.js'
 import { TOSC } from './tosc.js'
 import './tosc-button.js'
 import './tosc-scroll.js'
+import './tosc-drop.js'
 
 class TOSCcreate extends LitElement {
   static get styles() {
@@ -107,6 +108,7 @@ class TOSCcreate extends LitElement {
   static get properties() {
     return {
       hint: { type: String },
+      me: { type: Object },
     };
   }
 
@@ -119,7 +121,8 @@ class TOSCcreate extends LitElement {
       <div class='personal'>
         <input class='name' value=${this.me.name} spellcheck="false"
           @change=${this.changeName}>
-        <div class='pronoun'>${this.me.pronoun}</div>
+        <tosc-drop .choosen=${this.me.pronoun}
+          @change=${this.changePr}></tosc-drop>
       </div>
 
       <div class='hint'>${this.hint}</div>
@@ -142,6 +145,10 @@ class TOSCcreate extends LitElement {
         <button class='btn' @click=${this.buttonClick}>Go back</button>
       </div>
     `;
+  }
+
+  changePr(e) {
+    this.me.pronoun = e.detail.pronoun;
   }
 
   changeName(e) {
