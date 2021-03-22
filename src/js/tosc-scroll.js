@@ -31,10 +31,6 @@ class ToscScroll extends LitElement {
         width: 80px;
         height: calc(1.35 * var(--text-size));
 
-        /*border: 1px solid silver;
-        border-left: none;
-        border-right: none;
-        */
         background-color: #4444446a;
         border-radius: 5px;
         box-sizing: border-box;
@@ -43,14 +39,10 @@ class ToscScroll extends LitElement {
       #scroll {
         transform: translateY(0);
         transition: 0.1s;
-        /*display: flex;
-        flex-direction: column;
-        justify-content: space-around;*/
         height: 100%;
         width: 100%;
 
         overflow-y: scroll;
-        scroll-snap-type: y mandatory;
         scrollbar-width: none;
       }
 
@@ -98,7 +90,6 @@ class ToscScroll extends LitElement {
       }
 
       .pick[id] {
-        scroll-snap-align: center;
       }
 
       .pick#red {
@@ -148,12 +139,15 @@ class ToscScroll extends LitElement {
       this.scrollUp = this.cur;
     });
 
-    this.addEventListener('mouseup', () => {
+    this.addEventListener('mouseup', (e) => {
       this.isMDown = false;
+      //delya cuz click is happaning a bit later
+      setTimeout(() => this.block = false, 100);
     });
 
     this.addEventListener('mouseleave', () => {
       this.isMDown = false;
+      this.block = false;
     });
 
     this.addEventListener('mousemove', (e) => {
@@ -161,12 +155,13 @@ class ToscScroll extends LitElement {
       e.preventDefault();
 
       const y = e.pageY - this.offsetTop - this.scroll.offsetTop;
-      const scroll = this.startY - y;
+      const scroll = y - this.startY;
 
-      if (!this.block && Math.abs(scroll) < 10)
+      if (Math.abs(scroll) < 10)
         return;
+      this.block = true;
 
-      const pos = clamp(this.scrollUp - scroll, this.bottom, this.top);
+      const pos = clamp(this.scrollUp - scroll, this.top, this.bottom);
       this.updateScroll(pos);
 
       const letId = this.getLetId(pos);
@@ -175,15 +170,15 @@ class ToscScroll extends LitElement {
         this.updateValue();
       }
 
-      clearTimeout(this.blockTo);
-      this.blockTo = setTimeout(() => this.block = false, 300);
       this.stableLetter(pos);
     });
     /* enables dragabillity for scrolls */
 
-    this.letSize = this.scroll.offsetHeight / 3;
-    this.bottom = -this.letSize;
-    this.top = this.letSize;
+    this.letSize = parseInt(getComputedStyle(this).getPropertyValue('--text-size'), 10);
+    //5 cuz 3 from each letter and extra 2 from margin. And 3 cuz ther is 3 letters
+    this.blockSize = this.letSize * (5 / 3); 
+    this.bottom = this.scroll.offsetHeight / 2;
+    this.top = 0;
 
     this.cur = this.letterPos(this.active);
     this.updateScroll(this.cur);
@@ -203,8 +198,8 @@ class ToscScroll extends LitElement {
 
   letterPos(color) {
     switch (color) {
-      case "red": return this.top;
-      case "blue": return 0;
+      case "red": return 0;
+      case "blue": return 2 * this.letSize;
       case "green": return this.bottom;
     }
   }
@@ -226,36 +221,26 @@ class ToscScroll extends LitElement {
     this.dispatchEvent(updateEv);
   }
 
-  //to get more intuitive stabalization - rework it to calculate
-  //distance between line rather than center of the scroll element.
-  getLetId(pos, direction) {
-    if (pos < 0) //or do this shitty calculation
-      return (pos < -this.letSize / 2) ? 2 : 1;
+  //because !
+  getLetId(pos, dir) {
+    const blockSize = this.letSize * 5 / 3;
+    if (pos < blockSize)
+      return 0;
+    else if (pos < 2 * blockSize)
+      return 1;
     else
-      return (pos > this.letSize / 2) ? 0 : 1;
-    //let toAbs = this.scroll.offsetHeight / 2 - pos - this.top / 2;
-    //if (toAbs < 0) toAbs = 0;
-    //const aprox = (toAbs) / this.letSize;
-    //return (direction ? Math.ceil(aprox) : Math.floor(aprox));
+      return 2;
   }
 
   updateScroll(pos) {
-    //this.cur = pos;
-    //this.scroll.style.transform = `translateY(${pos}px)`;
+    this.cur = pos;
+    this.scroll.scrollTo(0, this.cur); //Maybe add a cycle to smooth it?
   }
 
   scrolling(e) {
-    let newPos = this.cur + e.deltaY / 2;
-
-    if (newPos > this.top)
-      newPos = this.top;
-    else if (newPos < this.bottom)
-      newPos = this.bottom;
-
-    if (newPos != this.cur) {
-      this.updateScroll(newPos);
-      this.stableLetter(newPos);
-    }
+    this.cur = this.scroll.scrollTop;
+    this.updateValue();
+    this.stableLetter(this.cur);
   }
 
   stableLetter(pos) {
@@ -264,8 +249,8 @@ class ToscScroll extends LitElement {
   }
 
   stabilize(pos, direction) {
-    const letId = this.getLetId(pos, direction);
-    const stablePos = (1 - letId) * this.letSize;
+    const letId = this.getLetId(pos, direction); //yep it is junky!
+    const stablePos = this.letterPos(["red", "blue", "green"][letId]);
     this.updateScroll(stablePos);
     this.updateValue();
   }
