@@ -130,6 +130,8 @@ class ToscScroll extends LitElement {
 
     this.scroll = this.shadowRoot.querySelector("#scroll");
 
+    this.addEventListener('touchmove', this.scrolling);
+
     this.addEventListener('wheel', this.scrolling);
 
     /* enables dragabillity for scrolls */
@@ -212,7 +214,9 @@ class ToscScroll extends LitElement {
   }
 
   updateValue() {
-    this.active = ["red", "blue", "green"][this.getLetId(this.cur, 0)];
+    const newVal = ["red", "blue", "green"][this.getLetId(this.cur, 0)];
+    if (newVal === this.active) return;
+    this.active = newVal;
 
     const updateEv = new CustomEvent('update', {
       detail: { extra: this.extra, color: this.active, letter: this.letter },
