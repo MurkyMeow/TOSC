@@ -91,7 +91,9 @@ class TOSCdrop extends LitElement {
 
   render() {
     return html`
-      <div id='choosen' @click=${this.toggle}>${this.choosen}</div>
+      <div id='choosen' @click=${this.toggle}>
+        ${this.choosen === "" ? "pronun" : this.choosen}
+      </div>
       <div id='drop-down' class='${this.active ? 'active' : ''}'>
         ${this.pronouns.map(pr => html`
           <span class='pronoun' @click=${() => this.changePr(pr)}>${pr}</span>

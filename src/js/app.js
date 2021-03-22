@@ -52,12 +52,12 @@ class TOSCapp extends LitElement {
     super();
     this.me = {
       name: 'Guest32432989',
-      pronoun: 'he',
-      tosc: new TOSC("R+RBG+")
+      pronoun: '',
+      tosc: new TOSC("BBBB")
     };
     this.hint = '';
-    //this.showList = true;
-    this.showList = false;
+    this.showList = true;
+    //this.showList = false;
   }
 
   render() {
