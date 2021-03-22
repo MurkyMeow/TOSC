@@ -7,7 +7,7 @@ class TOSCinline extends LitElement {
       :host {
         --text-size: 25px;
         --border-width: 1.5px;
-        --border-ratio: 1.1;
+        --text-ratio: 0.8;
 
         --red: #B02323;
         --blue: #5523F0;
@@ -23,9 +23,9 @@ class TOSCinline extends LitElement {
       }
 
       .letter {
-        font-size: calc(var(--text-size));
-        width: calc(var(--border-ratio) * var(--text-size));
-        height: calc(var(--border-ratio) * var(--text-size));
+        font-size: calc(var(--text-ratio) * var(--text-size));
+        width: calc(var(--text-size));
+        height: calc(var(--text-size));
 
         display: flex;
         align-items: center;
@@ -41,26 +41,26 @@ class TOSCinline extends LitElement {
 
       .circle {
         content: '';
-        width: calc(var(--border-ratio) * var(--text-size));
-        height: calc(var(--border-ratio) * var(--text-size));
+        width: calc(var(--text-size));
+        height: calc(var(--text-size));
 
         position: absolute;
         top:
-          calc(50% - (var(--border-widdth) + var(--border-ratio) * var(--text-size)) / 2);
+          calc(50% - (var(--border-widdth) + var(--text-size)) / 2);
         left:
-          calc(50% - (var(--border-widdth) + var(--border-ratio) * var(--text-size)) / 2); 
+          calc(50% - (var(--border-widdth) + var(--text-size)) / 2); 
 
-        border: var(--border-width) solid;
+        border: var(--border-width) solid transparent;
         border-radius: 50%;
       }
 
-      .extra.red {
+      .extra.red .circle {
         border-color: var(--red);
       }
-      .extra.blue {
+      .extra.blue .circle {
         border-color: var(--blue);
       }
-      .extra.green {
+      .extra.green .circle {
         border-color: var(--green);
       }
 
