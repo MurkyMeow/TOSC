@@ -1,12 +1,10 @@
-const path = require('path');
-
 module.exports = {
   entry: './src/index.js',
   module: {
     rules: [
       {
         test: /\.html$/,
-        use: [ 'html-loader' ]
+        use: ['html-loader'],
       },
       {
         test: /\.(svg|png|jpe?g|gif)$/,
@@ -15,9 +13,9 @@ module.exports = {
           options: {
             name: '[name].[hash].[ext]',
             outputPath: 'imgs',
-          }
-        }
+          },
+        },
       },
     ],
   },
-}
+};

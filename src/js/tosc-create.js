@@ -1,9 +1,8 @@
-import { LitElement, css, html } from 'lit-element'
-import { hints } from './hints.js'
-import { TOSC } from './tosc.js'
-import './tosc-button.js'
-import './tosc-scroll.js'
-import './tosc-drop.js'
+import { LitElement, css, html } from 'lit-element';
+import { hints } from './hints.js';
+import './tosc-button.js';
+import './tosc-scroll.js';
+import './tosc-drop.js';
 
 class TOSCcreate extends LitElement {
   static get styles() {
@@ -57,7 +56,8 @@ class TOSCcreate extends LitElement {
         margin: auto;
       }
 
-      .scrolls, .extra {
+      .scrolls,
+      .extra {
         display: flex;
         width: 100%;
         justify-content: space-between;
@@ -112,37 +112,37 @@ class TOSCcreate extends LitElement {
     };
   }
 
-  constructor() {
-    super();
-  }
-
   render() {
     return html`
-      <div class='personal'>
-        <input class='name' value=${this.me.name} spellcheck="false"
-          @change=${this.changeName}>
-        <tosc-drop .choosen=${this.me.pronoun}
-          @change=${this.changePr}></tosc-drop>
+      <div class="personal">
+        <input class="name" value=${this.me.name} spellcheck="false" @change=${this.changeName} />
+        <tosc-drop .choosen=${this.me.pronoun} @change=${this.changePr}></tosc-drop>
       </div>
 
-      <div class='hint'>${this.hint}</div>
+      <div class="hint">${this.hint}</div>
 
-      <div class='controls'>
-        <div class='scrolls'>
-          ${["T", "O", "S", "C"].map(el => html`
-            <tosc-scroll
-            .active=${this.me.tosc[el].color} .extra=${this.me.tosc[el].extra}
-            .letter=${el} @update=${this.showHint}></tosc-scroll>
-          `)}
+      <div class="controls">
+        <div class="scrolls">
+          ${['T', 'O', 'S', 'C'].map(
+            (el) => html`
+              <tosc-scroll
+                .active=${this.me.tosc[el].color}
+                .extra=${this.me.tosc[el].extra}
+                .letter=${el}
+                @update=${this.showHint}
+              ></tosc-scroll>
+            `
+          )}
         </div>
-        <div class='extra'>
-          ${["T", "O", "S", "C"].map(el => html`
-            <tosc-button .letter=${el} .state=${this.me.tosc[el].extra}
-              @toggle=${this.toggleExtra}></tosc-button>
-          `)}
+        <div class="extra">
+          ${['T', 'O', 'S', 'C'].map(
+            (el) => html`
+              <tosc-button .letter=${el} .state=${this.me.tosc[el].extra} @toggle=${this.toggleExtra}></tosc-button>
+            `
+          )}
         </div>
 
-        <button class='btn' @click=${this.buttonClick}>Go back</button>
+        <button class="btn" @click=${this.buttonClick}>Go back</button>
       </div>
     `;
   }
@@ -173,12 +173,13 @@ class TOSCcreate extends LitElement {
     this.requestUpdate();
   }
 
-  buttonClick(e) {
+  buttonClick() {
     const btnClkEv = new CustomEvent('button', {
       bubbles: true,
-      composed: true });
+      composed: true,
+    });
     this.dispatchEvent(btnClkEv);
   }
-};
+}
 
 customElements.define('tosc-create', TOSCcreate);

@@ -1,21 +1,24 @@
-import { LitElement, css, html } from 'lit-element'
-import './tosc-list.js'
-import './tosc-create.js'
-import { TOSC } from './tosc.js'
+import { LitElement, css, html } from 'lit-element';
+import './tosc-list.js';
+import './tosc-create.js';
+import { TOSC } from './tosc.js';
 
 const examples = [
-  { name: "Example 0", pronoun: "xey", tosc: new TOSC("RG+B+B+") },
-  { name: "Example 1", pronoun: "sie", tosc: new TOSC("RGBB") },
-  { name: "Example 2", pronoun: "he", tosc: new TOSC("RR+GG") },
-  { name: "Example 3", pronoun: "they/them/themselves", tosc: new TOSC("G+G+GG+") },
-  { name: "Example 4", pronoun: "", tosc: new TOSC("RBGR+") },
-  { name: "Example 5", pronoun: "sie", tosc: new TOSC("G+RGG+") },
-  { name: "Example 6", pronoun: "", tosc: new TOSC("R+G+G+G+") },
-  { name: "Example 7", pronoun: "xey", tosc: new TOSC("B+R+G+G") },
-  { name: "Example 8", pronoun: "ze/hir", tosc: new TOSC("B+RGG") },
-  { name: "Example 9", pronoun: "she", tosc: new TOSC("RBB+B") },
+  { name: 'Example 0', pronoun: 'xey', tosc: new TOSC('RG+B+B+') },
+  { name: 'Example 1', pronoun: 'sie', tosc: new TOSC('RGBB') },
+  { name: 'Example 2', pronoun: 'he', tosc: new TOSC('RR+GG') },
+  {
+    name: 'Example 3',
+    pronoun: 'they/them/themselves',
+    tosc: new TOSC('G+G+GG+'),
+  },
+  { name: 'Example 4', pronoun: '', tosc: new TOSC('RBGR+') },
+  { name: 'Example 5', pronoun: 'sie', tosc: new TOSC('G+RGG+') },
+  { name: 'Example 6', pronoun: '', tosc: new TOSC('R+G+G+G+') },
+  { name: 'Example 7', pronoun: 'xey', tosc: new TOSC('B+R+G+G') },
+  { name: 'Example 8', pronoun: 'ze/hir', tosc: new TOSC('B+RGG') },
+  { name: 'Example 9', pronoun: 'she', tosc: new TOSC('RBB+B') },
 ];
-
 
 class TOSCapp extends LitElement {
   static get styles() {
@@ -36,9 +39,6 @@ class TOSCapp extends LitElement {
         height: 100%;
         padding: 5px;
       }
-
-      tosc-list {
-      }
     `;
   }
 
@@ -53,7 +53,7 @@ class TOSCapp extends LitElement {
     this.me = {
       name: 'Guest32432989',
       pronoun: '',
-      tosc: new TOSC("BBBB")
+      tosc: new TOSC('BBBB'),
     };
     this.hint = '';
     //this.showList = true;
@@ -66,20 +66,16 @@ class TOSCapp extends LitElement {
 
   renderList() {
     return html`
-      <div class='container'>
-        <tosc-list .me=${this.me} .list=${examples}
-        @switch=${this.changeScreen}
-        ></tosc-list>
+      <div class="container">
+        <tosc-list .me=${this.me} .list=${examples} @switch=${this.changeScreen}></tosc-list>
       </div>
     `;
   }
 
   renderCreate() {
     return html`
-      <div class='container'>
-        <tosc-create .me=${this.me}
-        @button=${this.changeScreen}
-        @update=${this.updateMe}></tosc-create>
+      <div class="container">
+        <tosc-create .me=${this.me} @button=${this.changeScreen} @update=${this.updateMe}></tosc-create>
       </div>
     `;
   }
@@ -87,6 +83,6 @@ class TOSCapp extends LitElement {
   changeScreen() {
     this.showList = !this.showList;
   }
-};
+}
 
 customElements.define('tosc-app', TOSCapp);

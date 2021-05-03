@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit-element'
+import { LitElement, css, html } from 'lit-element';
 
 class PushButton extends LitElement {
   static get styles() {
@@ -14,7 +14,7 @@ class PushButton extends LitElement {
         height: 100%;
         background-color: #555;
         border-radius: 5px;
-        transition: .1s;
+        transition: 0.1s;
       }
 
       .cover.active {
@@ -37,23 +37,18 @@ class PushButton extends LitElement {
   static get properties() {
     return {
       state: { type: Boolean },
-    }
-  }
-
-  constructor() {
-    super();
+    };
   }
 
   firstUpdated() {
-    if (this.state === undefined)
-      this.state = false;
+    if (this.state === undefined) this.state = false;
   }
 
   render() {
     return html`
       <div class="wrap">
-        <div class="cover ${this.state ? "active" : "inactive"}"></div>
-        <input type="checkbox" @click=${this.toggle} ?checked=${this.state}>
+        <div class="cover ${this.state ? 'active' : 'inactive'}"></div>
+        <input type="checkbox" @click=${this.toggle} ?checked=${this.state} />
       </div>
     `;
   }
@@ -61,12 +56,13 @@ class PushButton extends LitElement {
   toggle(e) {
     this.state = e.target.checked;
 
-    const togEv = new CustomEvent('toggle', { 
+    const togEv = new CustomEvent('toggle', {
       detail: { state: this.state, letter: this.letter },
-      bubbles: true, 
-      composed: true });
+      bubbles: true,
+      composed: true,
+    });
     this.dispatchEvent(togEv);
   }
-};
+}
 
 customElements.define('tosc-button', PushButton);

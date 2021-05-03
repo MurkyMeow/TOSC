@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit-element'
+import { LitElement, css, html } from 'lit-element';
 
 class TOSCdrop extends LitElement {
   static get styles() {
@@ -23,7 +23,7 @@ class TOSCdrop extends LitElement {
         display: flex;
         flex-wrap: wrap;
         box-sizing: border-box;
-        transition: opacity .4s;
+        transition: opacity 0.4s;
 
         background-color: #444;
       }
@@ -75,15 +75,29 @@ class TOSCdrop extends LitElement {
 
   constructor() {
     super();
-    this.pronouns = [ 'ze/hir', 'ze/zir', 'she', 'he', 'they/them/themselves',
-      'they/them/themself', 'xey', 'sie', 'it', 'ey', 'e', 'hu', 'peh', 'per', 'thon'
+    this.pronouns = [
+      'ze/hir',
+      'ze/zir',
+      'she',
+      'he',
+      'they/them/themselves',
+      'they/them/themself',
+      'xey',
+      'sie',
+      'it',
+      'ey',
+      'e',
+      'hu',
+      'peh',
+      'per',
+      'thon',
     ];
 
     this.active = false;
   }
 
   firstUpdated() {
-    this.dropdown = this.shadowRoot.querySelector("#drop-down");
+    this.dropdown = this.shadowRoot.querySelector('#drop-down');
     this.dropdown.addEventListener('mouseleave', () => {
       this.active = false;
     });
@@ -91,13 +105,9 @@ class TOSCdrop extends LitElement {
 
   render() {
     return html`
-      <div id='choosen' @click=${this.toggle}>
-        ${this.choosen === "" ? "pronun" : this.choosen}
-      </div>
-      <div id='drop-down' class='${this.active ? 'active' : ''}'>
-        ${this.pronouns.map(pr => html`
-          <span class='pronoun' @click=${() => this.changePr(pr)}>${pr}</span>
-        `)}
+      <div id="choosen" @click=${this.toggle}>${this.choosen === '' ? 'pronun' : this.choosen}</div>
+      <div id="drop-down" class="${this.active ? 'active' : ''}">
+        ${this.pronouns.map((pr) => html` <span class="pronoun" @click=${() => this.changePr(pr)}>${pr}</span> `)}
       </div>
     `;
   }
@@ -112,9 +122,10 @@ class TOSCdrop extends LitElement {
     const changeEv = new CustomEvent('change', {
       detail: { pronoun: this.choosen },
       bubbles: true,
-      composed: true });
+      composed: true,
+    });
     this.dispatchEvent(changeEv);
   }
-};
+}
 
 customElements.define('tosc-drop', TOSCdrop);

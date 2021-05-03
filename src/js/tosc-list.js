@@ -1,6 +1,5 @@
-import { LitElement, css, html } from 'lit-element'
-import { TOSC } from './tosc.js'
-import './tosc-inline.js'
+import { LitElement, css, html } from 'lit-element';
+import './tosc-inline.js';
 
 class TOSClist extends LitElement {
   static get styles() {
@@ -16,11 +15,9 @@ class TOSClist extends LitElement {
         align-items: center;
       }
 
-      .me, .others {
-        width: 90%;
-      }
-
+      .me,
       .others {
+        width: 90%;
       }
 
       .person {
@@ -56,8 +53,8 @@ class TOSClist extends LitElement {
 
         display: grid;
         grid-template-areas:
-        "name tosc"
-        "pronoun tosc";
+          'name tosc'
+          'pronoun tosc';
         height: 70px;
 
         margin: -5px -5px 20px -5px;
@@ -65,8 +62,7 @@ class TOSClist extends LitElement {
       }
 
       .me.nopro {
-        grid-template-areas:
-        "name tosc"
+        grid-template-areas: 'name tosc';
       }
 
       .me.nopro .pname {
@@ -105,7 +101,6 @@ class TOSClist extends LitElement {
         outline: none;
       }
 
-
       .btn:focus-visible,
       .btn:hover {
         background-color: #666555;
@@ -124,43 +119,37 @@ class TOSClist extends LitElement {
     };
   }
 
-  constructor() {
-    super();
-  }
-
   render() {
     return html`
-      <div class='me ${this.me.pronoun === "" ? "nopro" : ""}'>
-          <span class='pname'>${this.me.name}</span>
-          ${this.me.pronoun === "" ? html`` : html`
-            <span class='ppronun'>(${this.me.pronoun})</span>
-          `}
-          <tosc-inline .tosc=${this.me.tosc}></tosc-inline>
+      <div class="me ${this.me.pronoun === '' ? 'nopro' : ''}">
+        <span class="pname">${this.me.name}</span>
+        ${this.me.pronoun === '' ? html`` : html` <span class="ppronun">(${this.me.pronoun})</span> `}
+        <tosc-inline .tosc=${this.me.tosc}></tosc-inline>
       </div>
-      <div class='others'>
-        ${this.list.map(ex => html`
-          <div class='person'>
-            <span class='pname'>${ex.name}</span>
-            ${ex.pronoun === "" ? html`` : html`
-            `}
-            <span class='ppronun'>
-              ${ex.pronoun === "" ? "" : `(${ex.pronoun})`}
-            </span>
-            <tosc-inline .tosc=${ex.tosc}></tosc-inline>
-          </div>
-        `)}
+      <div class="others">
+        ${this.list.map(
+          (ex) => html`
+            <div class="person">
+              <span class="pname">${ex.name}</span>
+              ${ex.pronoun === '' ? html`` : html``}
+              <span class="ppronun"> ${ex.pronoun === '' ? '' : `(${ex.pronoun})`} </span>
+              <tosc-inline .tosc=${ex.tosc}></tosc-inline>
+            </div>
+          `
+        )}
       </div>
 
-      <button class='btn' @click=${this.switch}>Edit</button>
+      <button class="btn" @click=${this.switch}>Edit</button>
     `;
   }
 
   switch() {
     const switchEv = new CustomEvent('switch', {
       bubbles: true,
-      composed: true });
+      composed: true,
+    });
     this.dispatchEvent(switchEv);
   }
-};
+}
 
 customElements.define('tosc-list', TOSClist);
