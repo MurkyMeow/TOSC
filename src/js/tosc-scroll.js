@@ -114,6 +114,7 @@ class ToscScroll extends LitElement {
   constructor() {
     super();
     this.cur = 0;
+    this.scrolling = this.scrolling.bind(this);
   }
 
   firstUpdated() {
@@ -123,9 +124,7 @@ class ToscScroll extends LitElement {
 
     this.scroll = this.shadowRoot.querySelector('#scroll');
 
-    this.addEventListener('touchmove', this.scrolling);
-
-    this.addEventListener('wheel', this.scrolling);
+    this.scroll.addEventListener('scroll', this.scrolling);
 
     /* enables dragabillity for scrolls */
     this.addEventListener('mousedown', (e) => {
@@ -164,7 +163,7 @@ class ToscScroll extends LitElement {
         this.updateValue();
       }
 
-      this.stableLetter(pos);
+      this.stabilize();
     });
 
     /* enables dragabillity for scrolls */
@@ -212,7 +211,7 @@ class ToscScroll extends LitElement {
   }
 
   updateValue() {
-    const newVal = ['red', 'blue', 'green'][this.getLetId(this.cur, 0)];
+    const newVal = ['red', 'blue', 'green'][this.getLetId(this.cur)];
     if (newVal === this.active) return;
     this.active = newVal;
 
@@ -226,9 +225,9 @@ class ToscScroll extends LitElement {
 
   //because !
   getLetId(pos) {
-    const blockSize = (this.letSize * 5) / 3;
-    if (pos < blockSize) return 0;
-    else if (pos < 2 * blockSize) return 1;
+    const { letSize } = this;
+    if (pos < letSize * 0.5) return 0; // half of the first letter
+    if (pos < letSize * 3) return 1; // half of the second letter + spacing
     return 2;
   }
 
@@ -240,19 +239,17 @@ class ToscScroll extends LitElement {
   scrolling() {
     this.cur = this.scroll.scrollTop;
     this.updateValue();
-    this.stableLetter(this.cur);
+    this.stabilize();
   }
 
-  stableLetter(pos) {
+  stabilize() {
     clearTimeout(this.stabletm);
-    this.stabletm = setTimeout(() => this.stabilize(pos, 0), 600);
-  }
-
-  stabilize(pos, direction) {
-    const letId = this.getLetId(pos, direction); //yep it is junky!
-    const stablePos = this.letterPos(['red', 'blue', 'green'][letId]);
-    this.updateScroll(stablePos);
-    this.updateValue();
+    this.stabletm = setTimeout(() => {
+      const letId = this.getLetId(this.cur); //yep it is junky!
+      const stablePos = this.letterPos(['red', 'blue', 'green'][letId]);
+      this.updateScroll(stablePos);
+      this.updateValue();
+    }, 600);
   }
 }
 
