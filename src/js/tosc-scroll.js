@@ -128,42 +128,50 @@ class ToscScroll extends LitElement {
 
     /* enables dragabillity for scrolls */
     this.addEventListener('mousedown', (e) => {
-      this.isMDown = true;
       this.startY = e.pageY - this.offsetTop - this.scroll.offsetTop;
       this.scrollUp = this.cur;
-    });
 
-    this.addEventListener('mouseup', () => {
-      this.isMDown = false;
-      //delya cuz click is happaning a bit later
-      setTimeout(() => (this.block = false), 100);
-    });
+      const onMouseUp = () => {
+        removeListeners();
+        //delya cuz click is happaning a bit later
+        setTimeout(() => (this.block = false), 100);
+      };
 
-    this.addEventListener('mouseleave', () => {
-      this.isMDown = false;
-      this.block = false;
-    });
+      const onMouseLeave = () => {
+        removeListeners();
+        this.block = false;
+      };
 
-    this.addEventListener('mousemove', (e) => {
-      if (!this.isMDown) return;
-      e.preventDefault();
+      const onMouseMove = (moveEvent) => {
+        moveEvent.preventDefault();
 
-      const y = e.pageY - this.offsetTop - this.scroll.offsetTop;
-      const scroll = y - this.startY;
+        const y = moveEvent.pageY - this.offsetTop - this.scroll.offsetTop;
+        const scroll = y - this.startY;
 
-      if (Math.abs(scroll) < 10) return;
-      this.block = true;
+        if (Math.abs(scroll) < 10) return;
+        this.block = true;
 
-      const pos = clamp(this.scrollUp - scroll, this.top, this.bottom);
-      this.updateScroll(pos);
+        const pos = clamp(this.scrollUp - scroll, this.top, this.bottom);
+        this.updateScroll(pos);
 
-      const letId = this.getLetId(pos);
-      if (letId !== this.curLetId) {
-        this.curLetId = letId;
-        this.updateValue();
-      }
+        const letId = this.getLetId(pos);
+        if (letId !== this.curLetId) {
+          this.curLetId = letId;
+          this.updateValue();
+        }
 
-      this.stabilize();
+        this.stabilize();
+      };
+
+      this.addEventListener('mousemove', onMouseMove);
+      this.addEventListener('mouseup', onMouseUp);
+      this.addEventListener('mouseleave', onMouseLeave);
+
+      const removeListeners = () => {
+        this.removeEventListener('mousemove', onMouseMove);
+        this.removeEventListener('mouseup', onMouseUp);
+        this.removeEventListener('mouseleave', onMouseLeave);
+      };
     });
 
     /* enables dragabillity for scrolls */
