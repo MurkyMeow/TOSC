@@ -114,13 +114,12 @@ class ToscScroll extends LitElement {
   constructor() {
     super();
     this.cur = 0;
+    this.active = 'blue';
+    this.letter = '?';
+    this.extra = false;
   }
 
   firstUpdated() {
-    if (this.active === undefined) this.active = 'blue';
-    if (this.letter === undefined) this.letter = '?';
-    if (this.extra === undefined) this.extra = false;
-
     this.scroll = this.shadowRoot.querySelector('#scroll');
 
     this.addEventListener('touchmove', this.scrolling);

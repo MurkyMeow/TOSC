@@ -40,8 +40,9 @@ class PushButton extends LitElement {
     };
   }
 
-  firstUpdated() {
-    if (this.state === undefined) this.state = false;
+  constructor() {
+    super();
+    this.state = false;
   }
 
   render() {
