@@ -128,8 +128,8 @@ class ToscScroll extends LitElement {
 
     /* enables dragabillity for scrolls */
     this.addEventListener('mousedown', (e) => {
-      this.startY = e.pageY - this.offsetTop - this.scroll.offsetTop;
-      this.scrollUp = this.cur;
+      const startY = e.pageY - this.offsetTop - this.scroll.offsetTop;
+      const scrollUp = this.cur;
 
       const onMouseUp = () => {
         removeListeners();
@@ -146,12 +146,12 @@ class ToscScroll extends LitElement {
         moveEvent.preventDefault();
 
         const y = moveEvent.pageY - this.offsetTop - this.scroll.offsetTop;
-        const scroll = y - this.startY;
+        const scroll = y - startY;
 
         if (Math.abs(scroll) < 10) return;
         this.block = true;
 
-        const pos = clamp(this.scrollUp - scroll, this.top, this.bottom);
+        const pos = clamp(scrollUp - scroll, this.top, this.bottom);
         this.updateScroll(pos);
 
         const letId = this.getLetId(pos);
