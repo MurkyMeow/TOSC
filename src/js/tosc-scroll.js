@@ -128,7 +128,7 @@ class ToscScroll extends LitElement {
 
     /* enables dragabillity for scrolls */
     this.addEventListener('mousedown', (e) => {
-      const startY = e.pageY - this.offsetTop - this.scroll.offsetTop;
+      const startY = e.pageY;
       const scrollUp = this.cur;
 
       const onMouseUp = () => {
@@ -145,7 +145,7 @@ class ToscScroll extends LitElement {
       const onMouseMove = (moveEvent) => {
         moveEvent.preventDefault();
 
-        const y = moveEvent.pageY - this.offsetTop - this.scroll.offsetTop;
+        const y = moveEvent.pageY;
         const scroll = y - startY;
 
         if (Math.abs(scroll) < 10) return;
