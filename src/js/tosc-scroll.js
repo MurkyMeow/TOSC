@@ -168,13 +168,8 @@ class ToscScroll extends LitElement {
       };
     });
 
-    /* enables dragabillity for scrolls */
-
     this.letSize = parseInt(getComputedStyle(this).getPropertyValue('--text-size'), 10);
-    //5 cuz 3 from each letter and extra 2 from margin. And 3 cuz ther is 3 letters
-    this.blockSize = this.letSize * (5 / 3);
     this.bottom = this.scroll.offsetHeight / 2;
-    this.top = 0;
 
     this.cur = this.letterPos(this.active);
     this.updateScroll(this.cur);
