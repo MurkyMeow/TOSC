@@ -1,5 +1,4 @@
 import { LitElement, css, html } from 'lit-element';
-import { clamp } from './clamp.js';
 
 class ToscScroll extends LitElement {
   static get styles() {
@@ -129,7 +128,7 @@ class ToscScroll extends LitElement {
     /* enables dragabillity for scrolls */
     this.addEventListener('mousedown', (e) => {
       const startY = e.pageY;
-      const scrollUp = this.cur;
+      const startScroll = this.cur;
 
       const onMouseUp = () => {
         removeListeners();
@@ -145,20 +144,15 @@ class ToscScroll extends LitElement {
       const onMouseMove = (moveEvent) => {
         moveEvent.preventDefault();
 
-        const y = moveEvent.pageY;
-        const scroll = y - startY;
+        const scroll = moveEvent.pageY - startY;
 
         if (Math.abs(scroll) < 10) return;
         this.block = true;
 
-        const pos = clamp(scrollUp - scroll, this.top, this.bottom);
+        const pos = startScroll - scroll;
         this.updateScroll(pos);
 
-        const letId = this.getLetId(pos);
-        if (letId !== this.curLetId) {
-          this.curLetId = letId;
-          this.updateValue();
-        }
+        this.updateValue();
 
         this.stabilize();
       };
