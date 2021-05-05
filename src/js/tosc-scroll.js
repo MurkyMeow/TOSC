@@ -168,7 +168,7 @@ class ToscScroll extends LitElement {
       };
     });
 
-    this.letSize = parseInt(getComputedStyle(this).getPropertyValue('--text-size'), 10);
+    this.letterSize = parseInt(getComputedStyle(this).getPropertyValue('--text-size'), 10);
     this.bottom = this.scroll.offsetHeight / 2;
 
     this.cur = this.letterPos(this.active);
@@ -192,7 +192,7 @@ class ToscScroll extends LitElement {
       case 'red':
         return 0;
       case 'blue':
-        return 2 * this.letSize;
+        return 2 * this.letterSize;
       case 'green':
         return this.bottom;
       default:
@@ -208,7 +208,7 @@ class ToscScroll extends LitElement {
   }
 
   updateValue() {
-    const newVal = ['red', 'blue', 'green'][this.getLetId(this.cur)];
+    const newVal = ['red', 'blue', 'green'][this.getLetterId(this.cur)];
     if (newVal === this.active) return;
     this.active = newVal;
 
@@ -221,10 +221,10 @@ class ToscScroll extends LitElement {
   }
 
   //because !
-  getLetId(pos) {
-    const { letSize } = this;
-    if (pos < letSize * 0.5) return 0; // half of the first letter
-    if (pos < letSize * 3) return 1; // half of the second letter + spacing
+  getLetterId(pos) {
+    const { letterSize } = this;
+    if (pos < letterSize * 0.5) return 0; // half of the first letter
+    if (pos < letterSize * 3) return 1; // half of the second letter + spacing
     return 2;
   }
 
@@ -242,8 +242,8 @@ class ToscScroll extends LitElement {
   stabilize() {
     clearTimeout(this.stabletm);
     this.stabletm = setTimeout(() => {
-      const letId = this.getLetId(this.cur); //yep it is junky!
-      const stablePos = this.letterPos(['red', 'blue', 'green'][letId]);
+      const letterId = this.getLetterId(this.cur); //yep it is junky!
+      const stablePos = this.letterPos(['red', 'blue', 'green'][letterId]);
       this.updateScroll(stablePos);
       this.updateValue();
     }, 600);
