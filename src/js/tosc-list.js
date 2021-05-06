@@ -1,155 +1,119 @@
 import { LitElement, css, html } from 'lit-element';
-import './tosc-inline.js';
+import './tosc-person2';
+import './push-button';
 
 class TOSClist extends LitElement {
-  static get styles() {
-    return css`
-      :host {
-        display: block;
+    static get styles() {
+        return css`
+            :host {
+                display: grid;
+                grid-template-rows: fit-content(100px) auto 200px;
+                width: 100%;
+                height: 100%;
+                border-radius: inherit;
+                gap: 20px;
+            }
 
-        width: 100%;
-        height: 100%;
+            #me, #others {
+                padding: 0 30px;
+            }
 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+            #others {
+                overflow-y: auto;
+                width: 100%;
+                box-sizing: border-box;
+                position: relative;
+            }
 
-      .me,
-      .others {
-        width: 90%;
-      }
+            #others .person:not(:last-child) {
+                margin-bottom: 1.5vh;
+            }
 
-      .person {
-        margin-top: 20px;
-        width: 100%;
-        display: flex;
-        align-items: center;
-      }
+            #others::after {
+                content: " ";
+                position: sticky;
+                bottom: -.5vh;
+                left: 0px;
+                min-height: 4vh;
+                width: 100%;
+                background: linear-gradient(#0000 0%, #ddd);
+                display: block;
+            }
 
-      .pname {
-        font-size: 30px;
-      }
+            #others::-webkit-scrollbar {
+                display: none;
+            }
 
-      .ppronun {
-        font-size: 15px;
-        color: #888;
-        margin-left: 10px;
-      }
+            #me {
+                display: grid;
+                grid-template-columns: minmax(45%, 1fr) 1fr auto;
+                grid-gap: 10px;
+                align-items: center;
+            }
 
-      tosc-inline {
-        --text-size: 30px;
-        --border-width: 2px;
-        --text-ratio: 0.9;
-        width: 150px;
-        margin-left: auto;
-      }
+            .tosc {
+                grid-column: 3;
+                --font-ratio: 1.1;
+            }
 
-      .me {
-        box-sizing: border-box;
-        width: 102%;
-        padding: 5px 5%;
-        background-color: #292b35a0;
+            #me {
+                border-radius: inherit;
+                background: #00000025;
+                height: fit-content;
+                padding-top: 5px;
+                padding-bottom: 5px;
+            }
 
-        display: grid;
-        grid-template-areas:
-          'name tosc'
-          'pronoun tosc';
-        height: 70px;
+            #me .pronoun {
+                grid-column: 1;
+                color: #4c4c4c
+            }
 
-        margin: -5px -5px 20px -5px;
-        border-radius: 8px;
-      }
+            #me .pronoun:not([hidden]) + .tosc {
+                grid-row: 1 / 3;
+            }
 
-      .me.nopro {
-        grid-template-areas: 'name tosc';
-      }
+            #button {
+                width: 40%;
+                height: 50%;
+                place-self: center;
+            }
+        `;
+    }
 
-      .me.nopro .pname {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
+    static get properties() {
+        return {
+            list: { type: Array },
+            me: { type: Object },
+        };
+    }
 
-      .me tosc-inline {
-        grid-area: tosc;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-
-      .me .pname {
-        grid-area: name;
-      }
-
-      .me .ppronun {
-        grid-area: pronoun;
-        margin: 0;
-      }
-
-      .btn {
-        margin-top: auto;
-        margin-bottom: 20px;
-        width: 100px;
-        height: 40px;
-
-        border: none;
-        border-radius: 5px;
-        background-color: #555555;
-        color: #eee;
-        font-size: 20px;
-        outline: none;
-      }
-
-      .btn:focus-visible,
-      .btn:hover {
-        background-color: #666555;
-      }
-
-      .btn:active {
-        filter: brightness(1.2);
-      }
-    `;
-  }
-
-  static get properties() {
-    return {
-      list: { type: Array },
-      me: { type: Object },
-    };
-  }
-
-  render() {
-    return html`
-      <div class="me ${this.me.pronoun === '' ? 'nopro' : ''}">
-        <span class="pname">${this.me.name}</span>
-        ${this.me.pronoun === '' ? html`` : html` <span class="ppronun">(${this.me.pronoun})</span> `}
-        <tosc-inline .tosc=${this.me.tosc}></tosc-inline>
-      </div>
-      <div class="others">
-        ${this.list.map(
-          (ex) => html`
-            <div class="person">
-              <span class="pname">${ex.name}</span>
-              ${ex.pronoun === '' ? html`` : html``}
-              <span class="ppronun"> ${ex.pronoun === '' ? '' : `(${ex.pronoun})`} </span>
-              <tosc-inline .tosc=${ex.tosc}></tosc-inline>
+    render() {
+        return html`
+            <div id="me">
+                <span class="name">${this.me.name}</span>
+                <span class="pronoun" ?hidden=${this.me.pronoun === ''}>
+                    (${this.me.pronoun})
+                </span>
+                <tosc-inline class="tosc" .tosc=${this.me.tosc}></tosc-inline>
             </div>
-          `
-        )}
-      </div>
+            <div id="others">
+                ${this.list.map((ex) => html`
+                    <tosc-person .me=${ex} class='person'></tosc-person>
+                `)}
+            </div>
 
-      <button class="btn" @click=${this.switch}>Edit</button>
-    `;
-  }
+            <push-button id="button" @click=${this.switch}>Edit</push-button>
+        `;
+    }
 
-  switch() {
-    const switchEv = new CustomEvent('switch', {
-      bubbles: true,
-      composed: true,
-    });
-    this.dispatchEvent(switchEv);
-  }
+    switch() {
+        const switchEv = new CustomEvent('switch', {
+            bubbles: true,
+            composed: true,
+        });
+        this.dispatchEvent(switchEv);
+    }
 }
 
 customElements.define('tosc-list', TOSClist);
