@@ -4,6 +4,7 @@ import { examples } from './example'
 import { TOSC } from './tosc';
 import './tosc-list';
 import './tosc-create';
+import './tosc-list-landscape';
 
 class TOSCapp extends LitElement {
     static get styles() {
@@ -17,6 +18,9 @@ class TOSCapp extends LitElement {
                 color: #222;
                 border-radius: 10px;
                 font-family: sans;
+
+                height: 100%;
+                width: 100%;
             }
 
             :host > * {
@@ -24,19 +28,9 @@ class TOSCapp extends LitElement {
                 font-size: var(--font-size);
             }
 
-            :host {
-                width: 100%;
-                height: 80%;
-            }
-
             @media (hover: none) and (pointer: coarse) { /*mobile*/
-                :host {
-                    width: 100%;
-                    height: 100%;
-                }
-
                 :host > * {
-                    --font-size: 30px;
+                    --font-size: 50px;
                     font-size: var(--font-size);
                 }
             }
@@ -54,7 +48,7 @@ class TOSCapp extends LitElement {
         super();
         this.me = {
             name: 'Guest32432989',
-            pronoun: '',
+            pronoun: 'aoaoaoao',
             tosc: new TOSC('BBBB'),
         };
 
@@ -65,8 +59,16 @@ class TOSCapp extends LitElement {
     }
 
     render() {
-        if (!this.isMobile) return this.renderList();
+        if (!this.isMobile) return this.renderLandscapeLayout();
         return this.showList ? this.renderList() : this.renderCreate();
+    }
+
+    renderLandscapeLayout() {
+        return html`
+            <tosc-list-landscape
+                .people=${examples}
+            >Today at SOMEPLACE</tosc-list-landscape>
+        `;
     }
 
     renderList() {
