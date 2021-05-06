@@ -48,7 +48,6 @@ rules:
   max-len: [2, 210, { 'ignoreUrls': true }]
   max-lines: [2, { 'max': 390, 'skipComments': true }]
   max-lines-per-function: [2, 120]
-  max-nested-callbacks: [2, 2]
   max-params: [2, 4]
   max-statements: [2, 37]
   max-statements-per-line: [2, { 'max': 1 }]
@@ -135,7 +134,6 @@ rules:
   no-unsafe-negation: 2
   no-unused-expressions: 2
   no-unused-vars: 2
-  no-use-before-define: 2
   no-useless-call: 2
   no-useless-catch: 2
   no-useless-computed-key: 2
