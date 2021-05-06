@@ -1,5 +1,4 @@
 import { LitElement, css, html } from 'lit-element';
-import { clamp } from './clamp.js';
 
 class ToscScroll extends LitElement {
   static get styles() {
@@ -114,6 +113,7 @@ class ToscScroll extends LitElement {
   constructor() {
     super();
     this.cur = 0;
+    this.scrolling = this.scrolling.bind(this);
     this.active = 'blue';
     this.letter = '?';
     this.extra = false;
@@ -122,57 +122,53 @@ class ToscScroll extends LitElement {
   firstUpdated() {
     this.scroll = this.shadowRoot.querySelector('#scroll');
 
-    this.addEventListener('touchmove', this.scrolling);
-
-    this.addEventListener('wheel', this.scrolling);
+    this.scroll.addEventListener('scroll', this.scrolling);
 
     /* enables dragabillity for scrolls */
     this.addEventListener('mousedown', (e) => {
-      this.isMDown = true;
-      this.startY = e.pageY - this.offsetTop - this.scroll.offsetTop;
-      this.scrollUp = this.cur;
-    });
+      const startY = e.pageY;
+      const startScroll = this.cur;
 
-    this.addEventListener('mouseup', () => {
-      this.isMDown = false;
-      //delya cuz click is happaning a bit later
-      setTimeout(() => (this.block = false), 100);
-    });
+      const onMouseUp = () => {
+        removeListeners();
+        //delya cuz click is happaning a bit later
+        setTimeout(() => (this.block = false), 100);
+      };
 
-    this.addEventListener('mouseleave', () => {
-      this.isMDown = false;
-      this.block = false;
-    });
+      const onMouseLeave = () => {
+        removeListeners();
+        this.block = false;
+      };
 
-    this.addEventListener('mousemove', (e) => {
-      if (!this.isMDown) return;
-      e.preventDefault();
+      const onMouseMove = (moveEvent) => {
+        moveEvent.preventDefault();
 
-      const y = e.pageY - this.offsetTop - this.scroll.offsetTop;
-      const scroll = y - this.startY;
+        const scroll = moveEvent.pageY - startY;
 
-      if (Math.abs(scroll) < 10) return;
-      this.block = true;
+        if (Math.abs(scroll) < 10) return;
+        this.block = true;
 
-      const pos = clamp(this.scrollUp - scroll, this.top, this.bottom);
-      this.updateScroll(pos);
+        const pos = startScroll - scroll;
+        this.updateScroll(pos);
 
-      const letId = this.getLetId(pos);
-      if (letId !== this.curLetId) {
-        this.curLetId = letId;
         this.updateValue();
-      }
 
-      this.stableLetter(pos);
+        this.stabilize();
+      };
+
+      this.addEventListener('mousemove', onMouseMove);
+      this.addEventListener('mouseup', onMouseUp);
+      this.addEventListener('mouseleave', onMouseLeave);
+
+      const removeListeners = () => {
+        this.removeEventListener('mousemove', onMouseMove);
+        this.removeEventListener('mouseup', onMouseUp);
+        this.removeEventListener('mouseleave', onMouseLeave);
+      };
     });
 
-    /* enables dragabillity for scrolls */
-
-    this.letSize = parseInt(getComputedStyle(this).getPropertyValue('--text-size'), 10);
-    //5 cuz 3 from each letter and extra 2 from margin. And 3 cuz ther is 3 letters
-    this.blockSize = this.letSize * (5 / 3);
+    this.letterSize = parseInt(getComputedStyle(this).getPropertyValue('--text-size'), 10);
     this.bottom = this.scroll.offsetHeight / 2;
-    this.top = 0;
 
     this.cur = this.letterPos(this.active);
     this.updateScroll(this.cur);
@@ -195,7 +191,7 @@ class ToscScroll extends LitElement {
       case 'red':
         return 0;
       case 'blue':
-        return 2 * this.letSize;
+        return 2 * this.letterSize;
       case 'green':
         return this.bottom;
       default:
@@ -211,7 +207,7 @@ class ToscScroll extends LitElement {
   }
 
   updateValue() {
-    const newVal = ['red', 'blue', 'green'][this.getLetId(this.cur, 0)];
+    const newVal = ['red', 'blue', 'green'][this.getLetterId(this.cur)];
     if (newVal === this.active) return;
     this.active = newVal;
 
@@ -224,10 +220,10 @@ class ToscScroll extends LitElement {
   }
 
   //because !
-  getLetId(pos) {
-    const blockSize = (this.letSize * 5) / 3;
-    if (pos < blockSize) return 0;
-    else if (pos < 2 * blockSize) return 1;
+  getLetterId(pos) {
+    const { letterSize } = this;
+    if (pos < letterSize * 0.5) return 0; // half of the first letter
+    if (pos < letterSize * 3) return 1; // half of the second letter + spacing
     return 2;
   }
 
@@ -239,19 +235,17 @@ class ToscScroll extends LitElement {
   scrolling() {
     this.cur = this.scroll.scrollTop;
     this.updateValue();
-    this.stableLetter(this.cur);
+    this.stabilize();
   }
 
-  stableLetter(pos) {
+  stabilize() {
     clearTimeout(this.stabletm);
-    this.stabletm = setTimeout(() => this.stabilize(pos, 0), 600);
-  }
-
-  stabilize(pos, direction) {
-    const letId = this.getLetId(pos, direction); //yep it is junky!
-    const stablePos = this.letterPos(['red', 'blue', 'green'][letId]);
-    this.updateScroll(stablePos);
-    this.updateValue();
+    this.stabletm = setTimeout(() => {
+      const letterId = this.getLetterId(this.cur); //yep it is junky!
+      const stablePos = this.letterPos(['red', 'blue', 'green'][letterId]);
+      this.updateScroll(stablePos);
+      this.updateValue();
+    }, 600);
   }
 }
 
