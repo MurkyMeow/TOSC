@@ -102,11 +102,6 @@ class TOSCcreate extends LitElement {
         };
     }
 
-    constructor() {
-        super();
-        this.hint = hints.T.red[0];
-    }
-
     render() {
         return html`
             <div class="personal">

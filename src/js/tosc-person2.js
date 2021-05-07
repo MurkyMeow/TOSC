@@ -10,8 +10,6 @@ class TOSCPerson extends LitElement {
                 grid-template-columns: 10vw 1fr auto;
                 grid-gap: 20px;
                 align-items: center;
-                padding-bottom: 20px;
-                border-bottom: 2px solid #00000020;
             }
 
             #name {

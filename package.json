@@ -6,7 +6,8 @@
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "dev": "webpack-dev-server --config webpack.dev.js",
-    "dev:public": "npm run dev -- --host 0.0.0.0 --public"
+    "dev:public": "npm run dev -- --host 0.0.0.0 --public",
+    "server": "node app/server.js"
   },
   "author": "",
   "license": "ISC",
@@ -27,6 +28,7 @@
     "webpack-merge": "^5.0.9"
   },
   "dependencies": {
+    "express": "^4.17.1",
     "lit-element": "^2.4.0"
   }
 }

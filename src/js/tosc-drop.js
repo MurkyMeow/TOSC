@@ -82,7 +82,7 @@ class TOSCdrop extends LitElement {
 
     constructor() {
         super();
-        this.active = false;
+        this.active = true;
         this.toggle();
     }
 

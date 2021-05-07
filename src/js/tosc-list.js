@@ -27,6 +27,8 @@ class TOSClist extends LitElement {
 
             #others .person:not(:last-child) {
                 margin-bottom: 1.5vh;
+                padding-bottom: 1.5vh;
+                border-bottom: 2px solid #00000020;
             }
 
             #others::after {
