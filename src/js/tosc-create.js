@@ -12,6 +12,9 @@ class TOSCcreate extends LitElement {
                 height: 100%;
                 width: 100%;
                 grid-template-rows: 300px 15vh auto 200px;
+
+                padding: 0 10px;
+                box-sizing: border-box;
             }
 
             .name {
@@ -56,7 +59,6 @@ class TOSCcreate extends LitElement {
                 align-items: center;
                 width: 100%;
                 height: 100%;
-                padding: 0 10px;
                 box-sizing: border-box;
                 place-content: center;
             }
@@ -111,6 +113,7 @@ class TOSCcreate extends LitElement {
                 <input class="name" spellcheck="false"
                     value=${this.me.name}
                     @change=${this.changeName}
+                    @keyup=${this.blurName}
                 >
                 <tosc-drop
                     .choosen=${this.me.pronoun}
@@ -144,6 +147,10 @@ class TOSCcreate extends LitElement {
 
             <push-button id="button" @click=${this.switch}>Go back</push-button>
         `;
+    }
+
+    blurName(e) {
+        if (e.keyCode === 13) e.target.blur();
     }
 
     changePr(e) {

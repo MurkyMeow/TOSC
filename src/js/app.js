@@ -48,14 +48,14 @@ class TOSCapp extends LitElement {
         super();
         this.me = {
             name: 'Guest32432989',
-            pronoun: 'aoaoaoao',
+            pronoun: '',
             tosc: new TOSC('BBBB'),
         };
 
         this.isMobile = isMobile();
-        this.showList = true;
+        //this.showList = true;
 
-        //this.showList = false;
+        this.showList = false;
     }
 
     render() {
