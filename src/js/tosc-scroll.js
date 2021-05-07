@@ -7,8 +7,9 @@ class ToscScroll extends LitElement {
                 --red: #b02323;
                 --blue: #5523f0;
                 --green: #23b033;
+                --holder-bg-color: #ccc;
 
-                --text-size: 35px;
+                --font-size: inherit;
 
                 width: 100%;
                 height: 100%;
@@ -17,26 +18,27 @@ class ToscScroll extends LitElement {
                 justify-content: center;
                 align-items: center;
                 position: relative;
+                padding: 10px 0;
             }
 
             :host::before {
                 content: '';
+                --holder-width: calc(2.35 * var(--font-size));
+                --holder-height: calc(1.35 * var(--font-size));
 
                 position: absolute;
-                left: calc(50% - 40px);
-                top: calc(50% - 1.35 * var(--text-size) / 2);
+                left: calc(50% - var(--holder-width) / 2);
+                top: calc(50% - var(--holder-height) / 2);
 
-                width: 80px;
-                height: calc(1.35 * var(--text-size));
+                width: var(--holder-width);
+                height: var(--holder-height);
 
-                background-color: #4444446a;
+                background-color: var(--holder-bg-color);
                 border-radius: 5px;
                 box-sizing: border-box;
             }
 
             #scroll {
-                transform: translateY(0);
-                transition: 0.1s;
                 height: 100%;
                 width: 100%;
 
@@ -50,13 +52,13 @@ class ToscScroll extends LitElement {
 
             #scroll.extra .pick::before {
                 content: '';
-                width: calc(1.2 * var(--text-size));
-                height: calc(1.2 * var(--text-size));
-                border: 2px solid transparent;
+                width: calc(1.2 * var(--font-size));
+                height: calc(1.2 * var(--font-size));
+                border: 5px solid transparent;
                 position: absolute;
                 border-radius: 100%;
-                top: calc(50% - 1.2 * var(--text-size) / 2);
-                left: calc(50% - 1.2 * var(--text-size) / 2);
+                top: calc(50% - 1.2 * var(--font-size) / 2);
+                left: calc(50% - 1.2 * var(--font-size) / 2);
                 box-sizing: border-box;
             }
 
@@ -73,14 +75,14 @@ class ToscScroll extends LitElement {
             }
 
             .pick.void {
-                height: calc((400px - var(--text-size)) / 2);
+                height: calc((100% - var(--font-size)) / 2);
             }
 
             .pick {
                 user-select: none;
                 position: relative;
-                font-size: var(--text-size);
-                height: var(--text-size);
+                font-size: var(--font-size);
+                height: var(--font-size);
 
                 display: flex;
                 justify-content: center;
@@ -93,7 +95,7 @@ class ToscScroll extends LitElement {
 
             .pick#blue {
                 color: var(--blue);
-                margin: var(--text-size) 0;
+                margin: var(--font-size) 0;
             }
 
             .pick#green {
@@ -167,7 +169,7 @@ class ToscScroll extends LitElement {
             };
         });
 
-        this.letterSize = parseInt(getComputedStyle(this).getPropertyValue('--text-size'), 10);
+        this.letterSize = parseInt(getComputedStyle(this).getPropertyValue('--font-size'), 10);
         this.bottom = this.scroll.offsetHeight / 2;
 
         this.cur = this.letterPos(this.active);

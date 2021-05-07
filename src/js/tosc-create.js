@@ -11,17 +11,17 @@ class TOSCcreate extends LitElement {
                 display: grid;
                 height: 100%;
                 width: 100%;
-                grid-template-rows: 100px 80px auto;
+                grid-template-rows: 300px 15vh auto 200px;
             }
 
             .name {
                 background: transparent;
                 border: none;
-                border-bottom: 2px solid silver;
-                color: #eee;
+                border-bottom: 5px solid silver;
+                color: #222;
                 display: block;
 
-                font-size: 25px;
+                font-size: inherit;
                 width: calc(100% - 20px);
                 margin: 20px 10px;
 
@@ -33,7 +33,8 @@ class TOSCcreate extends LitElement {
             }
 
             .pronoun {
-                background: #aaaaaa5a;
+                background: #eee;
+                color: #222;
                 padding: 3px;
                 border-radius: 5px;
                 display: inline-block;
@@ -42,66 +43,53 @@ class TOSCcreate extends LitElement {
 
             .hint {
                 text-align: center;
-                font-size: 3vw;
-                width: 100%;
-                height: 80px;
+                font-size: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px;
             }
 
             .controls {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                width: 500px;
+                width: 100%;
                 height: 100%;
-                margin: auto;
+                padding: 0 10px;
+                box-sizing: border-box;
+                place-content: center;
             }
 
             .scrolls,
             .extra {
                 display: flex;
                 width: 100%;
-                justify-content: space-between;
+                justify-content: space-around;
             }
 
             .scrolls {
                 /*background-color: rgba(0, 0, 0, 0.37);*/
-                border-radius: 5px;
-                box-sizing: border-box;
-                padding: 8px;
                 margin-bottom: 20px;
+                --font-size: 50px;
             }
 
             tosc-scroll {
-                height: 400px;
+                --font-size: 80px;
             }
 
             tosc-button {
-                width: 100px;
-                height: 50px;
+                margin-top: 3vh;
+                width: 15vw;
+                height: 3vh;
             }
 
-            .btn {
-                margin-top: auto;
-                margin-bottom: 20px;
-                width: 100px;
-                height: 40px;
-
-                border: none;
-                border-radius: 5px;
-                background-color: #555555;
-                color: #eee;
-                font-size: 20px;
-                outline: none;
+            #button {
+                width: 40%;
+                height: 50%;
+                place-self: center;
             }
 
-            .btn:focus-visible,
-            .btn:hover {
-                background-color: #666555;
-            }
-
-            .btn:active {
-                filter: brightness(1.2);
-            }
         `;
     }
 
@@ -112,38 +100,49 @@ class TOSCcreate extends LitElement {
         };
     }
 
+    constructor() {
+        super();
+        this.hint = hints.T.red[0];
+    }
+
     render() {
         return html`
             <div class="personal">
-                <input class="name" value=${this.me.name} spellcheck="false" @change=${this.changeName} />
-                <tosc-drop .choosen=${this.me.pronoun} @change=${this.changePr}></tosc-drop>
+                <input class="name" spellcheck="false"
+                    value=${this.me.name}
+                    @change=${this.changeName}
+                >
+                <tosc-drop
+                    .choosen=${this.me.pronoun}
+                    @change=${this.changePr}
+                ></tosc-drop>
             </div>
 
             <div class="hint">${this.hint}</div>
 
             <div class="controls">
                 <div class="scrolls">
-                    ${['T', 'O', 'S', 'C'].map(
-                        (el) => html`
-                            <tosc-scroll
-                                .active=${this.me.tosc[el].color}
-                                .extra=${this.me.tosc[el].extra}
-                                .letter=${el}
-                                @update=${this.showHint}
-                            ></tosc-scroll>
-                        `
-                    )}
+                    ${this.me.tosc.map(el => html`
+                        <tosc-scroll
+                            .active=${el.color}
+                            .extra=${el.extra}
+                            .letter=${el.letter}
+                            @update=${this.showHint}
+                        ></tosc-scroll>
+                    `)}
                 </div>
                 <div class="extra">
-                    ${['T', 'O', 'S', 'C'].map(
-                        (el) => html`
-                            <tosc-button .letter=${el} .state=${this.me.tosc[el].extra} @toggle=${this.toggleExtra}></tosc-button>
-                        `
-                    )}
+                    ${this.me.tosc.map(el => html`
+                        <tosc-button
+                            .letter=${el.letter}
+                            .state=${el.extra}
+                            @toggle=${this.toggleExtra}
+                        ></tosc-button>
+                    `)}
                 </div>
-
-                <button class="btn" @click=${this.buttonClick}>Go back</button>
             </div>
+
+            <push-button id="button" @click=${this.switch}>Go back</push-button>
         `;
     }
 
@@ -173,7 +172,7 @@ class TOSCcreate extends LitElement {
         this.requestUpdate();
     }
 
-    buttonClick() {
+    switch() {
         const btnClkEv = new CustomEvent('button', {
             bubbles: true,
             composed: true,
