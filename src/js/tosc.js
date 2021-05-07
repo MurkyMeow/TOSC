@@ -31,6 +31,6 @@ export class TOSC {
     }
 
     map(callback) {
-        return [ this.T, this.O, this.S, this.C ].map(callback);
+        return [this.T, this.O, this.S, this.C].map(callback);
     }
 }

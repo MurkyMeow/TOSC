@@ -36,20 +36,17 @@ class PushButton extends LitElement {
     }
 
     static get properties() {
-        return {
-        };
+        return {};
     }
 
     constructor() {
         super();
-        this.tabIndex = "0";
+        this.tabIndex = '0';
     }
 
     render() {
-        return html`
-            <slot></slot>
-        `;
+        return html` <slot></slot> `;
     }
-};
+}
 
 customElements.define('push-button', PushButton);

@@ -98,32 +98,35 @@ class TOSCListLandscape extends LitElement {
     static get properties() {
         return {
             people: { type: Array },
-        }
+        };
     }
 
     constructor() {
         super();
         this.people = [];
-        this.avatar = "https://www.flaticon.com/svg/vstatic/svg/747/747402.svg?token=exp=1620310651~hmac=a9b02cfce78c075668c201880608aadb"
+        this.avatar =
+            'https://www.flaticon.com/svg/vstatic/svg/747/747402.svg?token=exp=1620310651~hmac=a9b02cfce78c075668c201880608aadb';
     }
 
     render() {
         return html`
             <slot id="title"></slot>
             <div id="people">
-                ${this.people.map(person => html`
-                    <div class='person'>
-                        <img class='avatar' src=${this.avatar}>
-                        <div class='wrap'>
-                            <span class='name'>${person.name}</span>
-                            <span class='pronoun'>${person.pronoun}</span>
+                ${this.people.map(
+                    (person) => html`
+                        <div class="person">
+                            <img class="avatar" src=${this.avatar} />
+                            <div class="wrap">
+                                <span class="name">${person.name}</span>
+                                <span class="pronoun">${person.pronoun}</span>
+                            </div>
+                            <tosc-inline class="tosc" .tosc=${person.tosc}></tosc-inline>
                         </div>
-                        <tosc-inline class='tosc' .tosc=${person.tosc}></tosc-inline>
-                    </div>
-                `)}
+                    `
+                )}
             </div>
         `;
     }
-};
+}
 
 customElements.define('tosc-list-landscape', TOSCListLandscape);

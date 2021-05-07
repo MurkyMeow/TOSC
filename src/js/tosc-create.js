@@ -91,7 +91,6 @@ class TOSCcreate extends LitElement {
                 height: 50%;
                 place-self: center;
             }
-
         `;
     }
 
@@ -105,38 +104,41 @@ class TOSCcreate extends LitElement {
     render() {
         return html`
             <div class="personal">
-                <input class="name" spellcheck="false"
+                <input
+                    class="name"
+                    spellcheck="false"
                     value=${this.me.name}
                     @change=${this.changeName}
                     @keyup=${this.blurName}
-                >
-                <tosc-drop
-                    .choosen=${this.me.pronoun}
-                    @change=${this.changePr}
-                ></tosc-drop>
+                />
+                <tosc-drop .choosen=${this.me.pronoun} @change=${this.changePr}></tosc-drop>
             </div>
 
             <div class="hint">${this.hint}</div>
 
             <div class="controls">
                 <div class="scrolls">
-                    ${this.me.tosc.map(el => html`
-                        <tosc-scroll
-                            .active=${el.color}
-                            .extra=${el.extra}
-                            .letter=${el.letter}
-                            @update=${this.showHint}
-                        ></tosc-scroll>
-                    `)}
+                    ${this.me.tosc.map(
+                        (el) => html`
+                            <tosc-scroll
+                                .active=${el.color}
+                                .extra=${el.extra}
+                                .letter=${el.letter}
+                                @update=${this.showHint}
+                            ></tosc-scroll>
+                        `
+                    )}
                 </div>
                 <div class="extra">
-                    ${this.me.tosc.map(el => html`
-                        <tosc-button
-                            .letter=${el.letter}
-                            .state=${el.extra}
-                            @toggle=${this.toggleExtra}
-                        ></tosc-button>
-                    `)}
+                    ${this.me.tosc.map(
+                        (el) => html`
+                            <tosc-button
+                                .letter=${el.letter}
+                                .state=${el.extra}
+                                @toggle=${this.toggleExtra}
+                            ></tosc-button>
+                        `
+                    )}
                 </div>
             </div>
 

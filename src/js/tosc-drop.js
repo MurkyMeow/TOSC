@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit-element';
-import { pronouns } from './pronouns.js'
+import { pronouns } from './pronouns.js';
 
 class TOSCdrop extends LitElement {
     static get styles() {
@@ -20,7 +20,7 @@ class TOSCdrop extends LitElement {
 
                 cursor: pointer;
                 user-select: none;
-                transition: background-color .2s;
+                transition: background-color 0.2s;
             }
 
             :host(.active) #choosen {
@@ -69,7 +69,6 @@ class TOSCdrop extends LitElement {
                 min-height: 80px;
                 box-sizing: border-box;
             }
-
         `;
     }
 
@@ -88,33 +87,26 @@ class TOSCdrop extends LitElement {
 
     firstUpdated() {
         this.dropdown = this.shadowRoot.querySelector('#drop-down');
-        this.dropdown.addEventListener('blur', () => this.active = false);
+        this.dropdown.addEventListener('blur', () => (this.active = false));
     }
 
     render() {
         return html`
-            <div id="choosen" @click=${this.toggle}>
-                ${this.choosen === '' ? 'pronun' : this.choosen}
-            </div>
+            <div id="choosen" @click=${this.toggle}>${this.choosen === '' ? 'pronun' : this.choosen}</div>
             <div id="drop-down">
-                ${pronouns.map(pr => html`
-                    <span class="pronoun" name=${pr} @click=${this.changePr}>${pr}</span>
-                `)}
+                ${pronouns.map((pr) => html` <span class="pronoun" name=${pr} @click=${this.changePr}>${pr}</span> `)}
             </div>
         `;
     }
 
     toggle() {
         this.active = !this.active;
-        if (this.active)
-            this.classList.add('active');
-        else
-            this.classList.remove('active');
-
+        if (this.active) this.classList.add('active');
+        else this.classList.remove('active');
     }
 
     changePr(e) {
-        this.choosen = e.target.getAttribute("name");
+        this.choosen = e.target.getAttribute('name');
         this.active = false;
         this.classList.remove('active');
 

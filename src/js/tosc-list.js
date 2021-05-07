@@ -14,7 +14,8 @@ class TOSClist extends LitElement {
                 gap: 20px;
             }
 
-            #me, #others {
+            #me,
+            #others {
                 padding: 0 30px;
             }
 
@@ -32,9 +33,9 @@ class TOSClist extends LitElement {
             }
 
             #others::after {
-                content: " ";
+                content: ' ';
                 position: sticky;
-                bottom: -.5vh;
+                bottom: -0.5vh;
                 left: 0px;
                 min-height: 4vh;
                 width: 100%;
@@ -68,7 +69,7 @@ class TOSClist extends LitElement {
 
             #me .pronoun {
                 grid-column: 1;
-                color: #4c4c4c
+                color: #4c4c4c;
             }
 
             #me .pronoun:not([hidden]) + .tosc {
@@ -94,15 +95,11 @@ class TOSClist extends LitElement {
         return html`
             <div id="me">
                 <span class="name">${this.me.name}</span>
-                <span class="pronoun" ?hidden=${this.me.pronoun === ''}>
-                    (${this.me.pronoun})
-                </span>
+                <span class="pronoun" ?hidden=${this.me.pronoun === ''}> (${this.me.pronoun}) </span>
                 <tosc-inline class="tosc" .tosc=${this.me.tosc}></tosc-inline>
             </div>
             <div id="others">
-                ${this.list.map((ex) => html`
-                    <tosc-person .me=${ex} class='person'></tosc-person>
-                `)}
+                ${this.list.map((ex) => html` <tosc-person .me=${ex} class="person"></tosc-person> `)}
             </div>
 
             <push-button id="button" @click=${this.switch}>Edit</push-button>

@@ -4,12 +4,12 @@ export const examples = [
     {
         name: 'Example 0 really long name with short pro',
         pronoun: 'xey',
-        tosc: new TOSC('RG+B+B+')
+        tosc: new TOSC('RG+B+B+'),
     },
     {
         name: 'Example 1 long name',
         pronoun: 'sie',
-        tosc: new TOSC('RGBB')
+        tosc: new TOSC('RGBB'),
     },
     { name: 'Example 2', pronoun: 'he', tosc: new TOSC('RR+GG') },
     {
@@ -21,7 +21,7 @@ export const examples = [
     {
         name: 'Example 5 long name',
         pronoun: 'they/them/themselves',
-        tosc: new TOSC('G+RGG+')
+        tosc: new TOSC('G+RGG+'),
     },
     { name: 'Example 6', pronoun: '', tosc: new TOSC('R+G+G+G+') },
     { name: 'Example 7', pronoun: 'xey', tosc: new TOSC('B+R+G+G') },
@@ -45,4 +45,3 @@ export const examples = [
     { name: 'Example 9', pronoun: 'she', tosc: new TOSC('RBB+B') },
     { name: 'Example 9', pronoun: 'she', tosc: new TOSC('RBB+B') },
 ];
-
