@@ -37,7 +37,7 @@ rules:
   handle-callback-err: 2
   id-blacklist: 0
   id-match: [2, '^([A-Za-z_][A-Za-z0-9_]*)?[A-Za-z0-9]$|^_$']
-  indent: [2, 2, { 'SwitchCase': 1, 'ignoredNodes': ['TemplateLiteral *'] }]
+  indent: [4, 2, { 'SwitchCase': 1, 'ignoredNodes': ['TemplateLiteral *'] }]
   init-declarations: 0
   key-spacing: 2
   keyword-spacing: 2
