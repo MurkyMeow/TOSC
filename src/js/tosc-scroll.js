@@ -225,8 +225,8 @@ class ToscScroll extends LitElement {
     //because !
     getLetterId(pos) {
         const { letterSize } = this;
-        if (pos < letterSize * 0.5) return 0; // half of the first letter
-        if (pos < letterSize * 3) return 1; // half of the second letter + spacing
+        if (pos < letterSize) return 0; // the first letter's height
+        if (pos < letterSize * 3) return 1; // spacing + the second letter's height
         return 2;
     }
 
