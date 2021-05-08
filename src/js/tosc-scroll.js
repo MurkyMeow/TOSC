@@ -215,7 +215,6 @@ class ToscScroll extends LitElement {
         this.active = newVal;
 
         const updateEv = new CustomEvent('update', {
-            detail: { extra: this.extra, color: this.active, letter: this.letter },
             bubbles: true,
             composed: true,
         });

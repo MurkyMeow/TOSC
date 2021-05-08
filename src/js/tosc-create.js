@@ -125,6 +125,7 @@ class TOSCcreate extends LitElement {
                                 .extra=${el.extra}
                                 .letter=${el.letter}
                                 @update=${this.showHint}
+                                @pointerdown=${this.showHint}
                             ></tosc-scroll>
                         `
                     )}
@@ -163,9 +164,9 @@ class TOSCcreate extends LitElement {
     }
 
     showHint(e) {
-        const data = e.detail;
-        this.me.tosc[data.letter].color = data.color;
-        this.updateHint(data.letter, data.color, data.extra);
+        const { active, letter, extra } = e.currentTarget;
+        this.me.tosc[letter].color = active;
+        this.updateHint(letter, active, extra);
     }
 
     toggleExtra(e) {
