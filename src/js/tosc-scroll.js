@@ -44,6 +44,7 @@ class ToscScroll extends LitElement {
 
                 overflow-y: scroll;
                 scrollbar-width: none;
+                scroll-behavior: smooth;
             }
 
             #scroll::-webkit-scrollbar {
