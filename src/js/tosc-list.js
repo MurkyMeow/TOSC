@@ -14,21 +14,38 @@ class TOSClist extends LitElement {
                 gap: 20px;
             }
 
-            #me,
-            #others {
-                padding: 0 30px;
+            #me {
+                border-radius: inherit;
+                background: #bdbdbd;
+                height: fit-content;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                padding: 20px 30px;
+            }
+
+            #me tosc-person {
+                --cover-color: #bdbdbd;
             }
 
             #others {
+            }
+
+            #others {
+                padding: 0 30px;
+
                 overflow-y: auto;
                 width: 100%;
                 box-sizing: border-box;
                 position: relative;
             }
 
+            #others tosc-person {
+                --cover-color: #ddd;
+            }
+
             #others .person:not(:last-child) {
-                margin-bottom: 1.5vh;
-                padding-bottom: 1.5vh;
+                margin-bottom: 25px;
+                padding-bottom: 25px;
                 border-bottom: 2px solid #00000020;
             }
 
@@ -47,33 +64,9 @@ class TOSClist extends LitElement {
                 display: none;
             }
 
-            #me {
-                display: grid;
-                grid-template-columns: minmax(45%, 1fr) 1fr auto;
-                grid-gap: 10px;
-                align-items: center;
-            }
-
             .tosc {
                 grid-column: 3;
                 --font-ratio: 1.1;
-            }
-
-            #me {
-                border-radius: inherit;
-                background: #00000025;
-                height: fit-content;
-                padding-top: 5px;
-                padding-bottom: 5px;
-            }
-
-            #me .pronoun {
-                grid-column: 1;
-                color: #4c4c4c;
-            }
-
-            #me .pronoun:not([hidden]) + .tosc {
-                grid-row: 1 / 3;
             }
 
             #button {
@@ -94,12 +87,12 @@ class TOSClist extends LitElement {
     render() {
         return html`
             <div id="me">
-                <span class="name">${this.me.name}</span>
-                <span class="pronoun" ?hidden=${this.me.pronoun === ''}> (${this.me.pronoun}) </span>
-                <tosc-inline class="tosc" .tosc=${this.me.tosc}></tosc-inline>
+                <tosc-person .me=${this.me} center></tosc-person>
             </div>
             <div id="others">
-                ${this.list.map((ex) => html` <tosc-person .me=${ex} class="person"></tosc-person> `)}
+                ${this.list.map((ex) => html`
+                    <tosc-person .me=${ex} class="person"></tosc-person>
+                `)}
             </div>
 
             <push-button id="button" @click=${this.switch}>Edit</push-button>
