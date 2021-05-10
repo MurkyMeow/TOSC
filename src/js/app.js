@@ -53,9 +53,8 @@ class TOSCapp extends LitElement {
         };
 
         this.isMobile = isMobile();
-        //this.showList = true;
-
-        this.showList = false;
+        this.showList = true;
+        //this.showList = false;
     }
 
     render() {

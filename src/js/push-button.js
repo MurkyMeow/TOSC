@@ -8,10 +8,8 @@ class PushButton extends LitElement {
                 --fg-color-active: #000;
                 --bg-color: #eee;
                 --fg-color: #000;
-                width: 100%;
-                height: 100%;
 
-                border-radius: inherit;
+                border-radius: 10px;
                 background-color: var(--bg-color);
                 color: var(--fg-color);
                 outline: none;
