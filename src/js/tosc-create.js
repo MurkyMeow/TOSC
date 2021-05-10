@@ -1,8 +1,9 @@
 import { LitElement, css, html } from 'lit-element';
-import { hints } from './hints.js';
-import './tosc-button.js';
-import './tosc-scroll.js';
-import './tosc-drop.js';
+import { hints } from './hints';
+import './tosc-button';
+import './tosc-scroll';
+import './tosc-avatar';
+import './tosc-drop';
 
 class TOSCcreate extends LitElement {
     static get styles() {
@@ -11,9 +12,29 @@ class TOSCcreate extends LitElement {
                 display: grid;
                 height: 100%;
                 width: 100%;
-                grid-template-rows: 300px 15vh auto 200px;
+                grid-template-rows: 250px 15vh auto 200px;
 
                 padding: 0 10px;
+                box-sizing: border-box;
+            }
+
+            .personal {
+                margin-top: 20px;
+                display: flex;
+                gap: 20px;
+            }
+
+            .avatar {
+                --size: 250px;
+                min-width: var(--size);
+                min-height: var(--size);
+                width: var(--size);
+                height: var(--size);
+            }
+
+            .personal-wrap {
+                display: block;
+                width: 100%;
                 box-sizing: border-box;
             }
 
@@ -25,10 +46,11 @@ class TOSCcreate extends LitElement {
                 display: block;
 
                 font-size: inherit;
-                width: calc(100% - 20px);
-                margin: 20px 10px;
+                width: 100%;
+                margin: 20px 0;
 
                 outline: none;
+                box-sizing: border-box;
             }
 
             .name:focus-visible {
@@ -36,12 +58,7 @@ class TOSCcreate extends LitElement {
             }
 
             .pronoun {
-                background: #eee;
-                color: #222;
-                padding: 3px;
-                border-radius: 5px;
                 display: inline-block;
-                margin-bottom: 20px;
             }
 
             .hint {
@@ -104,14 +121,23 @@ class TOSCcreate extends LitElement {
     render() {
         return html`
             <div class="personal">
-                <input
-                    class="name"
-                    spellcheck="false"
-                    value=${this.me.name}
-                    @change=${this.changeName}
-                    @keyup=${this.blurName}
-                />
-                <tosc-drop .choosen=${this.me.pronoun} @change=${this.changePr}></tosc-drop>
+                <tosc-avatar class='avatar'
+                    value=${this.me.avatar}
+                    @new-avatar=${this.updateAvatar}
+                ></tosc-avatar>
+                <div class='personal-wrap'>
+                    <input
+                        class="name"
+                        spellcheck="false"
+                        value=${this.me.name}
+                        @change=${this.changeName}
+                        @keyup=${this.blurName}
+                    />
+                    <tosc-drop class='pronoun'
+                        .choosen=${this.me.pronoun}
+                        @change=${this.changePr}
+                    ></tosc-drop>
+                </div>
             </div>
 
             <div class="hint">${this.hint}</div>
@@ -145,6 +171,10 @@ class TOSCcreate extends LitElement {
 
             <push-button id="button" @click=${this.switch}>Go back</push-button>
         `;
+    }
+
+    updateAvatar(e) {
+        this.me.avatar = e.detail;
     }
 
     blurName(e) {

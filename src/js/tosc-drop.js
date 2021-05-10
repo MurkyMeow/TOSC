@@ -68,6 +68,11 @@ class TOSCdrop extends LitElement {
                 text-overflow: ellipsis;
                 min-height: 80px;
                 box-sizing: border-box;
+                transition: background-color .2s;
+            }
+
+            .pronoun:active {
+                background-color: #fff;
             }
         `;
     }
@@ -81,34 +86,43 @@ class TOSCdrop extends LitElement {
 
     constructor() {
         super();
-        this.active = true;
-        this.toggle();
+        this.active = false;
     }
 
     firstUpdated() {
         this.dropdown = this.shadowRoot.querySelector('#drop-down');
-        this.dropdown.addEventListener('blur', () => (this.active = false));
+        this.addEventListener('blur', () => (this.active = false));
     }
 
     render() {
         return html`
-            <div id="choosen" @click=${this.toggle}>${this.choosen === '' ? 'pronun' : this.choosen}</div>
+            <div id="choosen" @click=${this.toggle}>${this.choosen === '' ? 'pronoun' : this.choosen}</div>
             <div id="drop-down">
-                ${pronouns.map((pr) => html` <span class="pronoun" name=${pr} @click=${this.changePr}>${pr}</span> `)}
+                ${pronouns.map((pr) => html`
+                    <span class="pronoun" name=${pr} @click=${this.changePr}>${pr}</span>
+                `)}
             </div>
         `;
     }
 
+    show() {
+        this.active = true;
+        this.classList.add('active');
+    }
+
+    hide() {
+        this.active = false;
+        this.classList.remove('active');
+    }
+
     toggle() {
-        this.active = !this.active;
-        if (this.active) this.classList.add('active');
-        else this.classList.remove('active');
+        if (!this.active) this.show();
+        else this.hide();
     }
 
     changePr(e) {
         this.choosen = e.target.getAttribute('name');
-        this.active = false;
-        this.classList.remove('active');
+        this.hide();
 
         const changeEv = new CustomEvent('change', {
             detail: { pronoun: this.choosen },

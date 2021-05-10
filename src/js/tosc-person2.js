@@ -10,6 +10,7 @@ class TOSCPerson extends LitElement {
                 grid-template-columns: 10vw 1fr auto;
                 grid-gap: 20px;
                 align-items: center;
+                --cover-color: #ff0000;
             }
 
             #name {
@@ -21,6 +22,11 @@ class TOSCPerson extends LitElement {
                 height: 100%;
             }
 
+            :host([center]) #name[center] {
+                grid-row: 1/3;
+                align-items: center;
+            }
+
             #name::after {
                 content: ' ';
                 position: sticky;
@@ -28,7 +34,7 @@ class TOSCPerson extends LitElement {
                 top: 0px;
                 height: 100%;
                 min-width: 2.5vw;
-                background: linear-gradient(90deg, #dddddd50 0%, #ddd);
+                background: linear-gradient(90deg, #00000000 0%, var(--cover-color));
                 display: block;
             }
 
@@ -47,6 +53,13 @@ class TOSCPerson extends LitElement {
             #name,
             #pronoun {
                 grid-column: 2;
+            }
+
+            #avatar {
+                width: 100px;
+                height: 100px;
+                object-fit: cover;
+                border-radius: 50%;
             }
 
             #tosc,
@@ -71,14 +84,13 @@ class TOSCPerson extends LitElement {
     constructor() {
         super();
         this.me = { name: 'Unnamed', pronoun: '', tosc: new TOSC('BBBB') };
-        this.avatar =
-            'https://www.flaticon.com/svg/vstatic/svg/747/747402.svg?token=exp=1620310651~hmac=a9b02cfce78c075668c201880608aadb';
+        console.log(this.me.avatar);
     }
 
     render() {
         return html`
-            <img id="avatar" src=${this.avatar} />
-            <span id="name">${this.me.name}</span>
+            <img id="avatar" src=${this.me.avatar ? this.me.avatar : '/img/noavatar.png'} />
+            <span id="name" ?center=${this.me.pronoun === ''}>${this.me.name}</span>
             <span id="pronoun" ?hidden=${this.me.pronoun === ''}> (${this.me.pronoun}) </span>
             <tosc-inline id="tosc" .tosc=${this.me.tosc}></tosc-inline>
         `;
