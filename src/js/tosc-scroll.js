@@ -44,7 +44,6 @@ class ToscScroll extends LitElement {
 
                 overflow-y: scroll;
                 scrollbar-width: none;
-                scroll-behavior: smooth;
             }
 
             #scroll::-webkit-scrollbar {
@@ -175,6 +174,8 @@ class ToscScroll extends LitElement {
 
         this.cur = this.letterPos(this.active);
         this.updateScroll(this.cur);
+        // add smooth scrolling AFTER the initial scroll position was set
+        this.scroll.style.setProperty('scroll-behavior', 'smooth');
     }
 
     render() {
