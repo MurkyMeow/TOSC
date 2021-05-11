@@ -205,7 +205,16 @@ class ToscScroll extends LitElement {
     chooseMe(e) {
         if (this.block) return;
         const who = e.currentTarget.id;
-        this.updateScroll(this.letterPos(who));
+
+        if (who === this.active) {
+            const highlightEv = new CustomEvent('highlight', {
+                bubbles: true,
+                composed: true,
+            });
+            this.dispatchEvent(highlightEv);
+        } else {
+            this.updateScroll(this.letterPos(who));
+        }
     }
 
     updateValue() {
