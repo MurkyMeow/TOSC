@@ -206,7 +206,6 @@ class ToscScroll extends LitElement {
         if (this.block) return;
         const who = e.currentTarget.id;
         this.updateScroll(this.letterPos(who));
-        this.updateValue();
     }
 
     updateValue() {
