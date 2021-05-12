@@ -1,6 +1,5 @@
 import { LitElement, css, html } from 'lit-element';
 import { isMobile } from './isMobile';
-import { examples } from './example';
 import { TOSC } from './tosc';
 import './tosc-list';
 import './tosc-create';
@@ -41,20 +40,45 @@ class TOSCapp extends LitElement {
     static get properties() {
         return {
             showList: { type: Boolean },
+            people: { type: Array, attribute: false },
         };
     }
 
     constructor() {
         super();
         this.me = {
+            id: Math.random(), // FIXME
             name: 'Guest32432989',
             pronoun: '',
             tosc: new TOSC('BBBB'),
         };
 
+        this.people = [];
+
         this.isMobile = isMobile();
         this.showList = true;
         //this.showList = false;
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        const ws = new WebSocket('/ws');
+
+        ws.onopen = () => {
+            const join = JSON.stringify({ type: 'join', payload: this.me });
+            ws.send(join);
+        };
+
+        ws.onmessage = (message) => {
+            const data = JSON.parse(message.data);
+
+            if (data.type === 'update') {
+                this.people = data.payload;
+            } else {
+                console.error('Unsupported message', data);
+            }
+        };
     }
 
     render() {
@@ -63,11 +87,11 @@ class TOSCapp extends LitElement {
     }
 
     renderLandscapeLayout() {
-        return html` <tosc-list-landscape .people=${examples}>Today at SOMEPLACE</tosc-list-landscape> `;
+        return html` <tosc-list-landscape .people=${this.people}>Today at SOMEPLACE</tosc-list-landscape> `;
     }
 
     renderList() {
-        return html` <tosc-list .me=${this.me} .list=${examples} @switch=${this.changeScreen}></tosc-list> `;
+        return html` <tosc-list .me=${this.me} .list=${this.people} @switch=${this.changeScreen}></tosc-list> `;
     }
 
     renderCreate() {

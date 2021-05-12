@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "lit-element": "^2.4.0"
+    "lit-element": "^2.4.0",
+    "ws": "^7.4.5"
   }
 }
