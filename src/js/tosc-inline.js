@@ -59,7 +59,9 @@ class TOSCinline extends LitElement {
     }
 
     static get properties() {
-        return {};
+        return {
+            tosc: { type: Object },
+        };
     }
 
     firstUpdated() {

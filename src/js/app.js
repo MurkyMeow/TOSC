@@ -1,6 +1,9 @@
 import { LitElement, css, html } from 'lit-element';
+import { api } from './serverAPI';
 import { isMobile } from './isMobile';
+import * as utils from './utils.js';
 import { TOSC } from './tosc';
+import { examples } from './example';
 import './tosc-list';
 import './tosc-create';
 import './tosc-list-landscape';
@@ -20,6 +23,17 @@ class TOSCapp extends LitElement {
 
                 height: 100%;
                 width: 100%;
+            }
+
+            #joinroom {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 50px;
             }
 
             :host > * {
@@ -46,56 +60,104 @@ class TOSCapp extends LitElement {
 
     constructor() {
         super();
-        this.me = {
-            id: Math.random(), // FIXME
-            name: 'Guest32432989',
-            pronoun: '',
-            tosc: new TOSC('BBBB'),
-        };
 
-        this.people = [];
+        this.me = JSON.parse(localStorage.getItem('me'));
+        if (this.me === null) {
+            this.me = {
+                name: 'Guest',
+                pronoun: '',
+                tosc: new TOSC('BBBB'),
+                id: utils.genToken(12),
+            };
+        }
+
+        this.people = [...examples];
+
+        this.roomId = new URLSearchParams(window.location.search).get('id');
+        //this.roomId = "fvygYXbvoxuZ";
 
         this.isMobile = isMobile();
         this.showList = true;
         //this.showList = false;
+
+        api.on('init', users => {
+            console.log('init', users.length);
+            users.forEach(user => user.tosc = new TOSC(user.tosc));
+            this.people = users
+        });
+
+        api.on('del_user', user_id => {
+            console.log('del user');
+            const index = this.people.findIndex(user => user.id === user_id);
+
+            if (index !== -1) {
+                this.people.splice(index, 1);
+                this.shadowRoot.querySelector("#list").requestUpdate();
+            }
+        });
+
+        api.on('add_user', user => {
+            console.log('add user');
+            user.tosc = new TOSC(user.tosc);
+            this.people.push(user);
+            //this.requestUpdate(); //it dosn't work this way :(
+            this.shadowRoot.querySelector("#list").requestUpdate();
+        });
+
+        api.on('upd_user', user => {
+            if (user.id === this.me.id) return;
+            console.log('upd user');
+            user.tosc = new TOSC(user.tosc);
+            const index = this.people.findIndex(old => old.id === user.id);
+
+            if (index !== undefined) {
+                this.people[index] = user;
+                this.shadowRoot.querySelector("#list").requestUpdate();
+            }
+        });
+
+        window.onunload = () => api.say('left_room', { room_id: this.roomId, user_id: this.me.id });
     }
 
     connectedCallback() {
         super.connectedCallback();
+        this.ws = api;
 
-        const ws = new WebSocket('/ws');
-
-        ws.onopen = () => {
-            const join = JSON.stringify({ type: 'join', payload: this.me });
-            ws.send(join);
-        };
-
-        ws.onmessage = (message) => {
-            const data = JSON.parse(message.data);
-
-            if (data.type === 'update') {
-                this.people = data.payload;
-            } else {
-                console.error('Unsupported message', data);
-            }
-        };
+        if (this.isMobile)
+            api.onconnection = () => api.say('join_room', { room_id: this.roomId, user: this.me });
     }
 
     render() {
+        if (this.isMobile && this.roomId === null) return this.renderGetARoom();
         if (!this.isMobile) return this.renderLandscapeLayout();
         return this.showList ? this.renderList() : this.renderCreate();
     }
 
+    renderGetARoom() {
+        return html`
+            <div id="joinroom">
+                It look's like you haven't enter any room yet.
+                Scan qrcode on the bottom of room's screen to join it.
+            </div>
+        `;
+    }
+
     renderLandscapeLayout() {
-        return html` <tosc-list-landscape .people=${this.people}>Today at SOMEPLACE</tosc-list-landscape> `;
+        return html` <tosc-list-landscape id='list' .people=${this.people}>Today at SOMEPLACE</tosc-list-landscape> `;
     }
 
     renderList() {
-        return html` <tosc-list .me=${this.me} .list=${this.people} @switch=${this.changeScreen}></tosc-list> `;
+        return html` <tosc-list id='list' .me=${this.me} .people=${this.people} @switch=${this.changeScreen}></tosc-list> `;
     }
 
     renderCreate() {
-        return html` <tosc-create .me=${this.me} @button=${this.changeScreen} @update=${this.updateMe}></tosc-create> `;
+        return html`
+            <tosc-create
+                .me=${this.me}
+                .roomId=${this.roomId}
+                @button=${this.changeScreen}
+                @update=${this.updateMe}
+            ></tosc-create>`;
     }
 
     changeScreen() {

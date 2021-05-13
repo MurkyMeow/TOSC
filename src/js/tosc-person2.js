@@ -84,7 +84,6 @@ class TOSCPerson extends LitElement {
     constructor() {
         super();
         this.me = { name: 'Unnamed', pronoun: '', tosc: new TOSC('BBBB') };
-        console.log(this.me.avatar);
     }
 
     render() {

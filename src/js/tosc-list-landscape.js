@@ -1,4 +1,7 @@
 import { LitElement, css, html } from 'lit-element';
+import { api } from './serverAPI';
+import * as utils from './utils';
+import * as QRCode from 'qrcode';
 
 class TOSCListLandscape extends LitElement {
     static get styles() {
@@ -28,9 +31,12 @@ class TOSCListLandscape extends LitElement {
                 justify-content: center;
                 align-items: center;
                 padding: 10px;
+                scroll-behavior: smooth;
 
                 overflow-y: auto;
                 height: 100%;
+
+                padding-bottom: 160px; /* for qr code */
             }
 
             .person {
@@ -92,6 +98,13 @@ class TOSCListLandscape extends LitElement {
                 justify-content: space-around;
                 --font-size: 40px;
             }
+
+            #qrcode {
+                position: absolute;
+                right: 20px;
+                bottom: 20px;
+                border-radius: 10px;
+            }
         `;
     }
 
@@ -104,27 +117,41 @@ class TOSCListLandscape extends LitElement {
     constructor() {
         super();
         this.people = [];
-        this.avatar =
-            'https://www.flaticon.com/svg/vstatic/svg/747/747402.svg?token=exp=1620310651~hmac=a9b02cfce78c075668c201880608aadb';
+
+        this.roomId = utils.genToken(12);
+        //this.myLink = `${window.location.href}room/${this.roomId}`;
+        this.myLink = `http://192.168.1.67:9080/room?id=${this.roomId}`;
+
+        api.onconnection = () => api.say('add_room', { room_id: this.roomId });
+    }
+
+    firstUpdated() {
+        this.qrcode = this.shadowRoot.querySelector("#qrcode");
+        QRCode.toCanvas(this.qrcode,
+            this.myLink, { toSJISFunc: QRCode.toSJIS }, (error) => {
+                    if (error) console.error(error)
+                    console.log(`Link for room ${this.roomId} generated!`);
+            }
+        );
     }
 
     render() {
         return html`
             <slot id="title"></slot>
             <div id="people">
-                ${this.people.map(
-                    (person) => html`
-                        <div class="person">
-                            <img class="avatar" src=${this.avatar} />
-                            <div class="wrap">
-                                <span class="name">${person.name}</span>
-                                <span class="pronoun">${person.pronoun}</span>
-                            </div>
-                            <tosc-inline class="tosc" .tosc=${person.tosc}></tosc-inline>
+                ${this.people.map((person) => html`
+                    <div class="person">
+                        <img class="avatar"
+                            src=${person.avatar ? person.avatar : 'img/noavatar.png'} />
+                        <div class="wrap">
+                            <span class="name">${person.name}</span>
+                            <span class="pronoun">${person.pronoun}</span>
                         </div>
-                    `
-                )}
+                        <tosc-inline class="tosc" .tosc=${person.tosc}></tosc-inline>
+                    </div>
+                `)}
             </div>
+            <canvas id="qrcode"></canvas>
         `;
     }
 }

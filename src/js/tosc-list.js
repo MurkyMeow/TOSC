@@ -79,7 +79,7 @@ class TOSClist extends LitElement {
 
     static get properties() {
         return {
-            list: { type: Array },
+            people: { type: Array, attribute: false },
             me: { type: Object },
         };
     }
@@ -90,7 +90,7 @@ class TOSClist extends LitElement {
                 <tosc-person .me=${this.me} center></tosc-person>
             </div>
             <div id="others">
-                ${this.list.map((ex) => html`
+                ${this.people.map((ex) => html`
                     <tosc-person .me=${ex} class="person"></tosc-person>
                 `)}
             </div>
