@@ -1,12 +1,19 @@
 const colors = { R: 'red', B: 'blue', G: 'green', r: 'red', b: 'blue', g: 'green' };
 
-export class TOSC {
+class TOSC {
     constructor(str) {
         this.T = { letter: 'T', color: 'blue', extra: false };
         this.O = { letter: 'O', color: 'blue', extra: false };
         this.S = { letter: 'S', color: 'blue', extra: false };
         this.C = { letter: 'C', color: 'blue', extra: false };
+        this.fromJSON(str);
+    }
 
+    toJSON() {
+        return this.map(el => el.extra ? el.color[0] + '+' : el.color[0]).join('');
+    }
+
+    fromJSON(str) {
         let i = 0;
         this.T.color = colors[str[i++]];
         if (str[i] === '+') {
@@ -34,3 +41,5 @@ export class TOSC {
         return [this.T, this.O, this.S, this.C].map(callback);
     }
 }
+
+module.exports = { TOSC };
