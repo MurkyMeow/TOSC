@@ -10,8 +10,7 @@ class ServerAPI {
     }
 
     connect() {
-        //this.ws = new WebSocket('/ws');
-        this.ws = new WebSocket('ws://192.168.1.67:9080');
+        this.ws = new WebSocket(`ws://${location.host}`);
 
         this.ws.onopen = () => {
             console.log('WebSocket is open now');

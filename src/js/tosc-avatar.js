@@ -103,6 +103,19 @@ class TOSCavatar extends LitElement {
                 flex: 1 1 0;
                 width: 100%;
             }
+
+            .upload {
+                position: relative;
+            }
+
+            .upload-input {
+                opacity: 0;
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+            }
         `;
     }
 
@@ -125,7 +138,7 @@ class TOSCavatar extends LitElement {
     }
 
     firstUpdated() {
-        this.upload = this.shadowRoot.querySelector('#upload');
+        this.form = this.shadowRoot.querySelector('#controls');
         const avatar = this.getAttribute('value');
         if (avatar !== undefined && avatar !== '' && avatar !== 'undefined') this.avatar = avatar;
         console.log(this.avatar);
@@ -143,13 +156,19 @@ class TOSCavatar extends LitElement {
                         <img src=${this.previewAvatar} />
                     </div>
 
-                    <div id="controls">
-                        <upload-button @new-file=${this.previewFile} class="button"
-                            >Upload</upload-button
-                        >
+                    <form id="controls">
+                        <just-button class="button upload">
+                            <input
+                                class="upload-input"
+                                name="file"
+                                type="file"
+                                @change=${this.previewFile}
+                            />
+                            Upload
+                        </just-button>
 
                         <just-button class="button" @click=${this.saveAvatar}>Save</just-button>
-                    </div>
+                    </form>
                 </div>
             </div>
         `;
@@ -168,22 +187,25 @@ class TOSCavatar extends LitElement {
         this.popup = false;
     }
 
-    saveAvatar(e) {
+    saveAvatar() {
         if (this.avatar.startsWith('blob:')) URL.revokeObjectURL(this.avatar);
 
-        this.avatar = this.previewAvatar;
-        this.hidePopup();
-        this.dispatchEvent(
-            new CustomEvent('new-avatar', {
-                detail: { avatar: this.avatar, file: this.file },
-                bubbles: true,
-                composed: true,
-            })
-        );
+        const formdata = new FormData(this.form);
+
+        fetch('/uploadAvatar', { method: 'POST', body: formdata })
+            .then((res) => res.text())
+            .then((avatar) => {
+                this.hidePopup();
+                this.dispatchEvent(
+                    new CustomEvent('new-avatar', {
+                        detail: { avatar },
+                    })
+                );
+            });
     }
 
     previewFile(e) {
-        const file = e.detail;
+        const [file] = e.target.files;
         if (file.type === 'image/jpeg' || file.type === 'image/png') {
             if (this.avatar !== this.previewAvatar && this.previewAvatar.startsWith('blob:'))
                 URL.revokeObjectURL(this.previewAvatar);

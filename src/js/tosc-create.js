@@ -1,5 +1,4 @@
 import { LitElement, css, html } from 'lit-element';
-import { api } from './serverAPI';
 import { hints } from './hints';
 import './tosc-button';
 import './tosc-scroll';
@@ -212,13 +211,7 @@ class TOSCcreate extends LitElement {
     }
 
     switch() {
-        api.say('update_user', { room_id: this.roomId, user: this.me });
-        this.dispatchEvent(
-            new CustomEvent('button', {
-                bubbles: true,
-                composed: true,
-            })
-        );
+        this.dispatchEvent(new CustomEvent('button'));
     }
 }
 
