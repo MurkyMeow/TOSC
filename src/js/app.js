@@ -73,8 +73,8 @@ class TOSCapp extends LitElement {
 
         this.people = [...examples];
 
-        this.roomId = new URLSearchParams(window.location.search).get('id');
-        //this.roomId = "fvygYXbvoxuZ";
+        //this.roomId = new URLSearchParams(window.location.search).get('id');
+        this.roomId = "l0goKUeetsF1";
 
         this.isMobile = isMobile();
         this.showList = true;
@@ -84,6 +84,13 @@ class TOSCapp extends LitElement {
             console.log('init', users.length);
             users.forEach(user => user.tosc = new TOSC(user.tosc));
             this.people = users
+        });
+
+        api.on('upd_avatar', data => {
+            if (data.revokeAvatar)
+                URL.revokeAvatar(this.me.avatar);
+            this.me.avatar = data.avatar;
+            this.requestUpdate();
         });
 
         api.on('del_user', user_id => {
@@ -116,7 +123,12 @@ class TOSCapp extends LitElement {
             }
         });
 
-        window.onunload = () => api.say('left_room', { room_id: this.roomId, user_id: this.me.id });
+        window.onunload = () => {
+            //if (this.isMobile)
+                //api.say('left_room', { room_id: this.roomId, user_id: this.me.id });
+            //else
+                //api.say('del_room', { room_id: this.roomId });
+        };
     }
 
     connectedCallback() {

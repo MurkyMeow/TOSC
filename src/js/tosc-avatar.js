@@ -175,6 +175,9 @@ class TOSCavatar extends LitElement {
     }
 
     saveAvatar(e) {
+        if (this.avatar.startsWith("blob:"))
+            URL.revokeObjectURL(this.avatar);
+
         this.avatar = this.previewAvatar;
         this.hidePopup();
         this.dispatchEvent(new CustomEvent('new-avatar', {
@@ -187,9 +190,9 @@ class TOSCavatar extends LitElement {
     previewFile(e) {
         const file = e.detail;
         if (file.type ==='image/jpeg' || file.type === 'image/png') {
-            const reader = new FileReader();
-            reader.onload = (e) => { this.previewAvatar = e.target.result };
-            reader.readAsDataURL(file);
+            if (this.avatar !== this.previewAvatar && this.previewAvatar.startsWith("blob:"))
+                URL.revokeObjectURL(this.previewAvatar);
+            this.previewAvatar = URL.createObjectURL(file);
             this.file = file;
         }
         else {

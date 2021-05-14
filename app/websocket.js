@@ -6,6 +6,9 @@ const rooms = new Map(); //room_id --> { room, [ users ] };
 
 //saves avatar on disk and returns link to it
 const saveAvatar = async (id, avatar) => {
+    if (!avatar || !avatar.startsWith("blob:"))
+        return avatar;
+    const link = `/img/users/avatar_id${id}`;
     //return 'link';
     return undefined;
 };
@@ -19,7 +22,7 @@ const startWebSocket = (options) => {
 
         ws.on('message', async (message) => {
             const { type, data } = JSON.parse(message);
-            console.log(`Got event ${type} with`, data);
+            console.log(`Got event ${type}`);
 
             switch (type) {
                 case 'join_room': //data.user = { name, pro, avatar, id }
@@ -39,6 +42,16 @@ const startWebSocket = (options) => {
                     break;
             }
         });
+
+        ws.on('close', () => {
+            if (ws.userData) {
+                console.log(`User ${ws.userData.user_id} exited`);
+                if (ws.userData.user_id)
+                    leftUser(ws.userData);
+                else
+                    deleteRoom(ws.userData);
+            }
+        });
     });
 
     //////////////////////////////////////////////////////////////////////
@@ -51,14 +64,13 @@ const startWebSocket = (options) => {
 
         const user = new User(ws, data.user);
         user.avatar = await saveAvatar(data.user.id, data.user.avatar);
+        ws.userData = { room_id: data.room_id, user_id: data.user.id };
 
         const room = rooms.get(data.room_id);
         user.say('init', Array.from(room.users, ([name, value]) => value));
         room.users.forEach(old => old.say('add_user', user));
         room.say('add_user', user);
         room.users.set(user.id, user);
-
-        console.log(room.users);
     }
 
     const leftUser = (data) => {
@@ -89,7 +101,8 @@ const startWebSocket = (options) => {
     const addRoom = (ws, data) => {
         const room = { id: data.room_id, say: ws.say, users: new Map() };
         rooms.set(data.room_id, room);
-        console.log('Added room', data);
+        ws.userData = { room_id: data.room_id, user_id: undefined };
+        console.log('Added room', room.id);
     }
 
     const deleteRoom = (data) => {//FIXME
