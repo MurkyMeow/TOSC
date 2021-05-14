@@ -74,8 +74,8 @@ class TOSCapp extends LitElement {
         //this.people = [...examples];
         this.people = [];
 
-        //this.roomId = new URLSearchParams(window.location.search).get('id');
-        this.roomId = "l0goKUeetsF1";
+        this.roomId = new URLSearchParams(window.location.search).get('id');
+        //this.roomId = "l0goKUeetsF1";
 
         this.isMobile = isMobile();
         this.showList = true;
@@ -87,10 +87,9 @@ class TOSCapp extends LitElement {
             this.people = users
         });
 
-        api.on('upd_avatar', data => {
-            if (data.revokeAvatar)
-                URL.revokeAvatar(this.me.avatar);
-            this.me.avatar = data.avatar;
+        api.on('upd_avatar', avatar => {
+            URL.revokeAvatar(this.me.avatar);
+            this.me.avatar = avatar;
             this.requestUpdate();
         });
 
@@ -114,6 +113,7 @@ class TOSCapp extends LitElement {
 
         api.on('upd_user', user => {
             if (user.id === this.me.id) return;
+
             console.log('upd user');
             user.tosc = new TOSC(user.tosc);
             const index = this.people.findIndex(old => old.id === user.id);

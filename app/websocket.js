@@ -66,8 +66,12 @@ const startWebSocket = (options) => {
             return;
         }
 
+        const newAvatar = await saveAvatar(data.user);
         const user = new User(ws, data.user);
-        //user.avatar = await saveAvatar(data.user);
+
+        if (newAvatar)
+            user.setAvatar(newAvatar);
+
         ws.userData = { room_id: data.room_id, user_id: data.user.id };
 
         const room = rooms.get(data.room_id);
@@ -78,27 +82,36 @@ const startWebSocket = (options) => {
     }
 
     const leftUser = (data) => {
+        if (!rooms.has(data.room_id)) {
+            console.log('Left Error: incorrect room id:', data.room_id);
+            return;
+        }
+
         const room = rooms.get(data.room_id);
         if (room.users.delete(data.user_id)) {
             room.users.forEach(old => old.say('del_user', data.user_id));
             room.say('del_user', data.user_id);
+            console.log('user deleted', data.user_id);
         }
     }
 
     const updateUser = async (ws, data) => {
-        const user = new User(ws, data.user);
-        //user.avatar = await saveAvatar(data.user);
+        if (!rooms.has(data.room_id)) {
+            console.log('Update Error: incorrect room id:', data.room_id);
+            return;
+        }
 
         const room = rooms.get(data.room_id);
+        const newAvatar = await saveAvatar(data.user);
+        const user = new User(ws, data.user);
 
-        if (room.users.has(data.user.id)) {
-            const user = new User(ws, data.user);
+        if (newAvatar)
+            user.setAvatar(newAvatar);
 
-            room.users.set(data.user.id, user);
-            room.users.forEach(old => old.say('upd_user', user));
-            room.say('upd_user', user);
-            console.log('user updated');
-        }
+        room.users.set(data.user.id, user);
+        room.users.forEach(old => old.say('upd_user', user));
+        room.say('upd_user', user);
+        console.log('user updated');
     }
 
     const addRoom = (ws, data) => {
