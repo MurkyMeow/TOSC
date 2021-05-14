@@ -3,7 +3,7 @@ import { api } from './serverAPI';
 import { isMobile } from './isMobile';
 import * as utils from './utils.js';
 import { TOSC } from './tosc';
-import { examples } from './example';
+import { ADD_USER, DEL_USER, INIT, UPDATE_USER, UPLOAD_AVATAR } from '../../events';
 import './tosc-list';
 import './tosc-create';
 import './tosc-list-landscape';
@@ -81,19 +81,19 @@ class TOSCapp extends LitElement {
         this.showList = true;
         //this.showList = false;
 
-        api.on('init', (users) => {
+        api.on(INIT, (users) => {
             console.log('init', users.length);
             users.forEach((user) => (user.tosc = new TOSC(user.tosc)));
             this.people = users;
         });
 
-        api.on('upd_avatar', (avatar) => {
+        api.on(UPLOAD_AVATAR, (avatar) => {
             URL.revokeAvatar(this.me.avatar);
             this.me.avatar = avatar;
             this.requestUpdate();
         });
 
-        api.on('del_user', (user_id) => {
+        api.on(DEL_USER, (user_id) => {
             console.log('del user');
             const index = this.people.findIndex((user) => user.id === user_id);
 
@@ -103,7 +103,7 @@ class TOSCapp extends LitElement {
             }
         });
 
-        api.on('add_user', (user) => {
+        api.on(ADD_USER, (user) => {
             console.log('add user');
             user.tosc = new TOSC(user.tosc);
             this.people.push(user);
@@ -111,7 +111,7 @@ class TOSCapp extends LitElement {
             this.shadowRoot.querySelector('#list').requestUpdate();
         });
 
-        api.on('upd_user', (user) => {
+        api.on(UPDATE_USER, (user) => {
             if (user.id === this.me.id) return;
 
             console.log('upd user');

@@ -1,5 +1,16 @@
-const { User } = require('./user.js');
 const WebSocket = require('ws');
+
+const {
+    INIT,
+    JOIN_ROOM,
+    LEFT_ROOM,
+    ADD_ROOM,
+    DELETE_ROOM,
+    ROOM_GONE,
+    ADD_USER,
+    DEL_USER,
+    UPDATE_USER,
+} = require('../events');
 
 //////////////////////////////////////////////////////////////////////
 const rooms = new Map(); //room_id --> { room, [ users ] };
@@ -28,19 +39,19 @@ const startWebSocket = (options) => {
             console.log(`Got event ${type}`);
 
             switch (type) {
-                case 'join_room': //data.user = { name, pro, avatar, id }
+                case JOIN_ROOM: //data.user = { name, pro, avatar, id }
                     joinUser(ws, data);
                     break;
-                case 'left_room': //data.user_id
+                case LEFT_ROOM: //data.user_id
                     leftUser(data);
                     break;
-                case 'update_user': //data.user = { name, pro, avatar, id }
+                case UPDATE_USER: //data.user = { name, pro, avatar, id }
                     updateUser(ws, data);
                     break;
-                case 'add_room': //room - user { !pro, !name, !avatar, id }
+                case ADD_ROOM: //room - user { !pro, !name, !avatar, id }
                     addRoom(ws, data);
                     break;
-                case 'delete_room': //data.room_id
+                case DELETE_ROOM: //data.room_id
                     deleteRoom(data);
                     break;
             }
@@ -69,9 +80,9 @@ const startWebSocket = (options) => {
         ws.userData = { room_id, user_id: user.id };
 
         const roomUsers = Array.from(room.users, ([id, roomUser]) => roomUser);
-        ws.say('init', roomUsers);
-        roomUsers.forEach((roomUser) => roomUser.say('add_user', user));
-        room.say('add_user', user);
+        ws.say(INIT, roomUsers);
+        roomUsers.forEach((roomUser) => roomUser.say(ADD_USER, user));
+        room.say(ADD_USER, user);
         room.users.set(user.id, user);
     };
 
@@ -85,8 +96,8 @@ const startWebSocket = (options) => {
         }
 
         if (room.users.delete(user_id)) {
-            room.users.forEach((old) => old.say('del_user', user_id));
-            room.say('del_user', user_id);
+            room.users.forEach((old) => old.say(DEL_USER, user_id));
+            room.say(DEL_USER, user_id);
             console.log('user deleted', user_id);
         }
     };
@@ -101,8 +112,8 @@ const startWebSocket = (options) => {
         }
 
         room.users.set(user.id, user);
-        room.users.forEach((old) => old.say('upd_user', user));
-        room.say('upd_user', user);
+        room.users.forEach((old) => old.say(UPDATE_USER, user));
+        room.say(UPDATE_USER, user);
         console.log('user updated');
     };
 
@@ -117,7 +128,7 @@ const startWebSocket = (options) => {
         //FIXME
         const { users } = rooms.get(data.room_id);
         rooms.delete(data.room_id);
-        users.forEach((old) => old.say('room_gone', data.room_id));
+        users.forEach((old) => old.say(ROOM_GONE, data.room_id));
     };
 };
 
