@@ -126,30 +126,32 @@ class TOSCListLandscape extends LitElement {
     }
 
     firstUpdated() {
-        this.qrcode = this.shadowRoot.querySelector("#qrcode");
-        QRCode.toCanvas(this.qrcode,
-            this.myLink, { toSJISFunc: QRCode.toSJIS }, (error) => {
-                    if (error) console.error(error)
-                    console.log(`Link for room ${this.roomId} generated!`);
-            }
-        );
+        this.qrcode = this.shadowRoot.querySelector('#qrcode');
+        QRCode.toCanvas(this.qrcode, this.myLink, { toSJISFunc: QRCode.toSJIS }, (error) => {
+            if (error) console.error(error);
+            console.log(`Link for room ${this.roomId} generated!`);
+        });
     }
 
     render() {
         return html`
             <slot id="title"></slot>
             <div id="people">
-                ${this.people.map((person) => html`
-                    <div class="person">
-                        <img class="avatar"
-                            src=${person.avatar ? person.avatar : 'img/noavatar.png'} />
-                        <div class="wrap">
-                            <span class="name">${person.name}</span>
-                            <span class="pronoun">${person.pronoun}</span>
+                ${this.people.map(
+                    (person) => html`
+                        <div class="person">
+                            <img
+                                class="avatar"
+                                src=${person.avatar ? person.avatar : 'img/noavatar.png'}
+                            />
+                            <div class="wrap">
+                                <span class="name">${person.name}</span>
+                                <span class="pronoun">${person.pronoun}</span>
+                            </div>
+                            <tosc-inline class="tosc" .tosc=${person.tosc}></tosc-inline>
                         </div>
-                        <tosc-inline class="tosc" .tosc=${person.tosc}></tosc-inline>
-                    </div>
-                `)}
+                    `
+                )}
             </div>
             <canvas id="qrcode"></canvas>
         `;

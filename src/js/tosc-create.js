@@ -122,7 +122,11 @@ class TOSCcreate extends LitElement {
     render() {
         return html`
             <div class="personal">
-                <tosc-avatar class="avatar" value=${this.me.avatar} @new-avatar=${this.updateAvatar}></tosc-avatar>
+                <tosc-avatar
+                    class="avatar"
+                    value=${this.me.avatar}
+                    @new-avatar=${this.updateAvatar}
+                ></tosc-avatar>
                 <div class="personal-wrap">
                     <input
                         class="name"
@@ -131,7 +135,11 @@ class TOSCcreate extends LitElement {
                         @change=${this.changeName}
                         @keyup=${this.blurName}
                     />
-                    <tosc-drop class="pronoun" .choosen=${this.me.pronoun} @change=${this.changePr}></tosc-drop>
+                    <tosc-drop
+                        class="pronoun"
+                        .choosen=${this.me.pronoun}
+                        @change=${this.changePr}
+                    ></tosc-drop>
                 </div>
             </div>
 
@@ -205,10 +213,12 @@ class TOSCcreate extends LitElement {
 
     switch() {
         api.say('update_user', { room_id: this.roomId, user: this.me });
-        this.dispatchEvent(new CustomEvent('button', {
-            bubbles: true,
-            composed: true,
-        }));
+        this.dispatchEvent(
+            new CustomEvent('button', {
+                bubbles: true,
+                composed: true,
+            })
+        );
     }
 }
 

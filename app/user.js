@@ -9,7 +9,8 @@ class User {
         this.say = ws.say;
     }
 
-    setAvatar(newAvatar) {//link to avatar (string)
+    setAvatar(newAvatar) {
+        //link to avatar (string)
         this.avatar = newAvatar;
         this.say('upd_avatar', newAvatar);
     }
@@ -21,9 +22,8 @@ class User {
             tosc: this.tosc,
             id: this.id,
             avatar: this.avatar,
-        }
+        };
     }
-
-};
+}
 
 module.exports = { User };

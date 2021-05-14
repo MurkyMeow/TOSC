@@ -15,7 +15,7 @@ class JustButton extends LitElement {
 
                 background-color: #ccc;
                 padding: 10px 50px;
-                transition: background-color .2s;
+                transition: background-color 0.2s;
                 width: inherit;
             }
 
@@ -26,14 +26,11 @@ class JustButton extends LitElement {
     }
 
     static get properties() {
-        return {
-        }
+        return {};
     }
 
     render() {
-        return html`
-            <button><slot></slot></button>
-        `;
+        return html` <button><slot></slot></button> `;
     }
 }
 

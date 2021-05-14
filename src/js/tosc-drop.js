@@ -68,7 +68,7 @@ class TOSCdrop extends LitElement {
                 text-overflow: ellipsis;
                 min-height: 80px;
                 box-sizing: border-box;
-                transition: background-color .2s;
+                transition: background-color 0.2s;
             }
 
             .pronoun:active {
@@ -96,11 +96,15 @@ class TOSCdrop extends LitElement {
 
     render() {
         return html`
-            <div id="choosen" @click=${this.toggle}>${this.choosen === '' ? 'pronoun' : this.choosen}</div>
+            <div id="choosen" @click=${this.toggle}>
+                ${this.choosen === '' ? 'pronoun' : this.choosen}
+            </div>
             <div id="drop-down">
-                ${pronouns.map((pr) => html`
-                    <span class="pronoun" name=${pr} @click=${this.changePr}>${pr}</span>
-                `)}
+                ${pronouns.map(
+                    (pr) => html`
+                        <span class="pronoun" name=${pr} @click=${this.changePr}>${pr}</span>
+                    `
+                )}
             </div>
         `;
     }

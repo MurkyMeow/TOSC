@@ -1,12 +1,21 @@
 export const hints = {
     T: {
-        red: ['Do not touch me.', 'Hands off! ! do not want to be touched, and that is really important'],
-        blue: ['Ask me if I want contact', "I want hugs, but not from everyone. Don't hesitate to ask!"],
+        red: [
+            'Do not touch me.',
+            'Hands off! ! do not want to be touched, and that is really important',
+        ],
+        blue: [
+            'Ask me if I want contact',
+            "I want hugs, but not from everyone. Don't hesitate to ask!",
+        ],
         green: ['Free hugs', 'Please hug me!'],
     },
 
     O: {
-        red: ["Don't ask me personal questions", 'Personal questions hurt me. Mind your own business!'],
+        red: [
+            "Don't ask me personal questions",
+            'Personal questions hurt me. Mind your own business!',
+        ],
         blue: [
             'Ask me if I am ready for personal questions before asking them.',
             'I want to talk about personal things, but not with everyone - ask first.',
@@ -19,7 +28,10 @@ export const hints = {
             'Do not talk to me about anything',
             'Do not speak at me. I am not going to talk to anyone, and that is important to me.',
         ],
-        blue: ['Ask me if I am ready to chat.', 'I want to chat, but not with everyone - ask first.'],
+        blue: [
+            'Ask me if I am ready to chat.',
+            'I want to chat, but not with everyone - ask first.',
+        ],
         green: ['Ready to chat', 'Plese talk to me!'],
     },
 
@@ -32,6 +44,9 @@ export const hints = {
             'Before providing feedback, ask me if I am ready for it.',
             'I want to receive feedback, but not from everone - ask first.',
         ],
-        green: ['I am always ready for your input, be it criticism or praise.', "Following Crocker's rules"],
+        green: [
+            'I am always ready for your input, be it criticism or praise.',
+            "Following Crocker's rules",
+        ],
     },
 };

@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit-element';
-import './just-button'
-import './upload-button'
+import './just-button';
+import './upload-button';
 
 class TOSCavatar extends LitElement {
     static get styles() {
@@ -67,7 +67,7 @@ class TOSCavatar extends LitElement {
                 position: absolute;
                 background-color: #e06666;
                 padding: 20px 30px;
-                transition: top .2s;
+                transition: top 0.2s;
                 z-index: 10;
                 width: 70vw;
                 border-radius: 10px;
@@ -125,35 +125,30 @@ class TOSCavatar extends LitElement {
     }
 
     firstUpdated() {
-        this.upload = this.shadowRoot.querySelector("#upload");
-        const avatar = this.getAttribute("value");
-        if (avatar !== undefined && avatar !== "" && avatar !== "undefined")
-            this.avatar = avatar;
+        this.upload = this.shadowRoot.querySelector('#upload');
+        const avatar = this.getAttribute('value');
+        if (avatar !== undefined && avatar !== '' && avatar !== 'undefined') this.avatar = avatar;
         console.log(this.avatar);
     }
 
     render() {
         return html`
             <div id="avatar-wrap" @click=${this.showPopup}>
-                <img id="avatar" src=${this.avatar}>
+                <img id="avatar" src=${this.avatar} />
             </div>
             <div id="popup" @click=${this.mbHidePopup} ?hidden=${!this.popup}>
                 <div id="container">
                     <div id="avatar-preview">
                         <div id="error" ?hidden=${this.errorHide}>${this.error}</div>
-                        <img src=${this.previewAvatar}>
+                        <img src=${this.previewAvatar} />
                     </div>
 
                     <div id="controls">
-                        <upload-button
-                            @new-file=${this.previewFile}
-                            class="button"
-                        >Upload</upload-button>
+                        <upload-button @new-file=${this.previewFile} class="button"
+                            >Upload</upload-button
+                        >
 
-                        <just-button
-                            class="button"
-                            @click=${this.saveAvatar}
-                        >Save</just-button>
+                        <just-button class="button" @click=${this.saveAvatar}>Save</just-button>
                     </div>
                 </div>
             </div>
@@ -161,8 +156,7 @@ class TOSCavatar extends LitElement {
     }
 
     mbHidePopup(e) {
-        if (e.currentTarget === e.target)
-            this.hidePopup();
+        if (e.currentTarget === e.target) this.hidePopup();
     }
 
     showPopup() {
@@ -175,36 +169,36 @@ class TOSCavatar extends LitElement {
     }
 
     saveAvatar(e) {
-        if (this.avatar.startsWith("blob:"))
-            URL.revokeObjectURL(this.avatar);
+        if (this.avatar.startsWith('blob:')) URL.revokeObjectURL(this.avatar);
 
         this.avatar = this.previewAvatar;
         this.hidePopup();
-        this.dispatchEvent(new CustomEvent('new-avatar', {
-            detail: { avatar: this.avatar, file: this.file },
-            bubbles: true,
-            composed: true,
-        }));
+        this.dispatchEvent(
+            new CustomEvent('new-avatar', {
+                detail: { avatar: this.avatar, file: this.file },
+                bubbles: true,
+                composed: true,
+            })
+        );
     }
 
     previewFile(e) {
         const file = e.detail;
-        if (file.type ==='image/jpeg' || file.type === 'image/png') {
-            if (this.avatar !== this.previewAvatar && this.previewAvatar.startsWith("blob:"))
+        if (file.type === 'image/jpeg' || file.type === 'image/png') {
+            if (this.avatar !== this.previewAvatar && this.previewAvatar.startsWith('blob:'))
                 URL.revokeObjectURL(this.previewAvatar);
             this.previewAvatar = URL.createObjectURL(file);
             this.file = file;
-        }
-        else {
-            this.showError("Unsupported file type!");
+        } else {
+            this.showError('Unsupported file type!');
         }
     }
 
     showError(error) {
         this.error = error;
         this.errorHide = false;
-        setTimeout(() => this.errorHide = true, 2000);
+        setTimeout(() => (this.errorHide = true), 2000);
     }
-};
+}
 
 customElements.define('tosc-avatar', TOSCavatar);

@@ -8,10 +8,9 @@ const rooms = new Map(); //room_id --> { room, [ users ] };
 const saveAvatar = async (user) => {
     console.log(user);
     //if (!user.avatar || !user.avatar.startsWith("blob:"))
-        //return avatar;
+    //return avatar;
 
     //const link = `/img/users/avatar_id${id}`;
-
 
     //return link;
     return undefined;
@@ -50,10 +49,8 @@ const startWebSocket = (options) => {
         ws.on('close', () => {
             if (ws.userData) {
                 console.log(`User ${ws.userData.user_id} exited`);
-                if (ws.userData.user_id)
-                    leftUser(ws.userData);
-                else
-                    deleteRoom(ws.userData);
+                if (ws.userData.user_id) leftUser(ws.userData);
+                else deleteRoom(ws.userData);
             }
         });
     });
@@ -69,17 +66,19 @@ const startWebSocket = (options) => {
         const newAvatar = await saveAvatar(data.user);
         const user = new User(ws, data.user);
 
-        if (newAvatar)
-            user.setAvatar(newAvatar);
+        if (newAvatar) user.setAvatar(newAvatar);
 
         ws.userData = { room_id: data.room_id, user_id: data.user.id };
 
         const room = rooms.get(data.room_id);
-        user.say('init', Array.from(room.users, ([name, value]) => value));
-        room.users.forEach(old => old.say('add_user', user));
+        user.say(
+            'init',
+            Array.from(room.users, ([name, value]) => value)
+        );
+        room.users.forEach((old) => old.say('add_user', user));
         room.say('add_user', user);
         room.users.set(user.id, user);
-    }
+    };
 
     const leftUser = (data) => {
         if (!rooms.has(data.room_id)) {
@@ -89,11 +88,11 @@ const startWebSocket = (options) => {
 
         const room = rooms.get(data.room_id);
         if (room.users.delete(data.user_id)) {
-            room.users.forEach(old => old.say('del_user', data.user_id));
+            room.users.forEach((old) => old.say('del_user', data.user_id));
             room.say('del_user', data.user_id);
             console.log('user deleted', data.user_id);
         }
-    }
+    };
 
     const updateUser = async (ws, data) => {
         if (!rooms.has(data.room_id)) {
@@ -105,27 +104,27 @@ const startWebSocket = (options) => {
         const newAvatar = await saveAvatar(data.user);
         const user = new User(ws, data.user);
 
-        if (newAvatar)
-            user.setAvatar(newAvatar);
+        if (newAvatar) user.setAvatar(newAvatar);
 
         room.users.set(data.user.id, user);
-        room.users.forEach(old => old.say('upd_user', user));
+        room.users.forEach((old) => old.say('upd_user', user));
         room.say('upd_user', user);
         console.log('user updated');
-    }
+    };
 
     const addRoom = (ws, data) => {
         const room = { id: data.room_id, say: ws.say, users: new Map() };
         rooms.set(data.room_id, room);
         ws.userData = { room_id: data.room_id, user_id: undefined };
         console.log('Added room', room.id);
-    }
+    };
 
-    const deleteRoom = (data) => {//FIXME
+    const deleteRoom = (data) => {
+        //FIXME
         const { users } = rooms.get(data.room_id);
         rooms.delete(data.room_id);
-        users.forEach(old => old.say('room_gone', data.room_id));
-    }
-}
+        users.forEach((old) => old.say('room_gone', data.room_id));
+    };
+};
 
 module.exports = { startWebSocket };

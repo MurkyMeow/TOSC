@@ -90,9 +90,9 @@ class TOSClist extends LitElement {
                 <tosc-person .me=${this.me} center></tosc-person>
             </div>
             <div id="others">
-                ${this.people.map((ex) => html`
-                    <tosc-person .me=${ex} class="person"></tosc-person>
-                `)}
+                ${this.people.map(
+                    (ex) => html` <tosc-person .me=${ex} class="person"></tosc-person> `
+                )}
             </div>
 
             <push-button id="button" @click=${this.switch}>Edit</push-button>

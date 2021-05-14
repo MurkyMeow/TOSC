@@ -15,7 +15,7 @@ class UploadButton extends LitElement {
 
                 background-color: #ccc;
                 padding: 10px 50px;
-                transition: background-color .2s;
+                transition: background-color 0.2s;
                 width: inherit;
             }
 
@@ -26,8 +26,7 @@ class UploadButton extends LitElement {
     }
 
     static get properties() {
-        return {
-        }
+        return {};
     }
 
     render() {
@@ -38,7 +37,7 @@ class UploadButton extends LitElement {
     }
 
     firstUpdated() {
-        this.upload = this.shadowRoot.querySelector("#upload");
+        this.upload = this.shadowRoot.querySelector('#upload');
     }
 
     click() {
@@ -46,11 +45,13 @@ class UploadButton extends LitElement {
     }
 
     newFile() {
-        this.dispatchEvent(new CustomEvent('new-file', {
-            detail: this.upload.files[0],
-            bubbles: true,
-            composed: true,
-        }));
+        this.dispatchEvent(
+            new CustomEvent('new-file', {
+                detail: this.upload.files[0],
+                bubbles: true,
+                composed: true,
+            })
+        );
     }
 }
 

@@ -70,7 +70,12 @@ class TOSCinline extends LitElement {
 
     render() {
         return html`
-            ${this.tosc.map((lt) => html` <span class="letter ${lt.color}" ?extra=${lt.extra}> ${lt.letter} </span> `)}
+            ${this.tosc.map(
+                (lt) =>
+                    html`
+                        <span class="letter ${lt.color}" ?extra=${lt.extra}> ${lt.letter} </span>
+                    `
+            )}
         `;
     }
 }

@@ -10,7 +10,7 @@ class TOSC {
     }
 
     toJSON() {
-        return this.map(el => el.extra ? el.color[0] + '+' : el.color[0]).join('');
+        return this.map((el) => (el.extra ? el.color[0] + '+' : el.color[0])).join('');
     }
 
     fromJSON(str) {

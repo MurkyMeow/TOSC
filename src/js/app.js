@@ -81,57 +81,56 @@ class TOSCapp extends LitElement {
         this.showList = true;
         //this.showList = false;
 
-        api.on('init', users => {
+        api.on('init', (users) => {
             console.log('init', users.length);
-            users.forEach(user => user.tosc = new TOSC(user.tosc));
-            this.people = users
+            users.forEach((user) => (user.tosc = new TOSC(user.tosc)));
+            this.people = users;
         });
 
-        api.on('upd_avatar', avatar => {
+        api.on('upd_avatar', (avatar) => {
             URL.revokeAvatar(this.me.avatar);
             this.me.avatar = avatar;
             this.requestUpdate();
         });
 
-        api.on('del_user', user_id => {
+        api.on('del_user', (user_id) => {
             console.log('del user');
-            const index = this.people.findIndex(user => user.id === user_id);
+            const index = this.people.findIndex((user) => user.id === user_id);
 
             if (index !== -1) {
                 this.people.splice(index, 1);
-                this.shadowRoot.querySelector("#list").requestUpdate();
+                this.shadowRoot.querySelector('#list').requestUpdate();
             }
         });
 
-        api.on('add_user', user => {
+        api.on('add_user', (user) => {
             console.log('add user');
             user.tosc = new TOSC(user.tosc);
             this.people.push(user);
             //this.requestUpdate(); //it dosn't work this way :(
-            this.shadowRoot.querySelector("#list").requestUpdate();
+            this.shadowRoot.querySelector('#list').requestUpdate();
         });
 
-        api.on('upd_user', user => {
+        api.on('upd_user', (user) => {
             if (user.id === this.me.id) return;
 
             console.log('upd user');
             user.tosc = new TOSC(user.tosc);
-            const index = this.people.findIndex(old => old.id === user.id);
+            const index = this.people.findIndex((old) => old.id === user.id);
 
             if (index !== undefined) {
                 this.people[index] = user;
-                this.shadowRoot.querySelector("#list").requestUpdate();
+                this.shadowRoot.querySelector('#list').requestUpdate();
             }
         });
 
         window.onunload = () => {
             //if (this.isMobile)
-                //api.say('left_room', { room_id: this.roomId, user_id: this.me.id });
+            //api.say('left_room', { room_id: this.roomId, user_id: this.me.id });
             //else
-                //api.say('del_room', { room_id: this.roomId });
+            //api.say('del_room', { room_id: this.roomId });
 
-            if (this.me.avatar.startsWith("blob:"))
-                URL.revokeObjectURL(this.me.avatar);
+            if (this.me.avatar.startsWith('blob:')) URL.revokeObjectURL(this.me.avatar);
         };
     }
 
@@ -152,28 +151,38 @@ class TOSCapp extends LitElement {
     renderGetARoom() {
         return html`
             <div id="joinroom">
-                It look's like you haven't enter any room yet.
-                Scan qrcode on the bottom of room's screen to join it.
+                It look's like you haven't enter any room yet. Scan qrcode on the bottom of room's
+                screen to join it.
             </div>
         `;
     }
 
     renderLandscapeLayout() {
-        return html` <tosc-list-landscape id='list' .people=${this.people}>Today at SOMEPLACE</tosc-list-landscape> `;
+        return html`
+            <tosc-list-landscape id="list" .people=${this.people}
+                >Today at SOMEPLACE</tosc-list-landscape
+            >
+        `;
     }
 
     renderList() {
-        return html` <tosc-list id='list' .me=${this.me} .people=${this.people} @switch=${this.changeScreen}></tosc-list> `;
+        return html`
+            <tosc-list
+                id="list"
+                .me=${this.me}
+                .people=${this.people}
+                @switch=${this.changeScreen}
+            ></tosc-list>
+        `;
     }
 
     renderCreate() {
-        return html`
-            <tosc-create
-                .me=${this.me}
-                .roomId=${this.roomId}
-                @button=${this.changeScreen}
-                @update=${this.updateMe}
-            ></tosc-create>`;
+        return html` <tosc-create
+            .me=${this.me}
+            .roomId=${this.roomId}
+            @button=${this.changeScreen}
+            @update=${this.updateMe}
+        ></tosc-create>`;
     }
 
     changeScreen() {
