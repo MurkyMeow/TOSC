@@ -10,4 +10,3 @@ module.exports.ROOM_GONE = 'room_gone';
 module.exports.ADD_USER = 'add_user';
 module.exports.DEL_USER = 'del_user';
 module.exports.UPDATE_USER = 'update_user';
-module.exports.UPLOAD_AVATAR = 'upload_avatar';

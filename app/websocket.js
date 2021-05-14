@@ -15,18 +15,6 @@ const {
 //////////////////////////////////////////////////////////////////////
 const rooms = new Map(); //room_id --> { room, [ users ] };
 
-//saves avatar on disk and returns link to it
-const saveAvatar = async (user) => {
-    console.log(user);
-    //if (!user.avatar || !user.avatar.startsWith("blob:"))
-    //return avatar;
-
-    //const link = `/img/users/avatar_id${id}`;
-
-    //return link;
-    return undefined;
-};
-
 const startWebSocket = (options) => {
     const wss = new WebSocket.Server(options);
 
