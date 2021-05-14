@@ -181,7 +181,7 @@ class TOSCavatar extends LitElement {
         this.avatar = this.previewAvatar;
         this.hidePopup();
         this.dispatchEvent(new CustomEvent('new-avatar', {
-            detail: this.avatar,
+            detail: { avatar: this.avatar, file: this.file },
             bubbles: true,
             composed: true,
         }));

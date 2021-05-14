@@ -169,7 +169,8 @@ class TOSCcreate extends LitElement {
     }
 
     updateAvatar(e) {
-        this.me.avatar = e.detail;
+        this.me.avatar = e.detail.avatar;
+        //this.me.avatarFile = e.detail.file;
     }
 
     blurName(e) {

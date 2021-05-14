@@ -71,7 +71,8 @@ class TOSCapp extends LitElement {
             };
         }
 
-        this.people = [...examples];
+        //this.people = [...examples];
+        this.people = [];
 
         //this.roomId = new URLSearchParams(window.location.search).get('id');
         this.roomId = "l0goKUeetsF1";
@@ -128,6 +129,9 @@ class TOSCapp extends LitElement {
                 //api.say('left_room', { room_id: this.roomId, user_id: this.me.id });
             //else
                 //api.say('del_room', { room_id: this.roomId });
+
+            if (this.me.avatar.startsWith("blob:"))
+                URL.revokeObjectURL(this.me.avatar);
         };
     }
 

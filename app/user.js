@@ -4,7 +4,7 @@ class User {
         this.pronoun = user.pronoun; //string;
         this.tosc = user.tosc; //TOSC()
         this.id = user.id; //string
-        this.avatar = undefined; //link (string);
+        this.avatar = user.avatar; //link (string);
 
         this.say = ws.say;
     }

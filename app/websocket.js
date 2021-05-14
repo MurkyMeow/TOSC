@@ -5,11 +5,15 @@ const WebSocket = require('ws');
 const rooms = new Map(); //room_id --> { room, [ users ] };
 
 //saves avatar on disk and returns link to it
-const saveAvatar = async (id, avatar) => {
-    if (!avatar || !avatar.startsWith("blob:"))
-        return avatar;
-    const link = `/img/users/avatar_id${id}`;
-    //return 'link';
+const saveAvatar = async (user) => {
+    console.log(user);
+    //if (!user.avatar || !user.avatar.startsWith("blob:"))
+        //return avatar;
+
+    //const link = `/img/users/avatar_id${id}`;
+
+
+    //return link;
     return undefined;
 };
 
@@ -63,7 +67,7 @@ const startWebSocket = (options) => {
         }
 
         const user = new User(ws, data.user);
-        user.avatar = await saveAvatar(data.user.id, data.user.avatar);
+        //user.avatar = await saveAvatar(data.user);
         ws.userData = { room_id: data.room_id, user_id: data.user.id };
 
         const room = rooms.get(data.room_id);
@@ -83,13 +87,12 @@ const startWebSocket = (options) => {
 
     const updateUser = async (ws, data) => {
         const user = new User(ws, data.user);
-        user.avatar = await saveAvatar(data.user.id, data.user.avatar);
+        //user.avatar = await saveAvatar(data.user);
 
         const room = rooms.get(data.room_id);
 
         if (room.users.has(data.user.id)) {
             const user = new User(ws, data.user);
-            user.avatar = await saveAvatar(data.user.id, data.user.avatar);
 
             room.users.set(data.user.id, user);
             room.users.forEach(old => old.say('upd_user', user));

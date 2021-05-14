@@ -29,8 +29,11 @@
     "webpack-merge": "^5.0.9"
   },
   "dependencies": {
+    "downloadjs": "^1.4.7",
     "express": "^4.17.1",
+    "fetch-blob": "^2.1.2",
     "lit-element": "^2.4.0",
+    "node-fetch": "^2.6.1",
     "qrcode": "^1.4.4",
     "ws": "^7.4.5"
   }
