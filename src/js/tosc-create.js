@@ -175,9 +175,12 @@ class TOSCcreate extends LitElement {
         `;
     }
 
+    dispatchUpdate(me) {
+        this.dispatchEvent(new CustomEvent('update', { detail: me }));
+    }
+
     updateAvatar(e) {
-        this.me.avatar = e.detail.avatar;
-        //this.me.avatarFile = e.detail.file;
+        this.dispatchUpdate({ ...this.me, avatar: e.detail.avatar });
     }
 
     blurName(e) {
@@ -185,11 +188,11 @@ class TOSCcreate extends LitElement {
     }
 
     changePr(e) {
-        this.me.pronoun = e.detail.pronoun;
+        this.dispatchUpdate({ ...this.me, pronoun: e.detail.pronoun });
     }
 
     changeName(e) {
-        this.me.name = e.currentTarget.value;
+        this.dispatchUpdate({ ...this.me, name: e.currentTarget.value });
     }
 
     updateHint(letter, color, extra) {
@@ -199,6 +202,7 @@ class TOSCcreate extends LitElement {
     showHint(e) {
         const { active, letter, extra } = e.currentTarget;
         this.me.tosc[letter].color = active;
+        this.dispatchUpdate({ ...this.me });
         this.updateHint(letter, active, extra);
     }
 
@@ -206,8 +210,8 @@ class TOSCcreate extends LitElement {
         const letter = e.detail.letter;
         const color = this.me.tosc[letter].color;
         this.me.tosc[letter].extra = e.detail.state;
+        this.dispatchUpdate({ ...this.me });
         this.updateHint(letter, color, e.detail.state);
-        this.requestUpdate();
     }
 
     switch() {

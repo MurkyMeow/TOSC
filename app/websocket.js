@@ -116,9 +116,12 @@ const startWebSocket = (options) => {
 
     const deleteRoom = (data) => {
         //FIXME
-        const { users } = rooms.get(data.room_id);
-        rooms.delete(data.room_id);
-        users.forEach((old) => old.say(ROOM_GONE, data.room_id));
+        const room = rooms.get(data.room_id);
+        if (room) {
+            const { users } = room;
+            rooms.delete(data.room_id);
+            users.forEach((old) => old.say(ROOM_GONE, data.room_id));
+        }
     };
 };
 

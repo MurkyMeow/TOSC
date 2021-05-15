@@ -2,8 +2,9 @@ import { LitElement, css, html } from 'lit-element';
 import { api } from './serverAPI';
 import { isMobile } from './isMobile';
 import * as utils from './utils.js';
+import * as storage from './storage';
 import { TOSC } from './tosc';
-import { ADD_USER, DEL_USER, INIT, UPDATE_USER } from './events';
+import { ADD_USER, DEL_USER, INIT, JOIN_ROOM, UPDATE_USER } from './events';
 import './tosc-list';
 import './tosc-create';
 import './tosc-list-landscape';
@@ -54,6 +55,7 @@ class TOSCapp extends LitElement {
     static get properties() {
         return {
             showList: { type: Boolean },
+            me: { type: Object, attribute: false },
             people: { type: Array, attribute: false },
         };
     }
@@ -61,20 +63,27 @@ class TOSCapp extends LitElement {
     constructor() {
         super();
 
-        this.me = JSON.parse(localStorage.getItem('me'));
-        if (this.me === null) {
-            this.me = {
-                name: 'Guest',
-                pronoun: '',
-                tosc: new TOSC('BBBB'),
-                id: utils.genToken(12),
-            };
-        }
+        this.me = storage.getUserData() || {
+            name: 'Guest',
+            pronoun: '',
+            tosc: new TOSC('BBBB'),
+            id: utils.genToken(12),
+        };
 
         //this.people = [...examples];
         this.people = [];
 
-        this.roomId = new URLSearchParams(window.location.search).get('id');
+        const urlParams = new URLSearchParams(window.location.search);
+        this.roomId = urlParams.get('id');
+
+        if (this.roomId) {
+            storage.setRoomId(this.roomId);
+        } else if (storage.getRoomId()) {
+            this.roomId = storage.getRoomId();
+            // update url with the value from storage
+            urlParams.set('id', this.roomId);
+            window.location.search = urlParams.toString();
+        }
         //this.roomId = "l0goKUeetsF1";
 
         this.isMobile = isMobile();
@@ -133,7 +142,7 @@ class TOSCapp extends LitElement {
         this.ws = api;
 
         if (this.isMobile)
-            api.onconnection = () => api.say('join_room', { room_id: this.roomId, user: this.me });
+            api.onconnection = () => api.say(JOIN_ROOM, { room_id: this.roomId, user: this.me });
     }
 
     render() {
@@ -177,6 +186,11 @@ class TOSCapp extends LitElement {
             @button=${this.changeScreen}
             @update=${this.updateMe}
         ></tosc-create>`;
+    }
+
+    updateMe(e) {
+        this.me = e.detail;
+        storage.setUserData(this.me);
     }
 
     changeScreen() {
