@@ -10,7 +10,7 @@ const {
     ADD_USER,
     DEL_USER,
     UPDATE_USER,
-} = require('../events');
+} = require('./events');
 
 //////////////////////////////////////////////////////////////////////
 const rooms = new Map(); //room_id --> { room, [ users ] };

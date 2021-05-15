@@ -61,6 +61,7 @@ class TOSCListLandscape extends LitElement {
                 padding: 5px;
                 box-sizing: border-box;
                 border-radius: 50%;
+                object-fit: cover;
             }
 
             .wrap {

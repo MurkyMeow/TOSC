@@ -3,7 +3,7 @@ import { api } from './serverAPI';
 import { isMobile } from './isMobile';
 import * as utils from './utils.js';
 import { TOSC } from './tosc';
-import { ADD_USER, DEL_USER, INIT, UPDATE_USER } from '../../events';
+import { ADD_USER, DEL_USER, INIT, UPDATE_USER } from './events';
 import './tosc-list';
 import './tosc-create';
 import './tosc-list-landscape';
