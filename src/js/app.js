@@ -54,6 +54,7 @@ class TOSCapp extends LitElement {
 
     static get properties() {
         return {
+            closeTab: { type: Boolean },
             showList: { type: Boolean },
             me: { type: Object, attribute: false },
             people: { type: Array, attribute: false },
@@ -62,6 +63,7 @@ class TOSCapp extends LitElement {
 
     constructor() {
         super();
+        this.closeTab = false;
 
         this.me = storage.getUserData() || {
             name: 'Guest',
@@ -127,6 +129,10 @@ class TOSCapp extends LitElement {
             }
         });
 
+        api.on('close', () => {
+            this.closeTab = true;
+        });
+
         window.onunload = () => {
             //if (this.isMobile)
             //api.say('left_room', { room_id: this.roomId, user_id: this.me.id });
@@ -146,9 +152,18 @@ class TOSCapp extends LitElement {
     }
 
     render() {
+        if (this.closeTab) return this.renderCloseTab();
         if (this.isMobile && this.roomId === null) return this.renderGetARoom();
         if (!this.isMobile) return this.renderLandscapeLayout();
         return this.showList ? this.renderList() : this.renderCreate();
+    }
+
+    renderCloseTab() {
+        return html`
+            <div id="joinroom">
+                You've opened another tab, so this is not accessable anymore.
+            </div>
+        `;
     }
 
     renderGetARoom() {

@@ -68,10 +68,22 @@ const startWebSocket = (options) => {
         ws.userData = { room_id, user_id: user.id };
         user.say = ws.say;
 
+
+        const existing = room.users.get(user.id);
+        if (existing) {
+            console.log('Error: already existing user trying to connect:', room_id);
+            existing.say('close');
+            room.users.delete(user.id);
+        }
+
         const roomUsers = Array.from(room.users, ([id, roomUser]) => roomUser);
         user.say(INIT, roomUsers);
-        roomUsers.forEach((roomUser) => roomUser.say(ADD_USER, user));
-        room.say(ADD_USER, user);
+
+        if (!existing) {
+            roomUsers.forEach((roomUser) => roomUser.say(ADD_USER, user));
+            room.say(ADD_USER, user);
+        }
+
         room.users.set(user.id, user);
     };
 
