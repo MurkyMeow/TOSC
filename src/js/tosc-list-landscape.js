@@ -119,8 +119,8 @@ class TOSCListLandscape extends LitElement {
         this.people = [];
 
         this.roomId = utils.genToken(12);
-        //this.myLink = `${window.location.href}room/${this.roomId}`;
-        this.myLink = `http://192.168.1.67:9080/room?id=${this.roomId}`;
+        this.myLink = `${window.location.href}room?id=${this.roomId}`;
+        //this.myLink = `http://192.168.1.67:9080/room?id=${this.roomId}`;
 
         api.onconnection = () => api.say('add_room', { room_id: this.roomId });
     }

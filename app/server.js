@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 const uploadHandler = multer({ storage }).single('file');
 
 app.use(express.static(path.resolve(__dirname, 'public/')));
-app.use(express.static(path.resolve(__dirname, uploadsDir)));
+app.use('/' + uploadsDir, express.static(path.resolve(__dirname, uploadsDir)));
 
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'public/', 'index.html'));

@@ -1,6 +1,5 @@
 import { LitElement, css, html } from 'lit-element';
 import './just-button';
-import './upload-button';
 
 class TOSCavatar extends LitElement {
     static get styles() {
@@ -187,14 +186,23 @@ class TOSCavatar extends LitElement {
         this.popup = false;
     }
 
-    saveAvatar() {
+    tryFreeAvatar() {
         if (this.avatar.startsWith('blob:')) URL.revokeObjectURL(this.avatar);
+    }
+
+    saveAvatar() {
+        this.tryFreeAvatar();
+        this.avatar = this.previewAvatar;
 
         const formdata = new FormData(this.form);
+        console.log(formdata);
 
         fetch('/uploadAvatar', { method: 'POST', body: formdata })
             .then((res) => res.text())
             .then((avatar) => {
+                this.tryFreeAvatar();
+                this.avatar = avatar;
+
                 this.hidePopup();
                 this.dispatchEvent(
                     new CustomEvent('new-avatar', {

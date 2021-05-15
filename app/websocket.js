@@ -66,9 +66,10 @@ const startWebSocket = (options) => {
         }
 
         ws.userData = { room_id, user_id: user.id };
+        user.say = ws.say;
 
         const roomUsers = Array.from(room.users, ([id, roomUser]) => roomUser);
-        ws.say(INIT, roomUsers);
+        user.say(INIT, roomUsers);
         roomUsers.forEach((roomUser) => roomUser.say(ADD_USER, user));
         room.say(ADD_USER, user);
         room.users.set(user.id, user);
@@ -98,6 +99,7 @@ const startWebSocket = (options) => {
             console.log('Update Error: incorrect room id:', room_id);
             return;
         }
+        user.say = ws.say;
 
         room.users.set(user.id, user);
         room.users.forEach((old) => old.say(UPDATE_USER, user));
