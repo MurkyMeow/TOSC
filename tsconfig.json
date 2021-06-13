@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "plugins": [
+      {
+        "name": "ts-lit-plugin",
+        "strict": true
+      }
+    ]
+  }
+}
