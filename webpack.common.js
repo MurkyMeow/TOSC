@@ -1,5 +1,5 @@
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index.ts',
   module: {
     rules: [
       {
@@ -15,6 +15,10 @@ module.exports = {
             outputPath: 'imgs',
           },
         },
+      },
+      {
+        test: /\.ts$/,
+        loader: 'ts-loader',
       },
     ],
   },
