@@ -1,4 +1,4 @@
-import WebSocket, { ServerOptions } from 'ws';
+import { Router } from 'express';
 import { Person } from '../src/js/types';
 
 import {
@@ -18,130 +18,101 @@ import {
 
 //////////////////////////////////////////////////////////////////////
 interface Room {
-  users: Map<string, Person>;
+  users: Record<string, Person>;
 }
 
-const rooms = new Map<string, Room>();
+const rooms: Record<string, Room> = {};
 
-function sayToUser(ws: WebSocket, event: APIEvent): void {
-  ws.send(JSON.stringify(event));
-}
+const router = Router();
 
-export const startWebSocket = (options: ServerOptions) => {
-  const wss = new WebSocket.Server(options);
+router.post('/create', (req, res) => {
+  const room_id = Math.random().toString(36).slice(2);
 
-  wss.on('connection', (ws) => {
-    console.log('got connection');
-
-    ws.on('message', async (message) => {
-      const event = JSON.parse(String(message)) as APIEvent;
-      console.log(`Got event ${event.type}`);
-
-      switch (event.type) {
-        case JOIN_ROOM:
-          joinUser(ws, event.data);
-          break;
-        case LEFT_ROOM:
-          leftUser(event.data);
-          break;
-        case UPDATE_USER:
-          updateUser(ws, event.data);
-          break;
-        case ADD_ROOM:
-          addRoom(ws, event.data);
-          break;
-        case DELETE_ROOM:
-          deleteRoom(event.data);
-          break;
-      }
-    });
-
-    ws.on(CLOSE, () => {
-      if (ws.userData) {
-        console.log(`User ${ws.userData.user_id} exited`);
-        if (ws.userData.user_id) leftUser(ws.userData);
-        else deleteRoom(ws.userData);
-      }
-    });
-  });
-
-  //////////////////////////////////////////////////////////////////////
-
-  const joinUser = async (ws: WebSocket, data: JoinRoom['data']) => {
-    const { room_id, user } = data;
-    const room = rooms.get(room_id);
-
-    if (!room) {
-      console.log('Error: incorrect room id:', room_id);
-      return;
-    }
-
-    ws.userData = { room_id, user_id: user.id };
-
-    const existing = room.users.get(user.id);
-    if (existing) {
-      console.log('Error: already existing user trying to connect:', room_id);
-      sayToUser(ws, { type: 'close' });
-      room.users.delete(user.id);
-    }
-
-    const roomUsers = Array.from(room.users, ([id, roomUser]) => roomUser);
-    sayToUser(ws, { type: INIT, data: roomUsers });
-
-    if (!existing) {
-      roomUsers.forEach((roomUser) => roomUser.say(ADD_USER, user));
-      room.say(ADD_USER, user);
-    }
-
-    room.users.set(user.id, user);
+  rooms[room_id] = {
+    users: {},
   };
 
-  const leftUser = (data) => {
-    const { room_id, user_id } = data;
-    const room = rooms.get(room_id);
+  res.json({ room_id });
+});
 
-    if (!room) {
-      console.log('Left Error: incorrect room id:', data.room_id);
-      return;
-    }
+router.get('/info/:id', (req, res) => {
+  const { id } = req.query;
 
-    if (room.users.delete(user_id)) {
-      room.users.forEach((old) => old.say(DEL_USER, user_id));
-      room.say(DEL_USER, user_id);
-      console.log('user deleted', user_id);
-    }
-  };
+  if (!id || typeof id !== 'string') {
+    return res.status(400).end('Invalid room id');
+  }
 
-  const updateUser = async (ws, data) => {
-    const { room_id, user } = data;
-    const room = rooms.get(room_id);
+  const room = rooms[id];
 
-    if (!room) {
-      console.log('Update Error: incorrect room id:', room_id);
-      return;
-    }
-    user.say = ws.say;
+  res.json(room);
+});
 
-    room.users.set(user.id, user);
-    room.users.forEach((old) => old.say(UPDATE_USER, user));
-    room.say(UPDATE_USER, user);
-    console.log('user updated');
-  };
+router.post('/join/:id', (req, res) => {
+  const { id } = req.query;
+  const { user } = req.body;
 
-  const addRoom = (ws, data) => {
-    const room = { id: data.room_id, say: ws.say, users: new Map() };
-    rooms.set(data.room_id, room);
-    ws.userData = { room_id: data.room_id, user_id: undefined };
-    console.log('Added room', room.id);
-  };
+  if (!id || typeof id !== 'string') {
+    return res.status(400).end('Invalid room id');
+  }
 
-  const deleteRoom = (data) => {
-    //FIXME
-    const room = rooms.get(data.room_id);
-    if (room) {
-      const { users } = room;
-      rooms.delete(data.room_id);
-      users.forEach((old) => old.say(ROOM_GONE, data.room_id));
-    }
-  };
-};
+  if (!user) {
+    return res.status(400).end('User not provided');
+  }
+
+  const room = rooms[id];
+
+  if (!room) {
+    return res.status(400).end('Room not found');
+  }
+
+  const token = Math.random().toString(36).slice(2);
+
+  room.users[token] = user;
+
+  res.json({ token });
+});
+
+router.post('/leave/:id', (req, res) => {
+  const { id } = req.query;
+  const { token } = req.body;
+
+  if (!id || typeof id !== 'string') {
+    return res.status(400).end('Invalid room id');
+  }
+
+  const room = rooms[id];
+
+  if (!room) {
+    return res.status(400).end('Room not found');
+  }
+
+  const user = room.users[token];
+
+  if (!user) {
+    return res.status(400).end('Invalid token');
+  }
+
+  delete room.users[token];
+
+  res.json({ ok: true });
+});
+
+router.post('/delete/:id', (req, res) => {
+  const { id } = req.query;
+
+  if (!id || typeof id !== 'string') {
+    return res.status(400).end('Invalid room id');
+  }
+
+  const room = rooms[id];
+
+  if (!room) {
+    return res.status(400).end('Room not found');
+  }
+
+  delete rooms[id];
+
+  res.json({ ok: true });
+});
+
+export default router;

@@ -2,7 +2,8 @@ import http from 'http';
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
-import { startWebSocket } from './websocket';
+
+import websocket from './websocket';
 
 const PORT = process.env.PORT || 8080;
 
@@ -41,10 +42,7 @@ app.get('/room', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'public/', 'index.html'));
 });
 
-startWebSocket({
-  server,
-  //path: '/ws',
-});
+app.use(websocket);
 
 server.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
