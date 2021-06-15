@@ -35,6 +35,7 @@
     "webpack-merge": "^5.0.9"
   },
   "dependencies": {
+    "@restless/restless": "^0.4.2",
     "downloadjs": "^1.4.7",
     "express": "^4.17.1",
     "fetch-blob": "^2.1.2",
