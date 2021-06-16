@@ -3,7 +3,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 
-import websocket from './websocket';
+import room from './room';
 
 const PORT = process.env.PORT || 8080;
 
@@ -27,22 +27,13 @@ const uploadHandler = multer({ storage }).single('file');
 app.use(express.static(path.resolve(__dirname, 'public/')));
 app.use('/' + uploadsDir, express.static(path.resolve(__dirname, uploadsDir)));
 
-app.get('/', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'public/', 'index.html'));
-});
-
 app.post('/uploadAvatar', uploadHandler, (req, res) => {
   const { file } = req;
 
   res.end(`${uploadsDir}/${file.filename}`);
 });
 
-app.get('/room', (req, res) => {
-  console.log(`someone entered the room: ${req.query.id}`);
-  res.sendFile(path.resolve(__dirname, 'public/', 'index.html'));
-});
-
-app.use(websocket);
+app.use(room);
 
 server.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
