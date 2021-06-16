@@ -2,17 +2,13 @@ import { Router } from 'express';
 import * as st from 'simple-runtypes';
 
 import { LetterColor } from '../src/js/tosc';
-import { Person } from '../src/js/types';
-
-interface Room {
-  users: Record<string, Person>;
-}
+import { Room } from '../src/js/types';
 
 const rooms: Record<string, Room> = {};
 
 const router = Router();
 
-router.post('/create', (req, res) => {
+router.post('/room/create', (req, res) => {
   const room_id = Math.random().toString(36).slice(2);
 
   rooms[room_id] = {
@@ -26,12 +22,12 @@ const infoQuery = st.record({
   id: st.string(),
 });
 
-router.get('/info/:id', (req, res) => {
+router.get('/room/:id/info/', (req, res) => {
   const { id } = infoQuery(req.query);
 
   const room = rooms[id];
 
-  res.json(room);
+  res.json({ room });
 });
 
 const letter = st.record({
@@ -55,7 +51,7 @@ const joinBody = st.record({
   user,
 });
 
-router.post('/join/:id', (req, res) => {
+router.post('/room/:id/join', (req, res) => {
   const { id } = joinQuery(req.query);
   const { user } = joinBody(req.body);
 
@@ -79,7 +75,7 @@ const leaveBody = st.record({
   token: st.string(),
 });
 
-router.post('/leave/:id', (req, res) => {
+router.post('/room/:id/leave', (req, res) => {
   const { id } = leaveQuery(req.query);
   const { token } = leaveBody(req.body);
 
@@ -104,7 +100,7 @@ const deleteQuery = st.record({
   id: st.string(),
 });
 
-router.post('/delete/:id', (req, res) => {
+router.post('/room/:id/delete', (req, res) => {
   const { id } = deleteQuery(req.query);
 
   const room = rooms[id];
