@@ -1,5 +1,5 @@
 import { LitElement, property, css, html } from 'lit-element';
-import { TOSC } from './tosc';
+import { toscFromString } from './tosc';
 import './tosc-inline';
 import { Person } from './types';
 
@@ -56,7 +56,7 @@ class TOSCPerson extends LitElement {
     name: 'Unnamed',
     avatar: '',
     pronoun: '',
-    tosc: new TOSC('BBBB'),
+    tosc: toscFromString('bbbb'),
   };
 
   render() {

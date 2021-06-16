@@ -1,61 +1,40 @@
-const colors: Record<string, string> = {
-  R: 'red',
-  B: 'blue',
-  G: 'green',
-  r: 'red',
-  b: 'blue',
-  g: 'green',
+const letters: Record<string, Letter> = {
+  R: { color: LetterColor.red, extra: true },
+  r: { color: LetterColor.red, extra: false },
+  G: { color: LetterColor.green, extra: true },
+  g: { color: LetterColor.green, extra: false },
+  B: { color: LetterColor.blue, extra: true },
+  b: { color: LetterColor.blue, extra: false },
 };
 
+export enum LetterColor {
+  red = 'red',
+  green = 'green',
+  blue = 'blue',
+}
+
 export interface Letter {
-  letter: string;
-  color: string;
+  color: LetterColor;
   extra: boolean;
 }
 
-export class TOSC {
+export interface TOSC {
   T: Letter;
   O: Letter;
   S: Letter;
   C: Letter;
+}
 
-  constructor(str: string) {
-    this.T = { letter: 'T', color: 'blue', extra: false };
-    this.O = { letter: 'O', color: 'blue', extra: false };
-    this.S = { letter: 'S', color: 'blue', extra: false };
-    this.C = { letter: 'C', color: 'blue', extra: false };
-    this.fromJSON(str);
-  }
+export function toscFromString(str: string): TOSC {
+  return {
+    T: letters[str[0]],
+    O: letters[str[1]],
+    S: letters[str[2]],
+    C: letters[str[3]],
+  };
+}
 
-  toJSON(): string {
-    return this.map((el) => (el.extra ? el.color[0] + '+' : el.color[0])).join('');
-  }
-
-  fromJSON(str: string) {
-    let i = 0;
-    this.T.color = colors[str[i++]];
-    if (str[i] === '+') {
-      this.T.extra = true;
-      i++;
-    }
-    this.O.color = colors[str[i++]];
-    if (str[i] === '+') {
-      this.O.extra = true;
-      i++;
-    }
-    this.S.color = colors[str[i++]];
-    if (str[i] === '+') {
-      this.S.extra = true;
-      i++;
-    }
-    this.C.color = colors[str[i++]];
-    if (str[i] === '+') {
-      this.C.extra = true;
-      i++;
-    }
-  }
-
-  map<T>(callback: (l: Letter) => T): T[] {
-    return [this.T, this.O, this.S, this.C].map(callback);
-  }
+export function toscMap<T>(tosc: TOSC, cb: (letter: keyof TOSC, data: Letter) => T): T[] {
+  const keys = Object.keys(tosc) as (keyof TOSC)[];
+  return keys.map((key) => cb(key, tosc[key]));
 }

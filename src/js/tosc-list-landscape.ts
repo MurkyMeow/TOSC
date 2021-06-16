@@ -127,7 +127,7 @@ class TOSCListLandscape extends LitElement {
       throw new Error('could not find qrcode');
     }
 
-    QRCode.toCanvas(qrcode, this.myLink, { toSJISFunc: QRCode.toSJIS }, (error) => {
+    QRCode.toCanvas(qrcode, this.myLink, (error) => {
       if (error) console.error(error);
       console.log(`Link for room ${this.roomId} generated!`);
     });

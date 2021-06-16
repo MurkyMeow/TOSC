@@ -1,70 +1,79 @@
-export interface Handler {
-  (message: unknown): void;
+import { Person } from './types';
+
+export interface CreateRoomResponse {
+  room_id: string;
 }
 
-class ServerAPI {
-  handlers = new Map<string, Handler[]>();
-  tries = 0;
-  reconnect = -1;
-  ws: WebSocket | undefined;
-
-  onconnection?: () => void;
-
-  on(type: string, handler: Handler): void {
-    const handlers = this.handlers.get(type);
-
-    if (handlers) {
-      handlers.push(handler);
-    } else {
-      this.handlers.set(type, [handler]);
-    }
-  }
-
-  connect(): void {
-    this.ws = new WebSocket(`ws://${location.host}`);
-
-    this.ws.onopen = () => {
-      console.log('WebSocket is open now');
-      this.tries = 0;
-      clearInterval(this.reconnect);
-      if (this.onconnection) this.onconnection();
-    };
-
-    this.ws.onclose = () => {
-      console.log('WebSocket is closed now');
-      this.reconnect = window.setInterval(() => {
-        if (this.tries < 3) {
-          this.tries++;
-          this.connect();
-          console.log('Trying to reconnect');
-        } else {
-          console.log('Im dead');
-          clearInterval(this.reconnect);
-        }
-      }, 2000);
-    };
-
-    this.ws.onerror = () => {
-      console.log('Some sort of error in WebSocket');
-      clearInterval(this.reconnect);
-    };
-
-    this.ws.onmessage = (event) => {
-      let data = JSON.parse(event.data);
-      const handlers = this.handlers.get(data.type);
-      if (handlers) {
-        handlers.forEach((handler) => handler(data.data));
-      } else {
-        console.log('Unknown type of event: ' + data.type);
-        console.log(data.data);
-      }
-    };
-  }
-
-  say(type: string, data: unknown) {
-    this.ws?.send(JSON.stringify({ type, data }));
-  }
+export function createRoom(): Promise<CreateRoomResponse> {
+  return fetch('/room/create', { method: 'POST' }).then((res) => res.json());
 }
 
-export const api = new ServerAPI();
-api.connect();
+export interface GetRoomInfoParams {
+  roomId: string;
+}
+export interface GetRoomInfoResponse {
+  users: Person[];
+}
+
+export function getRoomInfo({ roomId }: GetRoomInfoParams): Promise<GetRoomInfoResponse> {
+  return fetch(`/room/${roomId}/info`).then((r) => r.json());
+}
+
+export interface JoinRoomParams {
+  roomId: string;
+  user: Person;
+}
+export interface JoinRoomResponse {
+  token: string;
+}
+
+export function joinRoom({ roomId, user }: JoinRoomParams): Promise<JoinRoomResponse> {
+  return fetch(`/room/${roomId}/join`, {
+    method: 'POST',
+    body: JSON.stringify(user),
+  }).then((r) => r.json());
+}
+
+export interface LeaveRoomParams {
+  roomId: string;
+  token: string;
+}
+export interface LeaveRoomResponse {
+  ok: true;
+}
+
+export function leaveRoom({ roomId, token }: LeaveRoomParams): Promise<LeaveRoomResponse> {
+  return fetch(`/room/${roomId}/leave`, {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  }).then((r) => r.json());
+}
+
+export interface DeleteRoomParams {
+  roomId: string;
+}
+export interface DeleteRoomResponse {
+  ok: true;
+}
+
+export function deleteRoom({ roomId }: DeleteRoomParams): Promise<DeleteRoomResponse> {
+  return fetch(`/room/${roomId}/delete`, {
+    method: 'POST',
+  }).then((r) => r.json());
+}
+
+export interface UpdateUserParams {
+  roomId: string;
+  token: string;
+  user: Person;
+}
+export interface UpdateUserResponse {
+  user: Person;
+}
+
+export function updateUser({ roomId, token, user }: UpdateUserParams): Promise<UpdateUserResponse> {
+  return fetch(`/room/${roomId}/update_user`, {
+    method: 'POST',
+    body: JSON.stringify({ token, user }),
+  }).then((r) => r.json());
+}

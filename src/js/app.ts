@@ -1,10 +1,8 @@
 import { LitElement, css, html, property } from 'lit-element';
-import { api } from './serverAPI';
+import * as api from './serverAPI';
 import { isMobile } from './isMobile';
-import * as utils from './utils';
+import { toscFromString } from './tosc';
 import * as storage from './storage';
-import { TOSC } from './tosc';
-import { ADD_USER, DEL_USER, INIT, JOIN_ROOM, UPDATE_USER, CLOSE } from './events';
 import './tosc-list';
 import './tosc-create';
 import './tosc-list-landscape';
@@ -53,19 +51,19 @@ class TOSCapp extends LitElement {
     `;
   }
 
-  @property({ type: Boolean }) closeTab = false;
   @property({ type: Boolean }) showList = true;
   @property({ attribute: false }) me: Person = storage.getUserData() || {
     name: 'Guest',
     pronoun: '',
     avatar: '',
-    tosc: new TOSC('BBBB'),
-    id: utils.genToken(12),
+    tosc: toscFromString('bbbb'),
   };
   @property({ attribute: false }) people: Person[] = [];
 
   roomId = '';
   isMobile = isMobile();
+
+  _userToken = '';
 
   constructor() {
     super();
@@ -83,75 +81,47 @@ class TOSCapp extends LitElement {
     }
     //this.roomId = "l0goKUeetsF1";
 
-    api.on(INIT, (users) => {
-      console.log('init', users.length);
-      users.forEach((user) => (user.tosc = new TOSC(user.tosc)));
-      this.people = users;
-    });
-
-    api.on(DEL_USER, (user_id) => {
-      console.log('del user');
-      const index = this.people.findIndex((user) => user.id === user_id);
-
-      if (index !== -1) {
-        this.people.splice(index, 1);
-        this.renderRoot.querySelector('#list')!.requestUpdate();
-      }
-    });
-
-    api.on(ADD_USER, (user) => {
-      console.log('add user');
-      user.tosc = new TOSC(user.tosc);
-      this.people.push(user);
-      //this.requestUpdate(); //it dosn't work this way :(
-      this.renderRoot.querySelector('#list')!.requestUpdate();
-    });
-
-    api.on(UPDATE_USER, (user) => {
-      if (user.id === this.me.id) return;
-
-      console.log('upd user');
-      user.tosc = new TOSC(user.tosc);
-      const index = this.people.findIndex((old) => old.id === user.id);
-
-      if (index !== undefined) {
-        this.people[index] = user;
-        this.renderRoot.querySelector('#list')!.requestUpdate();
-      }
-    });
-
-    api.on(CLOSE, () => {
-      this.closeTab = true;
-    });
-
     window.onunload = () => {
       //if (this.isMobile)
       //api.say('left_room', { room_id: this.roomId, user_id: this.me.id });
       //else
       //api.say('del_room', { room_id: this.roomId });
-
-      if (this.me?.avatar.startsWith('blob:')) URL.revokeObjectURL(this.me.avatar);
     };
   }
 
   connectedCallback() {
     super.connectedCallback();
 
-    if (this.isMobile)
-      api.onconnection = () => api.say(JOIN_ROOM, { room_id: this.roomId, user: this.me });
+    const { me, roomId } = this;
+
+    if (!roomId) {
+      return;
+    }
+
+    api.joinRoom({ roomId, user: me }).then((res) => {
+      this._userToken = res.token;
+
+      const syncRoomInfo = () => {
+        api
+          .getRoomInfo({ roomId: this.roomId })
+          .then((res) => {
+            this.people = res.users;
+          })
+          .catch(cancelSync);
+      };
+
+      const cancelSync = () => {
+        clearInterval(syncInterval);
+      };
+
+      let syncInterval = window.setInterval(syncRoomInfo, 1000);
+    });
   }
 
   render() {
-    if (this.closeTab) return this.renderCloseTab();
     if (this.isMobile && this.roomId === null) return this.renderGetARoom();
     if (!this.isMobile) return this.renderLandscapeLayout();
     return this.showList ? this.renderList() : this.renderCreate();
-  }
-
-  renderCloseTab() {
-    return html`
-      <div id="joinroom">You've opened another tab, so this is not accessable anymore.</div>
-    `;
   }
 
   renderGetARoom() {
@@ -194,8 +164,15 @@ class TOSCapp extends LitElement {
   }
 
   changeScreen() {
-    api.say(UPDATE_USER, { room_id: this.roomId, user: this.me });
+    const { roomId, _userToken, me } = this;
+
     this.showList = !this.showList;
+
+    if (!roomId || !_userToken) return;
+
+    api.updateUser({ roomId, token: _userToken, user: me }).then((res) => {
+      this.me = res.user;
+    });
   }
 }
 
