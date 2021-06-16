@@ -1,7 +1,7 @@
 import { Person } from './types';
 
 export interface CreateRoomResponse {
-  room_id: string;
+  roomId: string;
 }
 
 export function createRoom(): Promise<CreateRoomResponse> {

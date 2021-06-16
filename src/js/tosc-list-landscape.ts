@@ -1,5 +1,5 @@
 import { LitElement, property, css, html } from 'lit-element';
-import { api } from './serverAPI';
+import * as api from './serverAPI';
 import * as utils from './utils';
 import * as QRCode from 'qrcode';
 import { Person } from './types';
@@ -117,19 +117,20 @@ class TOSCListLandscape extends LitElement {
 
   constructor() {
     super();
-    api.onconnection = () => api.say('add_room', { room_id: this.roomId });
-  }
 
-  firstUpdated() {
-    const qrcode = this.renderRoot.querySelector('#qrcode');
+    api.createRoom().then((res) => {
+      this.roomId = res.roomId;
 
-    if (!qrcode) {
-      throw new Error('could not find qrcode');
-    }
+      const qrcode = this.renderRoot.querySelector('#qrcode');
 
-    QRCode.toCanvas(qrcode, this.myLink, (error) => {
-      if (error) console.error(error);
-      console.log(`Link for room ${this.roomId} generated!`);
+      if (!qrcode) {
+        throw new Error('could not find qrcode');
+      }
+
+      QRCode.toCanvas(qrcode, this.myLink, (error) => {
+        if (error) console.error(error);
+        console.log(`Link for room ${this.roomId} generated!`);
+      });
     });
   }
 

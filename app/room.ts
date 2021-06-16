@@ -13,13 +13,13 @@ const rooms: Record<string, Room> = {};
 const router = Router();
 
 router.post('/room/create', (req, res) => {
-  const room_id = Math.random().toString(36).slice(2);
+  const roomId = Math.random().toString(36).slice(2);
 
-  rooms[room_id] = {
+  rooms[roomId] = {
     users: {},
   };
 
-  res.json({ room_id });
+  res.json({ roomId });
 });
 
 const roomIdQuery = st.record({
