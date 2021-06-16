@@ -1,64 +1,118 @@
-import { Router, Request } from 'express';
-import { asyncHandler, responseOf, sanitize } from '@restless/restless';
-import { SchemaResult, Schema, asString, asObject } from '@restless/sanitizers';
+import { Router } from 'express';
+import { Person } from '../src/js/types';
 
-import { createRoom, deleteRoom, getRoomInfo, leaveRoom } from './room';
+import {
+  INIT,
+  JOIN_ROOM,
+  LEFT_ROOM,
+  ADD_ROOM,
+  DELETE_ROOM,
+  ROOM_GONE,
+  ADD_USER,
+  DEL_USER,
+  UPDATE_USER,
+  APIEvent,
+  JoinRoom,
+  CLOSE,
+} from './events';
 
-function handler<T, R>(
-  sanitizer: (data: unknown, req: Request) => SchemaResult<Schema<T>>,
-  handler: (args: T) => R
-) {
-  return asyncHandler(sanitizer, (args) => responseOf(handler(args as any)));
+//////////////////////////////////////////////////////////////////////
+interface Room {
+  users: Record<string, Person>;
 }
 
-const userSanitizer = asObject({
-  id: asString,
-  avatar: asString,
-  name: asString,
-  pronoun: asString,
-  tosc: asString,
-});
+const rooms: Record<string, Room> = {};
 
 const router = Router();
 
-router.post('/create', handler(sanitize({}), createRoom));
-router.get(
-  '/info',
-  handler(
-    sanitize({
-      query: asObject({ id: asString }),
-    }),
-    getRoomInfo
-  )
-);
-router.post(
-  '/join',
-  handler(
-    sanitize({
-      query: asObject({ id: asString }),
-      body: asObject({ user: userSanitizer }),
-    }),
-    getRoomInfo
-  )
-);
-router.post(
-  '/leave/:id',
-  handler(
-    sanitize({
-      query: asObject({ id: asString }),
-      body: asObject({ token: asString }),
-    }),
-    leaveRoom
-  )
-);
-router.post(
-  '/delete',
-  handler(
-    sanitize({
-      query: asObject({ id: asString }),
-    }),
-    deleteRoom
-  )
-);
+router.post('/create', (req, res) => {
+  const room_id = Math.random().toString(36).slice(2);
+
+  rooms[room_id] = {
+    users: {},
+  };
+
+  res.json({ room_id });
+});
+
+router.get('/info/:id', (req, res) => {
+  const { id } = req.query;
+
+  if (!id || typeof id !== 'string') {
+    return res.status(400).end('Invalid room id');
+  }
+
+  const room = rooms[id];
+
+  res.json(room);
+});
+
+router.post('/join/:id', (req, res) => {
+  const { id } = req.query;
+  const { user } = req.body;
+
+  if (!id || typeof id !== 'string') {
+    return res.status(400).end('Invalid room id');
+  }
+
+  if (!user) {
+    return res.status(400).end('User not provided');
+  }
+
+  const room = rooms[id];
+
+  if (!room) {
+    return res.status(400).end('Room not found');
+  }
+
+  const token = Math.random().toString(36).slice(2);
+
+  room.users[token] = user;
+
+  res.json({ token });
+});
+
+router.post('/leave/:id', (req, res) => {
+  const { id } = req.query;
+  const { token } = req.body;
+
+  if (!id || typeof id !== 'string') {
+    return res.status(400).end('Invalid room id');
+  }
+
+  const room = rooms[id];
+
+  if (!room) {
+    return res.status(400).end('Room not found');
+  }
+
+  const user = room.users[token];
+
+  if (!user) {
+    return res.status(400).end('Invalid token');
+  }
+
+  delete room.users[token];
+
+  res.json({ ok: true });
+});
+
+router.post('/delete/:id', (req, res) => {
+  const { id } = req.query;
+
+  if (!id || typeof id !== 'string') {
+    return res.status(400).end('Invalid room id');
+  }
+
+  const room = rooms[id];
+
+  if (!room) {
+    return res.status(400).end('Room not found');
+  }
+
+  delete rooms[id];
+
+  res.json({ ok: true });
+});
 
 export default router;
