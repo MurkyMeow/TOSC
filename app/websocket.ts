@@ -1,22 +1,8 @@
 import { Router } from 'express';
+import * as st from 'simple-runtypes';
+
 import { Person } from '../src/js/types';
 
-import {
-  INIT,
-  JOIN_ROOM,
-  LEFT_ROOM,
-  ADD_ROOM,
-  DELETE_ROOM,
-  ROOM_GONE,
-  ADD_USER,
-  DEL_USER,
-  UPDATE_USER,
-  APIEvent,
-  JoinRoom,
-  CLOSE,
-} from './events';
-
-//////////////////////////////////////////////////////////////////////
 interface Room {
   users: Record<string, Person>;
 }
@@ -35,29 +21,37 @@ router.post('/create', (req, res) => {
   res.json({ room_id });
 });
 
-router.get('/info/:id', (req, res) => {
-  const { id } = req.query;
+const infoQuery = st.record({
+  id: st.string(),
+});
 
-  if (!id || typeof id !== 'string') {
-    return res.status(400).end('Invalid room id');
-  }
+router.get('/info/:id', (req, res) => {
+  const { id } = infoQuery(req.query);
 
   const room = rooms[id];
 
   res.json(room);
 });
 
+const user = st.record({
+  id: st.string(),
+  avatar: st.string(),
+  name: st.string(),
+  pronoun: st.string(),
+  // tosc: st.record({}),
+});
+
+const joinQuery = st.record({
+  id: st.string(),
+});
+
+const joinBody = st.record({
+  user,
+});
+
 router.post('/join/:id', (req, res) => {
-  const { id } = req.query;
-  const { user } = req.body;
-
-  if (!id || typeof id !== 'string') {
-    return res.status(400).end('Invalid room id');
-  }
-
-  if (!user) {
-    return res.status(400).end('User not provided');
-  }
+  const { id } = joinQuery(req.query);
+  const { user } = joinBody(req.body);
 
   const room = rooms[id];
 
@@ -72,13 +66,16 @@ router.post('/join/:id', (req, res) => {
   res.json({ token });
 });
 
-router.post('/leave/:id', (req, res) => {
-  const { id } = req.query;
-  const { token } = req.body;
+const leaveQuery = st.record({
+  id: st.string(),
+});
+const leaveBody = st.record({
+  token: st.string(),
+});
 
-  if (!id || typeof id !== 'string') {
-    return res.status(400).end('Invalid room id');
-  }
+router.post('/leave/:id', (req, res) => {
+  const { id } = leaveQuery(req.query);
+  const { token } = leaveBody(req.body);
 
   const room = rooms[id];
 
@@ -97,12 +94,12 @@ router.post('/leave/:id', (req, res) => {
   res.json({ ok: true });
 });
 
-router.post('/delete/:id', (req, res) => {
-  const { id } = req.query;
+const deleteQuery = st.record({
+  id: st.string(),
+});
 
-  if (!id || typeof id !== 'string') {
-    return res.status(400).end('Invalid room id');
-  }
+router.post('/delete/:id', (req, res) => {
+  const { id } = deleteQuery(req.query);
 
   const room = rooms[id];
 
