@@ -1,6 +1,5 @@
 import { LitElement, css, html, property } from 'lit-element';
-import { TOSC } from './tosc';
-import { Tosc } from './types';
+import { TOSC, toscFromString } from './tosc';
 
 class TOSCinline extends LitElement {
   static get styles() {
@@ -59,22 +58,15 @@ class TOSCinline extends LitElement {
     `;
   }
 
-  static get properties() {
-    return {
-      tosc: { type: Object },
-    };
-  }
-
-  @property({ type: Object }) tosc: Tosc | undefined;
-
-  firstUpdated() {
-    if (this.tosc === undefined) this.tosc = new TOSC('BBBB');
-  }
+  @property({ type: Object }) tosc: TOSC = toscFromString('bbbb');
 
   render() {
     return html`
-      ${this.tosc?.map(
-        (lt) => html` <span class="letter ${lt.color}" ?extra=${lt.extra}> ${lt.letter} </span> `
+      ${(Object.keys(this.tosc) as (keyof TOSC)[]).map(
+        (lt) =>
+          html`
+            <span class="letter ${this.tosc[lt].color}" ?extra=${this.tosc[lt].extra}> ${lt} </span>
+          `
       )}
     `;
   }

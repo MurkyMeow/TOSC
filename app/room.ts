@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as st from 'simple-runtypes';
 
+import { LetterColor } from '../src/js/tosc';
 import { Person } from '../src/js/types';
 
 interface Room {
@@ -33,12 +34,17 @@ router.get('/info/:id', (req, res) => {
   res.json(room);
 });
 
+const letter = st.record({
+  color: st.enum(LetterColor),
+  extra: st.boolean(),
+});
+
 const user = st.record({
   id: st.string(),
   avatar: st.string(),
   name: st.string(),
   pronoun: st.string(),
-  // tosc: st.record({}),
+  tosc: st.record({ T: letter, O: letter, S: letter, C: letter }),
 });
 
 const joinQuery = st.record({

@@ -1,4 +1,3 @@
-import { TOSC } from './tosc';
 import { Person } from './types';
 
 function safeGet(key: string): string | null {
@@ -34,7 +33,6 @@ export function getUserData(): Person | null {
   if (!data) return null;
 
   const user = JSON.parse(data);
-  user.tosc = new TOSC(user.tosc);
 
   return user;
 }

@@ -10,6 +10,7 @@ import { ToscButtonToggle } from './tosc-button';
 import { ToscAvatarNewAvatar } from './tosc-avatar';
 import { TOSCdropChange } from './tosc-drop';
 import { ToscScroll } from './tosc-scroll';
+import { TOSC, LetterColor, toscMap } from './tosc';
 
 class TOSCcreate extends LitElement {
   static get styles() {
@@ -148,12 +149,13 @@ class TOSCcreate extends LitElement {
 
       <div class="controls">
         <div class="scrolls">
-          ${this.me.tosc.map(
-            (el) => html`
+          ${toscMap(
+            this.me.tosc,
+            (letter, opts) => html`
               <tosc-scroll
-                .active=${el.color}
-                .extra=${el.extra}
-                .letter=${el.letter}
+                .active=${opts.color}
+                .extra=${opts.extra}
+                .letter=${letter}
                 @update=${this.showHint}
                 @highlight=${this.showHint}
               ></tosc-scroll>
@@ -161,12 +163,13 @@ class TOSCcreate extends LitElement {
           )}
         </div>
         <div class="extra">
-          ${this.me.tosc.map(
-            (el) => html`
+          ${toscMap(
+            this.me.tosc,
+            (letter, opts) => html`
               <tosc-button
-                .state=${el.extra}
+                .state=${opts.extra}
                 @toggle=${(e: CustomEvent<ToscButtonToggle>) =>
-                  this.toggleExtra(el.letter, e.detail.state)}
+                  this.toggleExtra(letter, e.detail.state)}
               ></tosc-button>
             `
           )}
@@ -197,8 +200,8 @@ class TOSCcreate extends LitElement {
     this.dispatchUpdate({ ...this.me, name: e.target.value });
   }
 
-  updateHint(letter: string, color: string, extra: boolean): void {
-    this.hint = hints[letter][color][Number(extra)];
+  updateHint(letter: keyof TOSC, color: LetterColor, extra: boolean): void {
+    this.hint = hints[letter][color][extra ? 0 : 1];
   }
 
   showHint(e: { currentTarget: ToscScroll }): void {
@@ -208,9 +211,9 @@ class TOSCcreate extends LitElement {
     this.updateHint(letter, active, extra);
   }
 
-  toggleExtra(letter: string, state: boolean) {
+  toggleExtra(letter: keyof TOSC, state: boolean) {
     const color = this.me.tosc[letter].color;
-    this.me.tosc[letter].extra = estate;
+    this.me.tosc[letter].extra = state;
     this.dispatchUpdate({ ...this.me });
     this.updateHint(letter, color, state);
   }

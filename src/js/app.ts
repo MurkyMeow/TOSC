@@ -1,9 +1,8 @@
 import { LitElement, css, html, property } from 'lit-element';
 import { api } from './serverAPI';
 import { isMobile } from './isMobile';
-import * as utils from './utils';
+import { toscFromString } from './tosc';
 import * as storage from './storage';
-import { TOSC } from './tosc';
 import { ADD_USER, DEL_USER, INIT, JOIN_ROOM, UPDATE_USER, CLOSE } from './events';
 import './tosc-list';
 import './tosc-create';
@@ -59,8 +58,7 @@ class TOSCapp extends LitElement {
     name: 'Guest',
     pronoun: '',
     avatar: '',
-    tosc: new TOSC('BBBB'),
-    id: utils.genToken(12),
+    tosc: toscFromString('bbbb'),
   };
   @property({ attribute: false }) people: Person[] = [];
 
@@ -85,7 +83,6 @@ class TOSCapp extends LitElement {
 
     api.on(INIT, (users) => {
       console.log('init', users.length);
-      users.forEach((user) => (user.tosc = new TOSC(user.tosc)));
       this.people = users;
     });
 
@@ -101,7 +98,6 @@ class TOSCapp extends LitElement {
 
     api.on(ADD_USER, (user) => {
       console.log('add user');
-      user.tosc = new TOSC(user.tosc);
       this.people.push(user);
       //this.requestUpdate(); //it dosn't work this way :(
       this.renderRoot.querySelector('#list')!.requestUpdate();
@@ -111,7 +107,6 @@ class TOSCapp extends LitElement {
       if (user.id === this.me.id) return;
 
       console.log('upd user');
-      user.tosc = new TOSC(user.tosc);
       const index = this.people.findIndex((old) => old.id === user.id);
 
       if (index !== undefined) {

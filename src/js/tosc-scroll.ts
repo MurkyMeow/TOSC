@@ -1,4 +1,5 @@
 import { LitElement, property, css, html } from 'lit-element';
+import { LetterColor, TOSC } from './tosc';
 
 export class ToscScroll extends LitElement {
   static get styles() {
@@ -104,8 +105,8 @@ export class ToscScroll extends LitElement {
     `;
   }
 
-  @property({ type: String }) letter = 'active';
-  @property({ type: String }) active = 'blue';
+  @property({ type: String }) letter: keyof TOSC = 'O';
+  @property({ type: String }) active: LetterColor = LetterColor.blue;
   @property({ type: Boolean }) extra = false;
 
   cur = 0;
@@ -220,7 +221,9 @@ export class ToscScroll extends LitElement {
   }
 
   updateValue() {
-    const newVal = ['red', 'blue', 'green'][this.getLetterId(this.cur)];
+    const newVal = [LetterColor.red, LetterColor.blue, LetterColor.green][
+      this.getLetterId(this.cur)
+    ];
     if (newVal === this.active) return;
     this.active = newVal;
 
