@@ -99,13 +99,13 @@ class TOSCapp extends LitElement {
     }
 
     api.joinRoom({ roomId, user: me }).then((res) => {
-      const userToken = res.token;
+      this._userToken = res.token;
 
       const syncRoomInfo = () => {
         api
           .getRoomInfo({ roomId: this.roomId })
           .then((res) => {
-            this.people = Object.values(res.room.users);
+            this.people = res.users;
           })
           .catch(cancelSync);
       };
@@ -164,8 +164,15 @@ class TOSCapp extends LitElement {
   }
 
   changeScreen() {
-    // api.say(UPDATE_USER, { room_id: this.roomId, user: this.me });
+    const { roomId, _userToken, me } = this;
+
     this.showList = !this.showList;
+
+    if (!roomId || !_userToken) return;
+
+    api.updateUser({ roomId, token: _userToken, user: me }).then((res) => {
+      this.me = res.user;
+    });
   }
 }
 

@@ -2,7 +2,11 @@ import { Router } from 'express';
 import * as st from 'simple-runtypes';
 
 import { LetterColor } from '../src/js/tosc';
-import { Room } from '../src/js/types';
+import { Person } from '../src/js/types';
+
+export interface Room {
+  users: Record<string, Person>;
+}
 
 const rooms: Record<string, Room> = {};
 
@@ -18,16 +22,17 @@ router.post('/room/create', (req, res) => {
   res.json({ room_id });
 });
 
-const infoQuery = st.record({
+const roomIdQuery = st.record({
   id: st.string(),
 });
 
 router.get('/room/:id/info/', (req, res) => {
-  const { id } = infoQuery(req.query);
+  const { id } = roomIdQuery(req.query);
 
   const room = rooms[id];
+  const users = Object.values(room.users);
 
-  res.json({ room });
+  res.json({ users });
 });
 
 const letter = st.record({
@@ -43,16 +48,12 @@ const user = st.record({
   tosc: st.record({ T: letter, O: letter, S: letter, C: letter }),
 });
 
-const joinQuery = st.record({
-  id: st.string(),
-});
-
 const joinBody = st.record({
   user,
 });
 
 router.post('/room/:id/join', (req, res) => {
-  const { id } = joinQuery(req.query);
+  const { id } = roomIdQuery(req.query);
   const { user } = joinBody(req.body);
 
   const room = rooms[id];
@@ -68,15 +69,36 @@ router.post('/room/:id/join', (req, res) => {
   res.json({ token });
 });
 
-const leaveQuery = st.record({
-  id: st.string(),
+const updateUserBody = st.record({
+  user,
+  token: st.string(),
 });
+
+router.post('/room/:id/update_user', (req, res) => {
+  const { id } = roomIdQuery(req.query);
+  const { user, token } = updateUserBody(req.body);
+
+  const room = rooms[id];
+
+  if (!room) {
+    return res.status(400).end('Room not found');
+  }
+
+  if (!room.users[token]) {
+    return res.status(400).end('Invalid token');
+  }
+
+  room.users[token] = user;
+
+  res.json({ user });
+});
+
 const leaveBody = st.record({
   token: st.string(),
 });
 
 router.post('/room/:id/leave', (req, res) => {
-  const { id } = leaveQuery(req.query);
+  const { id } = roomIdQuery(req.query);
   const { token } = leaveBody(req.body);
 
   const room = rooms[id];
@@ -96,12 +118,8 @@ router.post('/room/:id/leave', (req, res) => {
   res.json({ ok: true });
 });
 
-const deleteQuery = st.record({
-  id: st.string(),
-});
-
 router.post('/room/:id/delete', (req, res) => {
-  const { id } = deleteQuery(req.query);
+  const { id } = roomIdQuery(req.query);
 
   const room = rooms[id];
 

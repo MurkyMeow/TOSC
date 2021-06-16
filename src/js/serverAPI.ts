@@ -1,4 +1,4 @@
-import { Person, Room } from './types';
+import { Person } from './types';
 
 export interface CreateRoomResponse {
   room_id: string;
@@ -12,7 +12,7 @@ export interface GetRoomInfoParams {
   roomId: string;
 }
 export interface GetRoomInfoResponse {
-  room: Room;
+  users: Person[];
 }
 
 export function getRoomInfo({ roomId }: GetRoomInfoParams): Promise<GetRoomInfoResponse> {
@@ -59,5 +59,21 @@ export interface DeleteRoomResponse {
 export function deleteRoom({ roomId }: DeleteRoomParams): Promise<DeleteRoomResponse> {
   return fetch(`/room/${roomId}/delete`, {
     method: 'POST',
+  }).then((r) => r.json());
+}
+
+export interface UpdateUserParams {
+  roomId: string;
+  token: string;
+  user: Person;
+}
+export interface UpdateUserResponse {
+  user: Person;
+}
+
+export function updateUser({ roomId, token, user }: UpdateUserParams): Promise<UpdateUserResponse> {
+  return fetch(`/room/${roomId}/update_user`, {
+    method: 'POST',
+    body: JSON.stringify({ token, user }),
   }).then((r) => r.json());
 }
