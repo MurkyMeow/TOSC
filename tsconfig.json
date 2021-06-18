@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "esnext",
     "target": "esnext",
     "moduleResolution": "node",
     "esModuleInterop": true,

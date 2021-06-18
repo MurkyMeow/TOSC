@@ -1,12 +1,3 @@
-const letters: Record<string, Letter> = {
-  R: { color: LetterColor.red, extra: true },
-  r: { color: LetterColor.red, extra: false },
-  G: { color: LetterColor.green, extra: true },
-  g: { color: LetterColor.green, extra: false },
-  B: { color: LetterColor.blue, extra: true },
-  b: { color: LetterColor.blue, extra: false },
-};
-
 export enum LetterColor {
   red = 'red',
   green = 'green',
@@ -24,6 +15,15 @@ export interface TOSC {
   S: Letter;
   C: Letter;
 }
+
+const letters: Record<string, Letter> = {
+  R: { color: LetterColor.red, extra: true },
+  r: { color: LetterColor.red, extra: false },
+  G: { color: LetterColor.green, extra: true },
+  g: { color: LetterColor.green, extra: false },
+  B: { color: LetterColor.blue, extra: true },
+  b: { color: LetterColor.blue, extra: false },
+};
 
 export function toscFromString(str: string): TOSC {
   return {

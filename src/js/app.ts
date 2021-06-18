@@ -8,7 +8,7 @@ import './tosc-create';
 import './tosc-list-landscape';
 import { Person } from './types';
 
-class TOSCapp extends LitElement {
+export class TOSCapp extends LitElement {
   static get styles() {
     return css`
       :host {
@@ -52,7 +52,7 @@ class TOSCapp extends LitElement {
   }
 
   @property({ type: Boolean }) showList = true;
-  @property({ attribute: false }) me: Person = storage.getUserData() || {
+  @property({ attribute: false }) me = storage.getUserData() || {
     name: 'Guest',
     pronoun: '',
     avatar: '',
@@ -158,7 +158,7 @@ class TOSCapp extends LitElement {
     ></tosc-create>`;
   }
 
-  updateMe(e) {
+  updateMe(e: CustomEvent<Person>): void {
     this.me = e.detail;
     storage.setUserData(this.me);
   }

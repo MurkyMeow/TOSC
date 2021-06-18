@@ -36,5 +36,5 @@ app.post('/uploadAvatar', uploadHandler, (req, res) => {
 app.use(room);
 
 server.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+  console.log(`Server started on http://localhost:${PORT}`);
 });
