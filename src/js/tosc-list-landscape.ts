@@ -1,7 +1,8 @@
 import { LitElement, property, css, html } from 'lit-element';
+import { repeat } from 'lit-html/directives/repeat';
 import * as api from './serverAPI';
 import * as QRCode from 'qrcode';
-import { Person } from './types';
+import { Room } from './types';
 
 import './tosc-inline';
 
@@ -15,14 +16,10 @@ class TOSCListLandscape extends LitElement {
         height: 100%;
       }
 
-      #title {
-        display: block;
-        width: 100%;
+      .title {
         background: #00000025;
         text-align: center;
         padding: 8px;
-        box-sizing: border-box;
-
         margin-bottom: 20px;
       }
 
@@ -111,8 +108,7 @@ class TOSCListLandscape extends LitElement {
     `;
   }
 
-  @property({ type: String }) roomId: string = '';
-  @property({ attribute: false }) people: Person[] = [];
+  @property({ type: Object }) room!: Room;
 
   _syncInterval = -1;
 
@@ -122,11 +118,11 @@ class TOSCListLandscape extends LitElement {
     if (!qrcode) {
       console.warn('could not find #qrcode');
     } else {
-      const link = `${window.location.href}room?id=${this.roomId}`;
+      const link = `${window.location.href}room?id=${this.room.id}`;
 
       QRCode.toCanvas(qrcode, link, (error) => {
         if (error) console.error(error);
-        console.log(`Link for room ${this.roomId} generated!`);
+        console.log(`Link for room ${this.room.id} generated!`);
       });
     }
   }
@@ -144,9 +140,9 @@ class TOSCListLandscape extends LitElement {
   _startSync() {
     const syncRoomInfo = () => {
       api
-        .getRoomInfo({ roomId: this.roomId })
+        .getRoomInfo({ roomId: this.room.id })
         .then((res) => {
-          this.people = res.users;
+          this.room = res.room;
         })
         .catch(() => {
           this._stopSync();
@@ -162,10 +158,12 @@ class TOSCListLandscape extends LitElement {
 
   render() {
     return html`
-      <slot id="title"></slot>
+      <div class="title">Today at ${this.room.name}</div>
       <div id="people">
-        ${this.people.map(
-          (person) => html`
+        ${repeat(
+          Object.entries(this.room.users),
+          ([key]) => key,
+          ([_, person]) => html`
             <div class="person">
               <img class="avatar" src=${person.avatar ? person.avatar : 'img/noavatar.png'} />
               <div class="wrap">

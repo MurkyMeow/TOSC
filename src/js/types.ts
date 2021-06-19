@@ -6,3 +6,9 @@ export interface Person {
   pronoun: string;
   tosc: TOSC;
 }
+
+export interface Room {
+  id: string;
+  name: string;
+  users: Record<string, Person>;
+}

@@ -1,7 +1,9 @@
 import { LitElement, css, html, property } from 'lit-element';
 import * as api from './serverAPI';
 import { toscFromString } from './tosc';
+import { Room } from './types';
 import * as storage from './storage';
+
 import './tosc-list';
 import './tosc-list-landscape';
 
@@ -33,7 +35,7 @@ export class TOSCapp extends LitElement {
     isJoined: false,
   };
 
-  @property({ attribute: false }) roomId = '';
+  @property({ attribute: false }) createdRoom?: Room;
 
   constructor() {
     super();
@@ -75,12 +77,12 @@ export class TOSCapp extends LitElement {
     e.preventDefault();
 
     const data = new FormData(e.currentTarget);
-    const roomName = String(data.get('roomName')); // FIXME unsued now
+    const name = String(data.get('roomName')); // FIXME unsued now
 
     api
-      .createRoom()
+      .createRoom({ name })
       .then((res) => {
-        this.roomId = res.roomId;
+        this.createdRoom = res.room;
       })
       .catch(() => {
         alert("Coulnd't create a room");
@@ -88,10 +90,10 @@ export class TOSCapp extends LitElement {
   }
 
   render() {
-    const { roomId, room } = this;
+    const { createdRoom, room } = this;
 
-    if (roomId) {
-      return html`<tosc-list-landscape roomId=${roomId}>Today at SOMEPLACE</tosc-list-landscape>`;
+    if (createdRoom) {
+      return html`<tosc-list-landscape .room=${createdRoom}></tosc-list-landscape>`;
     }
 
     if (room.isJoined) {

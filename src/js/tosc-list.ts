@@ -1,4 +1,5 @@
 import { LitElement, css, html, property } from 'lit-element';
+import { repeat } from 'lit-html/directives/repeat';
 import * as storage from './storage';
 import * as api from './serverAPI';
 import './tosc-create';
@@ -83,7 +84,7 @@ class TOSClist extends LitElement {
   @property({ type: String }) token = '';
 
   @property({ attribute: false }) me: Person = this.initialUser;
-  @property({ attribute: false }) people: Person[] = [];
+  @property({ attribute: false }) people: Record<string, Person> = {};
   @property({ attribute: false }) isEditing = false;
 
   _syncInterval = -1;
@@ -103,7 +104,7 @@ class TOSClist extends LitElement {
       api
         .getRoomInfo({ roomId: this.roomId })
         .then((res) => {
-          this.people = res.users;
+          this.people = res.room.users;
         })
         .catch(() => {
           this._stopSync();
@@ -129,7 +130,11 @@ class TOSClist extends LitElement {
         <tosc-person .me=${this.me}></tosc-person>
       </div>
       <div id="others">
-        ${this.people.map((ex) => html`<tosc-person .me=${ex} class="person"></tosc-person>`)}
+        ${repeat(
+          Object.entries(this.people),
+          ([id]) => id,
+          ([_, ex]) => html`<tosc-person .me=${ex} class="person"></tosc-person>`
+        )}
       </div>
 
       <push-button id="button" @click=${this.switch}>Edit</push-button>

@@ -2,24 +2,30 @@ import { ErrorRequestHandler, Router } from 'express';
 import * as st from 'simple-runtypes';
 
 import { LetterColor } from '../src/js/tosc';
-import { Person } from '../src/js/types';
-
-export interface Room {
-  users: Record<string, Person>;
-}
+import { Room } from '../src/js/types';
 
 const rooms: Record<string, Room> = {};
 
 const router = Router();
 
-router.post('/room/create', (req, res) => {
-  const roomId = Math.random().toString(36).slice(2);
+const createBody = st.record({
+  name: st.string(),
+});
 
-  rooms[roomId] = {
+router.post('/room/create', (req, res) => {
+  const { name } = createBody(req.body);
+
+  const id = Math.random().toString(36).slice(2);
+
+  const room = {
+    id,
+    name,
     users: {},
   };
 
-  res.json({ roomId });
+  rooms[id] = room;
+
+  res.json({ room });
 });
 
 const roomIdParams = st.record({
@@ -30,9 +36,12 @@ router.get('/room/:id/info/', (req, res) => {
   const { id } = roomIdParams(req.params);
 
   const room = rooms[id];
-  const users = Object.values(room.users);
 
-  res.json({ users });
+  if (!room) {
+    return res.status(400).json({ message: 'Room not found' });
+  }
+
+  res.json({ room });
 });
 
 const letter = st.record({
@@ -65,7 +74,7 @@ router.post('/room/:id/join', (req, res) => {
 
   room.users[token] = user;
 
-  res.json({ token });
+  res.json({ token, room });
 });
 
 const updateUserBody = st.record({

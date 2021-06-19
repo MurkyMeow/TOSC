@@ -1,4 +1,4 @@
-import { Person } from './types';
+import { Person, Room } from './types';
 
 function req<T>(input: RequestInfo, method: string, body?: unknown): Promise<T> {
   const init = {
@@ -16,19 +16,22 @@ function req<T>(input: RequestInfo, method: string, body?: unknown): Promise<T> 
   );
 }
 
+export interface CreateRoomParams {
+  name: string;
+}
 export interface CreateRoomResponse {
-  roomId: string;
+  room: Room;
 }
 
-export function createRoom(): Promise<CreateRoomResponse> {
-  return req('/room/create', 'POST');
+export function createRoom({ name }: CreateRoomParams): Promise<CreateRoomResponse> {
+  return req('/room/create', 'POST', { name });
 }
 
 export interface GetRoomInfoParams {
   roomId: string;
 }
 export interface GetRoomInfoResponse {
-  users: Person[];
+  room: Room;
 }
 
 export function getRoomInfo({ roomId }: GetRoomInfoParams): Promise<GetRoomInfoResponse> {
@@ -41,6 +44,7 @@ export interface JoinRoomParams {
 }
 export interface JoinRoomResponse {
   token: string;
+  room: Room;
 }
 
 export function joinRoom({ roomId, user }: JoinRoomParams): Promise<JoinRoomResponse> {

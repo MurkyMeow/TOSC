@@ -7,6 +7,7 @@
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "plugins": [
       {
         "name": "ts-lit-plugin",
