@@ -33,6 +33,7 @@ app.post('/uploadAvatar', uploadHandler, (req, res) => {
   res.end(`${uploadsDir}/${file.filename}`);
 });
 
+app.use(express.json());
 app.use(room);
 
 server.listen(PORT, () => {

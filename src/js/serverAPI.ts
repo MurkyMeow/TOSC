@@ -1,11 +1,27 @@
 import { Person } from './types';
 
+function req<T>(input: RequestInfo, method: string, body?: unknown): Promise<T> {
+  const init = {
+    method,
+    ...(body
+      ? {
+          body: JSON.stringify(body),
+          headers: { 'Content-Type': 'application/json' },
+        }
+      : {}),
+  };
+
+  return fetch(input, init).then((res) =>
+    res.ok ? res.json() : res.text().then((text) => Promise.reject(text))
+  );
+}
+
 export interface CreateRoomResponse {
   roomId: string;
 }
 
 export function createRoom(): Promise<CreateRoomResponse> {
-  return fetch('/room/create', { method: 'POST' }).then((res) => res.json());
+  return req('/room/create', 'POST');
 }
 
 export interface GetRoomInfoParams {
@@ -16,7 +32,7 @@ export interface GetRoomInfoResponse {
 }
 
 export function getRoomInfo({ roomId }: GetRoomInfoParams): Promise<GetRoomInfoResponse> {
-  return fetch(`/room/${roomId}/info`).then((r) => r.json());
+  return req(`/room/${roomId}/info`, 'GET');
 }
 
 export interface JoinRoomParams {
@@ -28,10 +44,7 @@ export interface JoinRoomResponse {
 }
 
 export function joinRoom({ roomId, user }: JoinRoomParams): Promise<JoinRoomResponse> {
-  return fetch(`/room/${roomId}/join`, {
-    method: 'POST',
-    body: JSON.stringify(user),
-  }).then((r) => r.json());
+  return req(`/room/${roomId}/join`, 'POST', { user });
 }
 
 export interface LeaveRoomParams {
@@ -43,10 +56,7 @@ export interface LeaveRoomResponse {
 }
 
 export function leaveRoom({ roomId, token }: LeaveRoomParams): Promise<LeaveRoomResponse> {
-  return fetch(`/room/${roomId}/leave`, {
-    method: 'POST',
-    body: JSON.stringify({ token }),
-  }).then((r) => r.json());
+  return req(`/room/${roomId}/leave`, 'POST', { token });
 }
 
 export interface DeleteRoomParams {
@@ -57,9 +67,7 @@ export interface DeleteRoomResponse {
 }
 
 export function deleteRoom({ roomId }: DeleteRoomParams): Promise<DeleteRoomResponse> {
-  return fetch(`/room/${roomId}/delete`, {
-    method: 'POST',
-  }).then((r) => r.json());
+  return req(`/room/${roomId}/delete`, 'POST');
 }
 
 export interface UpdateUserParams {
@@ -72,8 +80,5 @@ export interface UpdateUserResponse {
 }
 
 export function updateUser({ roomId, token, user }: UpdateUserParams): Promise<UpdateUserResponse> {
-  return fetch(`/room/${roomId}/update_user`, {
-    method: 'POST',
-    body: JSON.stringify({ token, user }),
-  }).then((r) => r.json());
+  return req(`/room/${roomId}/update_user`, 'POST', { token, user });
 }

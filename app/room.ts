@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { ErrorRequestHandler, Router } from 'express';
 import * as st from 'simple-runtypes';
 
 import { LetterColor } from '../src/js/tosc';
@@ -22,12 +22,12 @@ router.post('/room/create', (req, res) => {
   res.json({ roomId });
 });
 
-const roomIdQuery = st.record({
+const roomIdParams = st.record({
   id: st.string(),
 });
 
 router.get('/room/:id/info/', (req, res) => {
-  const { id } = roomIdQuery(req.query);
+  const { id } = roomIdParams(req.params);
 
   const room = rooms[id];
   const users = Object.values(room.users);
@@ -41,7 +41,6 @@ const letter = st.record({
 });
 
 const user = st.record({
-  id: st.string(),
   avatar: st.string(),
   name: st.string(),
   pronoun: st.string(),
@@ -53,13 +52,13 @@ const joinBody = st.record({
 });
 
 router.post('/room/:id/join', (req, res) => {
-  const { id } = roomIdQuery(req.query);
+  const { id } = roomIdParams(req.params);
   const { user } = joinBody(req.body);
 
   const room = rooms[id];
 
   if (!room) {
-    return res.status(400).end('Room not found');
+    return res.status(400).json({ message: 'Room not found' });
   }
 
   const token = Math.random().toString(36).slice(2);
@@ -75,17 +74,17 @@ const updateUserBody = st.record({
 });
 
 router.post('/room/:id/update_user', (req, res) => {
-  const { id } = roomIdQuery(req.query);
+  const { id } = roomIdParams(req.params);
   const { user, token } = updateUserBody(req.body);
 
   const room = rooms[id];
 
   if (!room) {
-    return res.status(400).end('Room not found');
+    return res.status(400).json({ message: 'Room not found' });
   }
 
   if (!room.users[token]) {
-    return res.status(400).end('Invalid token');
+    return res.status(400).json({ message: 'Invalid token' });
   }
 
   room.users[token] = user;
@@ -98,19 +97,19 @@ const leaveBody = st.record({
 });
 
 router.post('/room/:id/leave', (req, res) => {
-  const { id } = roomIdQuery(req.query);
+  const { id } = roomIdParams(req.params);
   const { token } = leaveBody(req.body);
 
   const room = rooms[id];
 
   if (!room) {
-    return res.status(400).end('Room not found');
+    return res.status(400).json({ message: 'Room not found' });
   }
 
   const user = room.users[token];
 
   if (!user) {
-    return res.status(400).end('Invalid token');
+    return res.status(400).json({ message: 'Invalid token' });
   }
 
   delete room.users[token];
@@ -119,17 +118,27 @@ router.post('/room/:id/leave', (req, res) => {
 });
 
 router.post('/room/:id/delete', (req, res) => {
-  const { id } = roomIdQuery(req.query);
+  const { id } = roomIdParams(req.params);
 
   const room = rooms[id];
 
   if (!room) {
-    return res.status(400).end('Room not found');
+    return res.status(400).json({ message: 'Room not found' });
   }
 
   delete rooms[id];
 
   res.json({ ok: true });
 });
+
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  if (err instanceof st.RuntypeError) {
+    res.status(400).json({ messagee: err.message });
+  } else {
+    next();
+  }
+};
+
+router.use(errorHandler);
 
 export default router;
