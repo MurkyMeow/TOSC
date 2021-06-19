@@ -1,4 +1,7 @@
 import { LitElement, css, html, property } from 'lit-element';
+import * as storage from './storage';
+import * as api from './serverAPI';
+import './tosc-create';
 import './tosc-person2';
 import './push-button';
 import { Person } from './types';
@@ -26,9 +29,6 @@ class TOSClist extends LitElement {
 
       #me tosc-person {
         --cover-color: #bdbdbd;
-      }
-
-      #others {
       }
 
       #others {
@@ -78,10 +78,52 @@ class TOSClist extends LitElement {
     `;
   }
 
-  @property({ type: Object }) me!: Person;
+  @property({ type: Object }) initialUser!: Person;
+  @property({ type: String }) roomId = '';
+  @property({ type: String }) token = '';
+
+  @property({ attribute: false }) me: Person = this.initialUser;
   @property({ attribute: false }) people: Person[] = [];
+  @property({ attribute: false }) isEditing = false;
+
+  _syncInterval = -1;
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._startSync();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._stopSync();
+  }
+
+  _startSync() {
+    const syncRoomInfo = () => {
+      api
+        .getRoomInfo({ roomId: this.roomId })
+        .then((res) => {
+          this.people = res.users;
+        })
+        .catch(() => {
+          this._stopSync();
+        });
+    };
+
+    this._syncInterval = window.setInterval(syncRoomInfo, 1000);
+  }
+
+  _stopSync() {
+    window.clearInterval(this._syncInterval);
+  }
 
   render() {
+    if (this.isEditing) {
+      return html`
+        <tosc-create .me=${this.me} @button=${this.switch} @update=${this.updateMe}></tosc-create>
+      `;
+    }
+
     return html`
       <div id="me">
         <tosc-person .me=${this.me}></tosc-person>
@@ -95,11 +137,18 @@ class TOSClist extends LitElement {
   }
 
   switch() {
-    const switchEv = new CustomEvent('switch', {
-      bubbles: true,
-      composed: true,
+    this.isEditing = !this.isEditing;
+  }
+
+  updateMe(e: CustomEvent<Person>) {
+    this.me = e.detail;
+    storage.setUserData(this.me);
+
+    const { roomId, token } = this;
+
+    api.updateUser({ roomId, token, user: this.me }).then((res) => {
+      this.me = res.user;
     });
-    this.dispatchEvent(switchEv);
   }
 }
 

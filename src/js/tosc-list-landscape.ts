@@ -1,8 +1,9 @@
 import { LitElement, property, css, html } from 'lit-element';
 import * as api from './serverAPI';
-import * as utils from './utils';
 import * as QRCode from 'qrcode';
 import { Person } from './types';
+
+import './tosc-inline';
 
 class TOSCListLandscape extends LitElement {
   static get styles() {
@@ -110,28 +111,53 @@ class TOSCListLandscape extends LitElement {
     `;
   }
 
-  @property({ type: Array }) people: Person[] = [];
+  @property({ type: String }) roomId: string = '';
+  @property({ attribute: false }) people: Person[] = [];
 
-  roomId = utils.genToken(12);
-  myLink = `${window.location.href}room?id=${this.roomId}`;
+  _syncInterval = -1;
 
-  constructor() {
-    super();
+  firstUpdated() {
+    const qrcode = this.renderRoot.querySelector('#qrcode');
 
-    api.createRoom().then((res) => {
-      this.roomId = res.roomId;
+    if (!qrcode) {
+      console.warn('could not find #qrcode');
+    } else {
+      const link = `${window.location.href}room?id=${this.roomId}`;
 
-      const qrcode = this.renderRoot.querySelector('#qrcode');
-
-      if (!qrcode) {
-        throw new Error('could not find qrcode');
-      }
-
-      QRCode.toCanvas(qrcode, this.myLink, (error) => {
+      QRCode.toCanvas(qrcode, link, (error) => {
         if (error) console.error(error);
         console.log(`Link for room ${this.roomId} generated!`);
       });
-    });
+    }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._startSync();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._stopSync();
+  }
+
+  _startSync() {
+    const syncRoomInfo = () => {
+      api
+        .getRoomInfo({ roomId: this.roomId })
+        .then((res) => {
+          this.people = res.users;
+        })
+        .catch(() => {
+          this._stopSync();
+        });
+    };
+
+    this._syncInterval = window.setInterval(syncRoomInfo, 1000);
+  }
+
+  _stopSync() {
+    window.clearInterval(this._syncInterval);
   }
 
   render() {

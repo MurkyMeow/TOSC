@@ -1,178 +1,119 @@
 import { LitElement, css, html, property } from 'lit-element';
 import * as api from './serverAPI';
-import { isMobile } from './isMobile';
 import { toscFromString } from './tosc';
 import * as storage from './storage';
 import './tosc-list';
-import './tosc-create';
 import './tosc-list-landscape';
-import { Person } from './types';
 
 export class TOSCapp extends LitElement {
   static get styles() {
     return css`
       :host {
         display: block;
-        margin: auto;
-        /*background-color: #444569;*/
-        /*background-color: #1e1e2e;*/
+        margin: 0;
         background-color: #ddd;
         color: #222;
-        border-radius: 10px;
-        font-family: sans;
 
         height: 100%;
         width: 100%;
       }
-
-      #joinroom {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 50px;
-      }
-
-      :host > * {
-        --font-size: 20pt;
-        font-size: var(--font-size);
-      }
-
-      @media (hover: none) and (pointer: coarse) {
-        /*mobile*/
-        :host > * {
-          --font-size: 50px;
-          font-size: var(--font-size);
-        }
-      }
     `;
   }
 
-  @property({ type: Boolean }) showList = true;
-  @property({ attribute: false }) me = storage.getUserData() || {
+  initialUser = storage.getUserData() || {
     name: 'Guest',
     pronoun: '',
     avatar: '',
     tosc: toscFromString('bbbb'),
   };
-  @property({ attribute: false }) people: Person[] = [];
 
-  roomId = '';
-  isMobile = isMobile();
+  @property({ attribute: false }) room = {
+    id: '',
+    token: '',
+    isJoined: false,
+  };
 
-  _userToken = '';
+  @property({ attribute: false }) roomId = '';
 
   constructor() {
     super();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    this.roomId = urlParams.get('id') || '';
+    // const urlParams = new URLSearchParams(window.location.search);
+    // this.roomId = urlParams.get('id') || '';
 
-    if (this.roomId) {
-      storage.setRoomId(this.roomId);
-    } else {
-      this.roomId = storage.getRoomId() || '';
-      // update url with the value from storage
-      urlParams.set('id', this.roomId);
-      window.location.search = urlParams.toString();
-    }
-    //this.roomId = "l0goKUeetsF1";
-
-    window.onunload = () => {
-      //if (this.isMobile)
-      //api.say('left_room', { room_id: this.roomId, user_id: this.me.id });
-      //else
-      //api.say('del_room', { room_id: this.roomId });
-    };
+    // if (this.roomId) {
+    //   storage.setRoomId(this.roomId);
+    // } else {
+    //   this.roomId = storage.getRoomId() || '';
+    //   // update url with the value from storage
+    //   urlParams.set('id', this.roomId);
+    //   window.location.search = urlParams.toString();
+    // }
   }
 
-  connectedCallback() {
-    super.connectedCallback();
+  onJoinSubmit(e: Event & { currentTarget: HTMLFormElement }): void {
+    e.preventDefault();
 
-    const { me, roomId } = this;
+    const data = new FormData(e.currentTarget);
+    const roomId = String(data.get('roomId'));
 
-    if (!roomId) {
-      return;
-    }
+    api
+      .joinRoom({ roomId, user: this.initialUser })
+      .then((res) => {
+        this.room = {
+          id: roomId,
+          token: res.token,
+          isJoined: true,
+        };
+      })
+      .catch(() => {
+        alert("Couldn't join that room");
+      });
+  }
 
-    api.joinRoom({ roomId, user: me }).then((res) => {
-      this._userToken = res.token;
+  onCreateSubmit(e: Event & { currentTarget: HTMLFormElement }): void {
+    e.preventDefault();
 
-      const syncRoomInfo = () => {
-        api
-          .getRoomInfo({ roomId: this.roomId })
-          .then((res) => {
-            this.people = res.users;
-          })
-          .catch(cancelSync);
-      };
+    const data = new FormData(e.currentTarget);
+    const roomName = String(data.get('roomName')); // FIXME unsued now
 
-      const cancelSync = () => {
-        clearInterval(syncInterval);
-      };
-
-      let syncInterval = window.setInterval(syncRoomInfo, 1000);
-    });
+    api
+      .createRoom()
+      .then((res) => {
+        this.roomId = res.roomId;
+      })
+      .catch(() => {
+        alert("Coulnd't create a room");
+      });
   }
 
   render() {
-    if (this.isMobile && this.roomId === null) return this.renderGetARoom();
-    if (!this.isMobile) return this.renderLandscapeLayout();
-    return this.showList ? this.renderList() : this.renderCreate();
-  }
+    const { roomId, room } = this;
 
-  renderGetARoom() {
+    if (roomId) {
+      return html`<tosc-list-landscape roomId=${roomId}>Today at SOMEPLACE</tosc-list-landscape>`;
+    }
+
+    if (room.isJoined) {
+      return html`<tosc-list roomId=${room.id} token=${room.token}></tosc-list>`;
+    }
+
     return html`
-      <div id="joinroom">
-        It look's like you haven't enter any room yet. Scan qrcode on the bottom of room's screen to
-        join it.
-      </div>
+      <form @submit=${this.onJoinSubmit}>
+        <label>
+          Room id
+          <input name="roomId" type="text" />
+        </label>
+        <button>Join room</button>
+      </form>
+      <form @submit=${this.onCreateSubmit}>
+        <label>
+          Room name
+          <input name="roomName" type="text" />
+        </label>
+        <button>Create room</button>
+      </form>
     `;
-  }
-
-  renderLandscapeLayout() {
-    return html`
-      <tosc-list-landscape id="list" .people=${this.people}>Today at SOMEPLACE</tosc-list-landscape>
-    `;
-  }
-
-  renderList() {
-    return html`
-      <tosc-list
-        id="list"
-        .me=${this.me}
-        .people=${this.people}
-        @switch=${this.changeScreen}
-      ></tosc-list>
-    `;
-  }
-
-  renderCreate() {
-    return html` <tosc-create
-      .me=${this.me}
-      @button=${this.changeScreen}
-      @update=${this.updateMe}
-    ></tosc-create>`;
-  }
-
-  updateMe(e: CustomEvent<Person>): void {
-    this.me = e.detail;
-    storage.setUserData(this.me);
-  }
-
-  changeScreen() {
-    const { roomId, _userToken, me } = this;
-
-    this.showList = !this.showList;
-
-    if (!roomId || !_userToken) return;
-
-    api.updateUser({ roomId, token: _userToken, user: me }).then((res) => {
-      this.me = res.user;
-    });
   }
 }
 
