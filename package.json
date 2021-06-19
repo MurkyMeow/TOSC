@@ -4,11 +4,9 @@
   "description": "T.O.S.C",
   "main": "./src/index.js",
   "scripts": {
-    "build": "webpack --config webpack.prod.js; cp -R img favicons app/public",
+    "build": "rollup -c",
     "dev": "rollup -c -w",
-    "dev:public": "npm run dev -- --host 0.0.0.0 --public",
-    "server": "ts-node-dev --respawn app/server.ts",
-    "start": "npm run server"
+    "server": "ts-node-dev --respawn app/server.ts"
   },
   "author": "",
   "license": "ISC",

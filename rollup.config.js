@@ -19,7 +19,11 @@ export default {
     commonjs(),
     typescript(),
     copy({
-      targets: [{ src: 'src/index.html', dest: 'app/public' }],
+      targets: [
+        { src: 'src/index.html', dest: 'app/public' },
+        { src: 'favicons', dest: 'app/public' },
+        { src: 'img', dest: 'app/public' },
+      ],
     }),
   ],
 };
