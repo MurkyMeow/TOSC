@@ -2,10 +2,10 @@ import { LitElement, css, html, property } from 'lit-element';
 import { hints } from './hints';
 import './push-button';
 import './tosc-scroll';
-import './tosc-avatar';
+import './tosc-avatar-upload';
 import './tosc-drop';
 import { Person } from './types';
-import { ToscAvatarNewAvatar } from './tosc-avatar';
+import { ToscAvatarUploadNewAvatar } from './tosc-avatar-upload';
 import { TOSCdropChange } from './tosc-drop';
 import { ToscScroll } from './tosc-scroll';
 import { TOSC, LetterColor, toscMap } from './tosc';
@@ -93,11 +93,11 @@ class TOSCcreate extends LitElement {
   render() {
     return html`
       <div class="personal">
-        <tosc-avatar
+        <tosc-avatar-upload
           class="avatar"
           src=${this.me.avatar}
           @new-avatar=${this.updateAvatar}
-        ></tosc-avatar>
+        ></tosc-avatar-upload>
         <div class="personal-fields">
           <input
             class="name"
@@ -142,7 +142,7 @@ class TOSCcreate extends LitElement {
     this.dispatchEvent(new CustomEvent('update', { detail: me }));
   }
 
-  updateAvatar(e: CustomEvent<ToscAvatarNewAvatar>) {
+  updateAvatar(e: CustomEvent<ToscAvatarUploadNewAvatar>) {
     this.dispatchUpdate({ ...this.me, avatar: e.detail.avatar });
   }
 

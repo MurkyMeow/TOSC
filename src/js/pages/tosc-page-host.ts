@@ -5,7 +5,7 @@ import * as QRCode from 'qrcode';
 import * as api from '../serverAPI';
 import { Room } from '../types';
 
-import '../tosc-avatar';
+import '../tosc-avatar-upload';
 import '../tosc-inline';
 
 class TOSCPageHost extends LitElement {
@@ -165,7 +165,7 @@ class TOSCPageHost extends LitElement {
           ([_, person]) => html`
             <div class="person">
               <div class="person-info">
-                <tosc-avatar class="avatar" src=${person.avatar}></tosc-avatar>
+                <tosc-avatar-upload class="avatar" src=${person.avatar}></tosc-avatar-upload>
                 <div class="wrap">
                   <span class="name">${person.name}</span>
                   <span class="pronoun">${person.pronoun}</span>

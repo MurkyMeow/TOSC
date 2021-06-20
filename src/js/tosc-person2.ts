@@ -1,7 +1,7 @@
 import { LitElement, property, css, html } from 'lit-element';
 import { toscFromString } from './tosc';
 import './tosc-inline';
-import './tosc-avatar';
+import './tosc-avatar-upload';
 
 class TOSCPerson extends LitElement {
   static get styles() {
@@ -66,7 +66,7 @@ class TOSCPerson extends LitElement {
 
   render() {
     return html`
-      <tosc-avatar class="avatar" src=${this.me.avatar}></tosc-avatar>
+      <tosc-avatar-upload class="avatar" src=${this.me.avatar}></tosc-avatar-upload>
       <div class="info">
         <div class="name">${this.me.name}</div>
         ${this.me.pronoun ? html` <div class="pronoun">${`(${this.me.pronoun})`}</div> ` : html``}

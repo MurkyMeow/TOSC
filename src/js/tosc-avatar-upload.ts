@@ -1,11 +1,11 @@
 import { LitElement, css, html, property } from 'lit-element';
 import './just-button';
 
-export interface ToscAvatarNewAvatar {
+export interface ToscAvatarUploadNewAvatar {
   avatar: string;
 }
 
-class TOSCavatar extends LitElement {
+class TOSCAvatarUpload extends LitElement {
   static get styles() {
     return css`
       :host {
@@ -197,7 +197,7 @@ class TOSCavatar extends LitElement {
 
         this.hidePopup();
         this.dispatchEvent(
-          new CustomEvent<ToscAvatarNewAvatar>('new-avatar', {
+          new CustomEvent<ToscAvatarUploadNewAvatar>('new-avatar', {
             detail: { avatar },
           })
         );
@@ -223,4 +223,4 @@ class TOSCavatar extends LitElement {
   }
 }
 
-customElements.define('tosc-avatar', TOSCavatar);
+customElements.define('tosc-avatar-upload', TOSCAvatarUpload);
