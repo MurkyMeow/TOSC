@@ -27,6 +27,7 @@ class TOSCcreate extends LitElement {
       .avatar {
         width: 80px;
         height: 80px;
+        margin-right: 15px;
       }
 
       .name {
@@ -54,11 +55,10 @@ class TOSCcreate extends LitElement {
 
       .hint {
         text-align: center;
-        font-size: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
+        font-size: 24px;
+        line-height: 1;
+        min-height: 1em;
+        margin-bottom: 20px;
       }
 
       .controls {
@@ -69,7 +69,6 @@ class TOSCcreate extends LitElement {
       }
 
       .scrolls {
-        font-size: 35px;
         display: flex;
         width: 100%;
         justify-content: space-around;
@@ -77,6 +76,7 @@ class TOSCcreate extends LitElement {
       }
 
       .scroll {
+        font-size: 50px;
         margin: 0 20px;
       }
 
@@ -159,7 +159,16 @@ class TOSCcreate extends LitElement {
   }
 
   updateHint(letter: keyof TOSC, color: LetterColor, extra: boolean): void {
-    this.hint = hints[letter][color][extra ? 0 : 1];
+    const { tosc } = this.me;
+
+    this.hint = hints[letter][color][extra ? 1 : 0];
+
+    const newTosc = {
+      ...tosc,
+      [letter]: { ...tosc[letter], extra },
+    };
+
+    this.dispatchUpdate({ ...this.me, tosc: newTosc });
   }
 
   showHint(e: { currentTarget: ToscScroll }): void {

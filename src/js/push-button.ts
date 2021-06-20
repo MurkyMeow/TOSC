@@ -9,6 +9,7 @@ class PushButton extends LitElement {
         --bg-color: #eee;
         --fg-color: #000;
 
+        cursor: pointer;
         padding: 8px;
         border-radius: 10px;
         background-color: var(--bg-color);
