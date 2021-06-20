@@ -46,7 +46,7 @@ export class ToscScroll extends LitElement {
       #scroll::-webkit-scrollbar {
         display: none;
       }
-      #scroll.extra .pick {
+      #scroll.extra .letter {
         border-color: var(--pick-color);
       }
 
@@ -54,12 +54,18 @@ export class ToscScroll extends LitElement {
         height: var(--pick-size);
       }
       .pick {
+        width: var(--pick-size);
+        height: var(--pick-size);
+        padding: 5px;
+        box-sizing: border-box;
+      }
+      .letter {
         color: var(--pick-color);
         user-select: none;
         position: relative;
 
-        width: var(--pick-size);
-        height: var(--pick-size);
+        width: 100%;
+        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -255,7 +261,7 @@ export class ToscScroll extends LitElement {
           ${['red', 'blue', 'green'].map(
             (color) => html`
               <div class="pick" id=${color} @click=${() => this.chooseMe(color)}>
-                ${this.letter}
+                <div class="letter">${this.letter}</div>
               </div>
             `
           )}
