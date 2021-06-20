@@ -1,71 +1,55 @@
 import { LitElement, css, html, property } from 'lit-element';
-import { TOSC, toscFromString } from './tosc';
+import { TOSC } from './tosc';
 
 class TOSCinline extends LitElement {
   static get styles() {
     return css`
       :host {
-        --border-width: 2px;
-        --font-size: inherit;
-        --font-ratio: 1.2;
-        --gap-width: 10px;
-
-        --red: #b02323;
-        --blue: #5523f0;
-        --green: #23b033;
-
         display: flex;
         align-items: center;
-        height: 100%;
-        /*width: 100%;*/
       }
 
       .letter {
-        --calc-size: calc(var(--font-size) * var(--font-ratio));
-
-        font-size: var(--font-size);
-        border: var(--border-width) solid transparent;
+        color: var(--letter-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.5em;
+        height: 1.5em;
         border-radius: 50%;
-        text-align: center;
-        width: var(--calc-size);
-        height: var(--calc-size);
-        line-height: calc(var(--calc-size) + var(--border-width));
+        border: 2px solid transparent;
+        box-sizing: border-box;
       }
-
       .letter:not(:last-child) {
-        margin-right: var(--gap-width);
+        margin-right: 5px;
       }
 
-      .letter.red[extra] {
-        border-color: var(--red);
-      }
-      .letter.blue[extra] {
-        border-color: var(--blue);
-      }
-      .letter.green[extra] {
-        border-color: var(--green);
+      .extra {
+        border-color: var(--letter-color);
       }
 
       .red {
-        color: var(--red);
+        --letter-color: var(--red);
       }
       .blue {
-        color: var(--blue);
+        --letter-color: var(--blue);
       }
       .green {
-        color: var(--green);
+        --letter-color: var(--green);
       }
     `;
   }
 
-  @property({ type: Object }) tosc: TOSC = toscFromString('bbbb');
+  @property({ type: Object }) tosc!: TOSC;
 
   render() {
     return html`
       ${(Object.keys(this.tosc) as (keyof TOSC)[]).map(
         (lt) =>
           html`
-            <span class="letter ${this.tosc[lt].color}" ?extra=${this.tosc[lt].extra}> ${lt} </span>
+            <div class="letter ${this.tosc[lt].color} ${this.tosc[lt].extra ? 'extra' : ''}">
+              ${lt}
+            </div>
           `
       )}
     `;

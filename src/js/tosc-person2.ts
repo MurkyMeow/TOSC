@@ -14,14 +14,14 @@ class TOSCPerson extends LitElement {
         flex: 1;
       }
 
-      #name {
+      .name {
         overflow-x: auto;
         overflow-y: hidden;
         white-space: nowrap;
         display: flex;
       }
 
-      #name::after {
+      .name::after {
         content: ' ';
         position: sticky;
         right: -0.5vw;
@@ -32,25 +32,27 @@ class TOSCPerson extends LitElement {
         display: block;
       }
 
-      #name::-webkit-scrollbar {
+      .name::-webkit-scrollbar {
         display: none;
       }
 
-      #pronoun {
+      .pronoun {
         overflow-x: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         color: #888;
       }
 
-      #avatar {
+      .avatar {
         width: 80px;
         height: 80px;
+        margin-right: 15px;
       }
 
-      #tosc {
+      .tosc {
+        font-size: 20px;
+        align-self: center;
         margin-left: 10px;
-        --font-ratio: 1.1;
       }
     `;
   }
@@ -64,12 +66,12 @@ class TOSCPerson extends LitElement {
 
   render() {
     return html`
-      <tosc-avatar id="avatar" src=${this.me.avatar}></tosc-avatar>
+      <tosc-avatar class="avatar" src=${this.me.avatar}></tosc-avatar>
       <div class="info">
-        <span id="name">${this.me.name}</span>
-        ${this.me.pronoun ? html` <span id="pronoun"> (${this.me.pronoun}) </span> ` : html``}
+        <div class="name">${this.me.name}</div>
+        ${this.me.pronoun ? html` <div class="pronoun">${`(${this.me.pronoun})`}</div> ` : html``}
       </div>
-      <tosc-inline id="tosc" .tosc=${this.me.tosc}></tosc-inline>
+      <tosc-inline class="tosc" .tosc=${this.me.tosc}></tosc-inline>
     `;
   }
 }

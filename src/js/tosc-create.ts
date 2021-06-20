@@ -82,7 +82,6 @@ class TOSCcreate extends LitElement {
 
       #button {
         width: 200px;
-        padding: 10px;
         margin: 0 auto;
       }
     `;

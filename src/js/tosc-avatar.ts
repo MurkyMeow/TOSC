@@ -25,6 +25,7 @@ class TOSCavatar extends LitElement {
         border-radius: 50%;
         object-fit: cover;
         width: 100%;
+        background-color: #bdf0ff;
       }
 
       #popup {

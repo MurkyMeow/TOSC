@@ -12,50 +12,48 @@ class TOSCPageRoom extends LitElement {
   static get styles() {
     return css`
       :host {
-        display: block;
+        display: flex;
+        flex-direction: column;
         width: 100%;
-        min-height: 100%;
+        height: 100%;
       }
 
       .me {
+        position: sticky;
+        top: 0;
         background: #bdbdbd;
       }
 
       .person {
-        padding: 20px 30px;
+        padding: 10px 30px;
       }
       .person:not(:last-child) {
         border-bottom: 2px solid #00000020;
       }
 
-      #others {
+      .list {
         position: relative;
+        flex: 1;
+        overflow: auto;
       }
-
-      #others::after {
+      .list::after {
         content: ' ';
-        position: sticky;
-        bottom: -0.5vh;
-        left: 0px;
-        min-height: 4vh;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 30px;
         width: 100%;
         background: linear-gradient(#0000 0%, #ddd);
         display: block;
       }
-
-      #others::-webkit-scrollbar {
+      .list::-webkit-scrollbar {
         display: none;
       }
 
-      .tosc {
-        grid-column: 3;
-        --font-ratio: 1.1;
-      }
-
-      #button {
-        width: 40%;
-        height: 50%;
-        place-self: center;
+      .edit-btn {
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto 30px;
       }
     `;
   }
@@ -134,16 +132,15 @@ class TOSCPageRoom extends LitElement {
     }
 
     return html`
-      <tosc-person class="person me" .me=${this.me}></tosc-person>
-      <div id="others">
+      <div class="list">
+        <tosc-person class="person me" .me=${this.me}></tosc-person>
         ${repeat(
           Object.entries(roomData.users),
           ([id]) => id,
           ([_, ex]) => html`<tosc-person class="person" .me=${ex}></tosc-person>`
         )}
       </div>
-
-      <push-button id="button" @click=${this.switch}>Edit</push-button>
+      <push-button class="edit-btn" @click=${this.switch}>Edit</push-button>
     `;
   }
 

@@ -9,12 +9,16 @@ export class TOSCapp extends LitElement {
   static get styles() {
     return css`
       :host {
+        --red: #b02323;
+        --blue: #5523f0;
+        --green: #23b033;
+
         display: block;
         margin: 0;
         background-color: #ddd;
         color: #222;
 
-        height: 100%;
+        min-height: 100%;
         width: 100%;
       }
     `;

@@ -5,6 +5,7 @@ import * as QRCode from 'qrcode';
 import * as api from '../serverAPI';
 import { Room } from '../types';
 
+import '../tosc-avatar';
 import '../tosc-inline';
 
 class TOSCPageHost extends LitElement {
@@ -41,34 +42,23 @@ class TOSCPageHost extends LitElement {
       }
 
       .person {
-        display: grid;
         background-color: #eee;
         border-radius: 10px;
         padding: 10px;
-
-        grid-template-columns: 100px auto;
-        gap: 10px 15px;
-
         width: 400px;
+      }
+      .person-info {
+        display: flex;
       }
 
       .avatar {
-        grid-row: 1;
-        grid-column: 1;
-
-        width: 100px;
-        height: 100px;
-        background-color: #bdf0ff;
-        padding: 5px;
-        box-sizing: border-box;
-        border-radius: 50%;
-        object-fit: cover;
+        flex-shrink: 0;
+        width: 80px;
+        height: 80px;
+        margin-right: 10px;
       }
 
       .wrap {
-        grid-row: 1;
-        grid-column: 2;
-
         height: 100%;
         width: 100%;
 
@@ -93,12 +83,8 @@ class TOSCPageHost extends LitElement {
       }
 
       .tosc {
-        grid-row: 2;
-        grid-column: 1 / 3;
-
-        width: 100%;
-        justify-content: space-around;
-        --font-size: 40px;
+        justify-content: center;
+        font-size: 35px;
       }
 
       #qrcode {
@@ -178,10 +164,12 @@ class TOSCPageHost extends LitElement {
           ([key]) => key,
           ([_, person]) => html`
             <div class="person">
-              <img class="avatar" src=${person.avatar ? person.avatar : 'img/noavatar.png'} />
-              <div class="wrap">
-                <span class="name">${person.name}</span>
-                <span class="pronoun">${person.pronoun}</span>
+              <div class="person-info">
+                <tosc-avatar class="avatar" src=${person.avatar}></tosc-avatar>
+                <div class="wrap">
+                  <span class="name">${person.name}</span>
+                  <span class="pronoun">${person.pronoun}</span>
+                </div>
               </div>
               <tosc-inline class="tosc" .tosc=${person.tosc}></tosc-inline>
             </div>
