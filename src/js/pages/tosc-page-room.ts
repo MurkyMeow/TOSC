@@ -17,36 +17,19 @@ class TOSCPageRoom extends LitElement {
         min-height: 100%;
       }
 
-      #me {
-        border-radius: inherit;
+      .me {
         background: #bdbdbd;
-        height: fit-content;
-        padding-top: 5px;
-        padding-bottom: 5px;
-        padding: 20px 30px;
       }
 
-      #me tosc-person {
-        --cover-color: #bdbdbd;
+      .person {
+        padding: 20px 30px;
+      }
+      .person:not(:last-child) {
+        border-bottom: 2px solid #00000020;
       }
 
       #others {
-        padding: 0 30px;
-
-        overflow-y: auto;
-        width: 100%;
-        box-sizing: border-box;
         position: relative;
-      }
-
-      #others tosc-person {
-        --cover-color: #ddd;
-      }
-
-      #others .person:not(:last-child) {
-        margin-bottom: 25px;
-        padding-bottom: 25px;
-        border-bottom: 2px solid #00000020;
       }
 
       #others::after {
@@ -151,14 +134,12 @@ class TOSCPageRoom extends LitElement {
     }
 
     return html`
-      <div id="me">
-        <tosc-person .me=${this.me}></tosc-person>
-      </div>
+      <tosc-person class="person me" .me=${this.me}></tosc-person>
       <div id="others">
         ${repeat(
           Object.entries(roomData.users),
           ([id]) => id,
-          ([_, ex]) => html`<tosc-person .me=${ex} class="person"></tosc-person>`
+          ([_, ex]) => html`<tosc-person class="person" .me=${ex}></tosc-person>`
         )}
       </div>
 
