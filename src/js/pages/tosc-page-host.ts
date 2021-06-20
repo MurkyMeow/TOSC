@@ -1,12 +1,13 @@
 import { LitElement, property, css, html } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
-import * as api from './serverAPI';
 import * as QRCode from 'qrcode';
-import { Room } from './types';
 
-import './tosc-inline';
+import * as api from '../serverAPI';
+import { Room } from '../types';
 
-class TOSCListLandscape extends LitElement {
+import '../tosc-inline';
+
+class TOSCPageHost extends LitElement {
   static get styles() {
     return css`
       :host {
@@ -108,7 +109,13 @@ class TOSCListLandscape extends LitElement {
     `;
   }
 
-  @property({ type: Object }) room!: Room;
+  // /room/:id
+  get roomId() {
+    const parts = location.pathname.split('/');
+    return parts[parts.length - 1];
+  }
+
+  @property({ attribute: false }) roomData?: Room;
 
   _syncInterval = -1;
 
@@ -118,11 +125,11 @@ class TOSCListLandscape extends LitElement {
     if (!qrcode) {
       console.warn('could not find #qrcode');
     } else {
-      const link = `${window.location.href}room?id=${this.room.id}`;
+      const link = `${window.location.href}room?id=${this.roomId}`;
 
       QRCode.toCanvas(qrcode, link, (error) => {
         if (error) console.error(error);
-        console.log(`Link for room ${this.room.id} generated!`);
+        console.log(`Link for room ${this.roomId} generated!`);
       });
     }
   }
@@ -140,9 +147,9 @@ class TOSCListLandscape extends LitElement {
   _startSync() {
     const syncRoomInfo = () => {
       api
-        .getRoomInfo({ roomId: this.room.id })
+        .getRoomInfo({ roomId: this.roomId })
         .then((res) => {
-          this.room = res.room;
+          this.roomData = res.room;
         })
         .catch(() => {
           this._stopSync();
@@ -157,11 +164,17 @@ class TOSCListLandscape extends LitElement {
   }
 
   render() {
+    const { roomData } = this;
+
+    if (!roomData) {
+      return html`<div>Loading...</div>`;
+    }
+
     return html`
-      <div class="title">Today at ${this.room.name}</div>
+      <div class="title">Today at ${roomData.name}</div>
       <div id="people">
         ${repeat(
-          Object.entries(this.room.users),
+          Object.entries(roomData.users),
           ([key]) => key,
           ([_, person]) => html`
             <div class="person">
@@ -180,4 +193,4 @@ class TOSCListLandscape extends LitElement {
   }
 }
 
-customElements.define('tosc-list-landscape', TOSCListLandscape);
+customElements.define('tosc-page-host', TOSCPageHost);

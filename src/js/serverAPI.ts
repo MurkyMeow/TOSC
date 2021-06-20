@@ -20,6 +20,7 @@ export interface CreateRoomParams {
   name: string;
 }
 export interface CreateRoomResponse {
+  token: string;
   room: Room;
 }
 

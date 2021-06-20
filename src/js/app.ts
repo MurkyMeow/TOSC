@@ -1,11 +1,9 @@
-import { LitElement, css, html, property } from 'lit-element';
-import * as api from './serverAPI';
-import { toscFromString } from './tosc';
-import { Room } from './types';
-import * as storage from './storage';
+import { LitElement, css } from 'lit-element';
+import { Router } from '@vaadin/router';
 
-import './tosc-list';
-import './tosc-list-landscape';
+import './pages/tosc-page-index';
+import './pages/tosc-page-room';
+import './pages/tosc-page-host';
 
 export class TOSCapp extends LitElement {
   static get styles() {
@@ -21,21 +19,6 @@ export class TOSCapp extends LitElement {
       }
     `;
   }
-
-  initialUser = storage.getUserData() || {
-    name: 'Guest',
-    pronoun: '',
-    avatar: '',
-    tosc: toscFromString('bbbb'),
-  };
-
-  @property({ attribute: false }) room = {
-    id: '',
-    token: '',
-    isJoined: false,
-  };
-
-  @property({ attribute: false }) createdRoom?: Room;
 
   constructor() {
     super();
@@ -53,69 +36,14 @@ export class TOSCapp extends LitElement {
     // }
   }
 
-  onJoinSubmit(e: Event & { currentTarget: HTMLFormElement }): void {
-    e.preventDefault();
+  firstUpdated() {
+    const router = new Router(this.renderRoot);
 
-    const data = new FormData(e.currentTarget);
-    const roomId = String(data.get('roomId'));
-
-    api
-      .joinRoom({ roomId, user: this.initialUser })
-      .then((res) => {
-        this.room = {
-          id: roomId,
-          token: res.token,
-          isJoined: true,
-        };
-      })
-      .catch(() => {
-        alert("Couldn't join that room");
-      });
-  }
-
-  onCreateSubmit(e: Event & { currentTarget: HTMLFormElement }): void {
-    e.preventDefault();
-
-    const data = new FormData(e.currentTarget);
-    const name = String(data.get('roomName')); // FIXME unsued now
-
-    api
-      .createRoom({ name })
-      .then((res) => {
-        this.createdRoom = res.room;
-      })
-      .catch(() => {
-        alert("Coulnd't create a room");
-      });
-  }
-
-  render() {
-    const { createdRoom, room } = this;
-
-    if (createdRoom) {
-      return html`<tosc-list-landscape .room=${createdRoom}></tosc-list-landscape>`;
-    }
-
-    if (room.isJoined) {
-      return html`<tosc-list roomId=${room.id} token=${room.token}></tosc-list>`;
-    }
-
-    return html`
-      <form @submit=${this.onJoinSubmit}>
-        <label>
-          Room id
-          <input name="roomId" type="text" />
-        </label>
-        <button>Join room</button>
-      </form>
-      <form @submit=${this.onCreateSubmit}>
-        <label>
-          Room name
-          <input name="roomName" type="text" />
-        </label>
-        <button>Create room</button>
-      </form>
-    `;
+    router.setRoutes([
+      { path: '/', component: 'tosc-page-index' },
+      { path: '/room/:roomId', component: 'tosc-page-room' },
+      { path: '/host/:roomId', component: 'tosc-page-host' },
+    ]);
   }
 }
 

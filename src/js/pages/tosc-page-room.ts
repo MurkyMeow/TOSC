@@ -1,13 +1,14 @@
 import { LitElement, css, html, property } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
-import * as storage from './storage';
-import * as api from './serverAPI';
-import './tosc-create';
-import './tosc-person2';
-import './push-button';
-import { Person } from './types';
+import * as storage from '../storage';
+import * as api from '../serverAPI';
+import { toscFromString } from '../tosc';
+import '../tosc-create';
+import '../tosc-person2';
+import '../push-button';
+import { Person, Room } from '../types';
 
-class TOSClist extends LitElement {
+class TOSCPageRoom extends LitElement {
   static get styles() {
     return css`
       :host {
@@ -79,19 +80,40 @@ class TOSClist extends LitElement {
     `;
   }
 
-  @property({ type: Object }) initialUser!: Person;
-  @property({ type: String }) roomId = '';
-  @property({ type: String }) token = '';
+  // /room/:id
+  get roomId(): string {
+    const parts = location.pathname.split('/');
+    return parts[parts.length - 1];
+  }
 
-  @property({ attribute: false }) me: Person = this.initialUser;
-  @property({ attribute: false }) people: Record<string, Person> = {};
+  @property({ attribute: false }) me: Person = storage.getUserData() || {
+    name: 'Guest',
+    pronoun: '',
+    avatar: '',
+    tosc: toscFromString('bbbb'),
+  };
+
+  @property({ attribute: false }) roomData?: Room;
+  userToken?: string;
+
   @property({ attribute: false }) isEditing = false;
 
   _syncInterval = -1;
 
   connectedCallback() {
     super.connectedCallback();
-    this._startSync();
+
+    const { roomId, me } = this;
+
+    api
+      .joinRoom({ roomId, user: me })
+      .then((res) => {
+        this.roomData = res.room;
+        this.userToken = res.token;
+      })
+      .catch(() => {
+        alert("Couldn't join that room");
+      });
   }
 
   disconnectedCallback() {
@@ -104,7 +126,7 @@ class TOSClist extends LitElement {
       api
         .getRoomInfo({ roomId: this.roomId })
         .then((res) => {
-          this.people = res.room.users;
+          this.roomData = res.room;
         })
         .catch(() => {
           this._stopSync();
@@ -119,6 +141,12 @@ class TOSClist extends LitElement {
   }
 
   render() {
+    const { roomData } = this;
+
+    if (!roomData) {
+      return html`<div>Loading...</div>`;
+    }
+
     if (this.isEditing) {
       return html`
         <tosc-create .me=${this.me} @button=${this.switch} @update=${this.updateMe}></tosc-create>
@@ -131,7 +159,7 @@ class TOSClist extends LitElement {
       </div>
       <div id="others">
         ${repeat(
-          Object.entries(this.people),
+          Object.entries(roomData.users),
           ([id]) => id,
           ([_, ex]) => html`<tosc-person .me=${ex} class="person"></tosc-person>`
         )}
@@ -146,15 +174,15 @@ class TOSClist extends LitElement {
   }
 
   updateMe(e: CustomEvent<Person>) {
+    const { roomId, userToken } = this;
+
     this.me = e.detail;
     storage.setUserData(this.me);
 
-    const { roomId, token } = this;
-
-    api.updateUser({ roomId, token, user: this.me }).then((res) => {
-      this.me = res.user;
-    });
+    if (userToken) {
+      api.updateUser({ roomId, token: userToken, user: this.me });
+    }
   }
 }
 
-customElements.define('tosc-list', TOSClist);
+customElements.define('tosc-page-room', TOSCPageRoom);

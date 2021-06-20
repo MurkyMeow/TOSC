@@ -16,6 +16,7 @@ router.post('/room/create', (req, res) => {
   const { name } = createBody(req.body);
 
   const id = Math.random().toString(36).slice(2);
+  const token = Math.random().toString(36).slice(2);
 
   const room = {
     id,
@@ -25,7 +26,7 @@ router.post('/room/create', (req, res) => {
 
   rooms[id] = room;
 
-  res.json({ room });
+  res.json({ token, room });
 });
 
 const roomIdParams = st.record({
