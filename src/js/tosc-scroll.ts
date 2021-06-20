@@ -16,10 +16,26 @@ export class ToscScroll extends LitElement {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        position: relative;
         padding: 10px 0;
 
         --pick-size: 1.5em;
+      }
+
+      .scroll-wrap {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+      .scroll-center {
+        position: absolute;
+        top: var(--pick-size);
+        left: 0;
+        right: 0;
+        height: var(--pick-size);
+        border-top: 2px solid #555;
+        border-bottom: 2px solid #555;
+        box-sizing: border-box;
       }
 
       #scroll {
@@ -65,7 +81,7 @@ export class ToscScroll extends LitElement {
       .extra-btn {
         margin-top: 10px;
         width: 100%;
-        height: 30px;
+        height: 40px;
       }
     `;
   }
@@ -78,7 +94,6 @@ export class ToscScroll extends LitElement {
   block = false;
   scrollEl: HTMLElement | null = null;
 
-  bottom = 0;
   stabletm = -1;
 
   get letterSize(): number {
@@ -147,8 +162,6 @@ export class ToscScroll extends LitElement {
       };
     });
 
-    this.bottom = this.scrollEl.scrollHeight;
-
     this.cur = this.letterPos(this.active);
     this.updateScroll(this.cur);
     // add smooth scrolling AFTER the initial scroll position was set
@@ -160,9 +173,9 @@ export class ToscScroll extends LitElement {
       case 'red':
         return 0;
       case 'blue':
-        return 2 * this.letterSize;
+        return this.letterSize;
       case 'green':
-        return this.bottom;
+        return 2 * this.letterSize;
       default:
         throw new Error(`Unknown color: ${color}`);
     }
@@ -197,7 +210,7 @@ export class ToscScroll extends LitElement {
   getLetterId(pos: number): number {
     const { letterSize } = this;
     if (pos < letterSize) return 0; // the first letter's height
-    if (pos < letterSize * 3) return 1; // spacing + the second letter's height
+    if (pos < letterSize * 2) return 1; // spacing + the second letter's height
     return 2;
   }
 
@@ -224,14 +237,19 @@ export class ToscScroll extends LitElement {
 
   render() {
     return html`
-      <div id="scroll" class=${this.extra ? 'extra' : ''}>
-        <div class="void-pick"></div>
-        ${['red', 'blue', 'green'].map(
-          (color) => html`
-            <div class="pick" id=${color} @click=${() => this.chooseMe(color)}>${this.letter}</div>
-          `
-        )}
-        <div class="void-pick"></div>
+      <div class="scroll-wrap">
+        <div class="scroll-center"></div>
+        <div id="scroll" class=${this.extra ? 'extra' : ''}>
+          <div class="void-pick"></div>
+          ${['red', 'blue', 'green'].map(
+            (color) => html`
+              <div class="pick" id=${color} @click=${() => this.chooseMe(color)}>
+                ${this.letter}
+              </div>
+            `
+          )}
+          <div class="void-pick"></div>
+        </div>
       </div>
       <tosc-button class="extra-btn" .state=${this.extra} @toggle=${this.toggleExtra}></tosc-button>
     `;
