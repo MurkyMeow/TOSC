@@ -5,10 +5,12 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import copy from 'rollup-plugin-copy';
 
+const outDir = path.resolve(__dirname, 'app', 'public');
+
 export default {
   input: 'src/index.ts',
   output: {
-    file: path.resolve(__dirname, 'app', 'public', 'bundle.js'),
+    dir: outDir,
     format: 'iife',
   },
   plugins: [
@@ -17,7 +19,10 @@ export default {
       preferBuiltins: false,
     }),
     commonjs(),
-    typescript(),
+    typescript({
+      incremental: true,
+      tsBuildInfoFile: outDir,
+    }),
     copy({
       targets: [
         { src: 'src/index.html', dest: 'app/public' },
