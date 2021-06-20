@@ -95,15 +95,7 @@ export class ToscScroll extends LitElement {
   scrollEl: HTMLElement | null = null;
 
   stabletm = -1;
-
-  get letterSize(): number {
-    const style = getComputedStyle(this);
-
-    const fontSize = Number(style.getPropertyValue('font-size').replace('px', ''));
-    const pickSize = Number(style.getPropertyValue('--pick-size').replace('em', ''));
-
-    return fontSize * pickSize;
-  }
+  letterSize = 0;
 
   constructor() {
     super();
@@ -124,6 +116,8 @@ export class ToscScroll extends LitElement {
       const startY = e.pageY;
       const startScroll = this.cur;
 
+      let moveTimer = -1;
+
       const onMouseUp = () => {
         removeListeners();
         //delya cuz click is happaning a bit later
@@ -136,6 +130,12 @@ export class ToscScroll extends LitElement {
       };
 
       const onMouseMove = (moveEvent: MouseEvent) => {
+        if (moveTimer >= 0) return;
+
+        moveTimer = window.setTimeout(() => {
+          moveTimer = -1;
+        }, 50);
+
         moveEvent.preventDefault();
 
         const scroll = moveEvent.pageY - startY;
@@ -161,6 +161,17 @@ export class ToscScroll extends LitElement {
         this.removeEventListener('mouseleave', onMouseLeave);
       };
     });
+
+    const onResize = () => {
+      const style = getComputedStyle(this);
+
+      const fontSize = Number(style.getPropertyValue('font-size').replace('px', ''));
+      const pickSize = Number(style.getPropertyValue('--pick-size').replace('em', ''));
+
+      this.letterSize = fontSize * pickSize;
+    };
+    onResize();
+    window.addEventListener('resize', onResize);
 
     this.cur = this.letterPos(this.active);
     this.updateScroll(this.cur);
@@ -216,7 +227,7 @@ export class ToscScroll extends LitElement {
 
   updateScroll(pos: number): void {
     this.cur = pos;
-    this.scrollEl?.scrollTo(0, this.cur); //Maybe add a cycle to smooth it?
+    this.scrollEl?.scrollTo(0, this.cur);
   }
 
   scrolling(): void {
