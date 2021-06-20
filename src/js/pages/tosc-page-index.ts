@@ -6,16 +6,29 @@ import * as storage from '../storage';
 
 class TOSCPageIndex extends LitElement {
   static get styles() {
-    return css``;
-  }
+    return css`
+      :host {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
 
-  onJoinSubmit(e: Event & { currentTarget: HTMLFormElement }): void {
-    e.preventDefault();
-
-    const data = new FormData(e.currentTarget);
-    const roomId = String(data.get('roomId'));
-
-    Router.go(`/room/${roomId}`);
+      .form {
+        display: block;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+      .form-input {
+        display: block;
+        width: 100%;
+      }
+      .form-btn {
+        display: block;
+        max-width: 200px;
+        margin: 10px auto 0;
+      }
+    `;
   }
 
   onCreateSubmit(e: Event & { currentTarget: HTMLFormElement }): void {
@@ -37,19 +50,12 @@ class TOSCPageIndex extends LitElement {
 
   render() {
     return html`
-      <form @submit=${this.onJoinSubmit}>
-        <label>
-          Room id
-          <input name="roomId" type="text" />
+      <form class="form" @submit=${this.onCreateSubmit}>
+        <label class="form-row">
+          Room name:
+          <input class="form-input" name="roomName" type="text" />
         </label>
-        <button>Join room</button>
-      </form>
-      <form @submit=${this.onCreateSubmit}>
-        <label>
-          Room name
-          <input name="roomName" type="text" />
-        </label>
-        <button>Create room</button>
+        <button class="form-btn">Create room</button>
       </form>
     `;
   }
