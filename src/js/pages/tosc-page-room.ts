@@ -55,6 +55,14 @@ class TOSCPageRoom extends LitElement {
         max-width: 200px;
         margin: 0 auto 30px;
       }
+
+      @media (max-width: 768px) {
+        .person {
+          --tosc-person_avatar-size: 60px;
+          --tosc-person_tosc-size: 20px;
+          padding: 10px;
+        }
+      }
     `;
   }
 

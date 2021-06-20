@@ -7,18 +7,17 @@ class TOSCPerson extends LitElement {
   static get styles() {
     return css`
       :host {
+        --tosc-person_avatar-size: 80px;
+        --tosc-person_tosc-size: 25px;
+
         display: flex;
       }
 
       .info {
         flex: 1;
-      }
-
-      .name {
         overflow-x: auto;
         overflow-y: hidden;
         white-space: nowrap;
-        display: flex;
       }
 
       .name::after {
@@ -37,20 +36,18 @@ class TOSCPerson extends LitElement {
       }
 
       .pronoun {
-        overflow-x: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
         color: #888;
       }
 
       .avatar {
-        width: 80px;
-        height: 80px;
+        flex-shrink: 0;
+        width: var(--tosc-person_avatar-size);
+        height: var(--tosc-person_avatar-size);
         margin-right: 15px;
       }
 
       .tosc {
-        font-size: 20px;
+        font-size: var(--tosc-person_tosc-size);
         align-self: center;
         margin-left: 10px;
       }

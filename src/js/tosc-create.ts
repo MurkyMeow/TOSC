@@ -19,12 +19,14 @@ class TOSCcreate extends LitElement {
 
       .personal {
         display: flex;
+        margin-bottom: 30px;
       }
       .personal-fields {
         width: 100%;
       }
 
       .avatar {
+        flex-shrink: 0;
         width: 80px;
         height: 80px;
         margin-right: 15px;
@@ -57,8 +59,8 @@ class TOSCcreate extends LitElement {
         text-align: center;
         font-size: 24px;
         line-height: 1;
-        min-height: 1em;
-        margin-bottom: 20px;
+        min-height: 3em;
+        margin-bottom: 30px;
       }
 
       .controls {
@@ -72,17 +74,28 @@ class TOSCcreate extends LitElement {
         display: flex;
         width: 100%;
         justify-content: space-around;
-        margin-bottom: 20px;
       }
 
       .scroll {
         font-size: 50px;
-        margin: 0 20px;
+        padding: 0 30px;
       }
 
       #button {
         width: 200px;
         margin: 0 auto;
+      }
+
+      @media (max-width: 768px) {
+        .scroll {
+          font-size: 35px;
+          padding: 0 8px;
+        }
+
+        .avatar {
+          width: 60px;
+          height: 60px;
+        }
       }
     `;
   }

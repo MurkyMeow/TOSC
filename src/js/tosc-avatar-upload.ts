@@ -126,7 +126,7 @@ class TOSCAvatarUpload extends LitElement {
 
   render() {
     return html`
-      <tosc-avatar src=${this.src} @click=${this.showPopup}></tosc-avatar>
+      <tosc-avatar class="avatar" src=${this.src} @click=${this.showPopup}></tosc-avatar>
       <div id="popup" @click=${this.mbHidePopup} ?hidden=${!this.popup}>
         <div id="container">
           <div id="avatar-preview">

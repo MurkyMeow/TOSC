@@ -175,12 +175,12 @@ export class ToscScroll extends LitElement {
       const pickSize = Number(style.getPropertyValue('--pick-size').replace('em', ''));
 
       this.letterSize = fontSize * pickSize;
+      this.cur = this.letterPos(this.active);
+      this.updateScroll(this.cur);
     };
     onResize();
     window.addEventListener('resize', onResize);
 
-    this.cur = this.letterPos(this.active);
-    this.updateScroll(this.cur);
     // add smooth scrolling AFTER the initial scroll position was set
     this.scrollEl.style.setProperty('scroll-behavior', 'smooth');
   }
