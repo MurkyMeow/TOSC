@@ -14,9 +14,9 @@ class TOSCavatar extends LitElement {
         height: 100%;
       }
 
-      #avatar-wrap {
-        width: 250px;
-        height: 250px;
+      .avatar-wrap {
+        width: 100%;
+        height: 100%;
         overflow: hidden;
         display: flex;
       }
@@ -123,7 +123,7 @@ class TOSCavatar extends LitElement {
   }
 
   @property({ type: String }) previewAvatar = '';
-  @property({ type: String }) avatar = '/img/noavatar.png';
+  @property({ type: String }) src = '';
   @property({ type: Boolean }) popup = false;
   @property({ type: Boolean }) errorHide = true;
   @property({ type: String }) error = '';
@@ -137,8 +137,8 @@ class TOSCavatar extends LitElement {
 
   render() {
     return html`
-      <div id="avatar-wrap" @click=${this.showPopup}>
-        <img id="avatar" src=${this.avatar} />
+      <div class="avatar-wrap" @click=${this.showPopup}>
+        <img id="avatar" src=${this.src || '/img/noavatar.png'} />
       </div>
       <div id="popup" @click=${this.mbHidePopup} ?hidden=${!this.popup}>
         <div id="container">
@@ -165,7 +165,7 @@ class TOSCavatar extends LitElement {
   }
 
   showPopup() {
-    this.previewAvatar = this.avatar;
+    this.previewAvatar = this.src;
     this.popup = true;
   }
 
@@ -174,7 +174,7 @@ class TOSCavatar extends LitElement {
   }
 
   tryFreeAvatar() {
-    if (this.avatar.startsWith('blob:')) URL.revokeObjectURL(this.avatar);
+    if (this.src.startsWith('blob:')) URL.revokeObjectURL(this.src);
   }
 
   saveAvatar() {
@@ -183,7 +183,7 @@ class TOSCavatar extends LitElement {
     }
 
     this.tryFreeAvatar();
-    this.avatar = this.previewAvatar;
+    this.src = this.previewAvatar;
 
     const formdata = new FormData(this.form);
     console.log(formdata);
@@ -192,7 +192,7 @@ class TOSCavatar extends LitElement {
       .then((res) => res.text())
       .then((avatar) => {
         this.tryFreeAvatar();
-        this.avatar = avatar;
+        this.src = avatar;
 
         this.hidePopup();
         this.dispatchEvent(
@@ -206,7 +206,7 @@ class TOSCavatar extends LitElement {
   previewFile(e: { target: HTMLInputElement }) {
     const [file] = e.target.files || [];
     if (file.type === 'image/jpeg' || file.type === 'image/png') {
-      if (this.avatar !== this.previewAvatar && this.previewAvatar.startsWith('blob:'))
+      if (this.src !== this.previewAvatar && this.previewAvatar.startsWith('blob:'))
         URL.revokeObjectURL(this.previewAvatar);
       this.previewAvatar = URL.createObjectURL(file);
       this.file = file;

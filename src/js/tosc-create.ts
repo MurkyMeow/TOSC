@@ -1,12 +1,10 @@
 import { LitElement, css, html, property } from 'lit-element';
 import { hints } from './hints';
-import './tosc-button';
 import './push-button';
 import './tosc-scroll';
 import './tosc-avatar';
 import './tosc-drop';
 import { Person } from './types';
-import { ToscButtonToggle } from './tosc-button';
 import { ToscAvatarNewAvatar } from './tosc-avatar';
 import { TOSCdropChange } from './tosc-drop';
 import { ToscScroll } from './tosc-scroll';
@@ -16,33 +14,19 @@ class TOSCcreate extends LitElement {
   static get styles() {
     return css`
       :host {
-        display: grid;
-        height: 100%;
-        width: 100%;
-        grid-template-rows: 250px 15vh auto 200px;
-
-        padding: 0 10px;
-        box-sizing: border-box;
+        padding: 20px 10px;
       }
 
       .personal {
-        margin-top: 20px;
         display: flex;
-        gap: 20px;
+      }
+      .personal-fields {
+        width: 100%;
       }
 
       .avatar {
-        --size: 250px;
-        min-width: var(--size);
-        min-height: var(--size);
-        width: var(--size);
-        height: var(--size);
-      }
-
-      .personal-wrap {
-        display: block;
-        width: 100%;
-        box-sizing: border-box;
+        width: 80px;
+        height: 80px;
       }
 
       .name {
@@ -52,9 +36,9 @@ class TOSCcreate extends LitElement {
         color: #222;
         display: block;
 
-        font-size: inherit;
+        font: inherit;
         width: 100%;
-        margin: 20px 0;
+        margin: 0 0 15px;
 
         outline: none;
         box-sizing: border-box;
@@ -81,39 +65,25 @@ class TOSCcreate extends LitElement {
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        place-content: center;
-      }
-
-      .scrolls,
-      .extra {
-        display: flex;
-        width: 100%;
-        justify-content: space-around;
+        margin-bottom: 30px;
       }
 
       .scrolls {
-        /*background-color: rgba(0, 0, 0, 0.37);*/
+        font-size: 35px;
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
         margin-bottom: 20px;
-        --font-size: 50px;
       }
 
-      tosc-scroll {
-        --font-size: 80px;
-      }
-
-      tosc-button {
-        margin-top: 3vh;
-        width: 15vw;
-        height: 3vh;
+      .scroll {
+        margin: 0 20px;
       }
 
       #button {
-        width: 40%;
-        height: 50%;
-        place-self: center;
+        width: 200px;
+        padding: 10px;
+        margin: 0 auto;
       }
     `;
   }
@@ -126,10 +96,10 @@ class TOSCcreate extends LitElement {
       <div class="personal">
         <tosc-avatar
           class="avatar"
-          avatar=${this.me.avatar}
+          src=${this.me.avatar}
           @new-avatar=${this.updateAvatar}
         ></tosc-avatar>
-        <div class="personal-wrap">
+        <div class="personal-fields">
           <input
             class="name"
             spellcheck="false"
@@ -153,24 +123,13 @@ class TOSCcreate extends LitElement {
             this.me.tosc,
             (letter, opts) => html`
               <tosc-scroll
+                class="scroll"
                 .active=${opts.color}
                 .extra=${opts.extra}
                 .letter=${letter}
                 @update=${this.showHint}
                 @highlight=${this.showHint}
               ></tosc-scroll>
-            `
-          )}
-        </div>
-        <div class="extra">
-          ${toscMap(
-            this.me.tosc,
-            (letter, opts) => html`
-              <tosc-button
-                .state=${opts.extra}
-                @toggle=${(e: CustomEvent<ToscButtonToggle>) =>
-                  this.toggleExtra(letter, e.detail.state)}
-              ></tosc-button>
             `
           )}
         </div>

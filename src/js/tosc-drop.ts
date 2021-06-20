@@ -28,55 +28,33 @@ class TOSCdrop extends LitElement {
       }
 
       :host(.active) #choosen {
-        background-color: #eee;
+        background: #eee;
       }
 
-      #drop-down {
-        opacity: 0;
-        z-index: -999;
-
-        position: absolute;
-        top: 120%;
-        left: 0;
-        width: 100%;
-
-        padding: 10px;
-        border-radius: 5px;
-
+      .list {
         display: flex;
-        flex-direction: column;
-        height: 600px;
-        overflow-y: auto;
-
-        gap: 10px;
-        box-sizing: border-box;
-        transition: opacity 0.4s;
-        box-shadow: 0 15px 5px 5px #00000020;
-
-        background-color: #ddd;
+        flex-wrap: wrap;
+        padding: 10px 0 0;
+        margin: 0;
       }
 
-      :host(.active) #drop-down {
-        opacity: 1;
-        z-index: 2;
+      :host(:not(.active)) .list {
+        display: none;
       }
 
       .pronoun {
-        padding: 6px 15px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        padding: 5px 12px;
         border-radius: 5px;
-        background-color: #eee;
+        background: #eee;
 
         user-select: none;
-        width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
-        min-height: 80px;
-        box-sizing: border-box;
-        transition: background-color 0.2s;
       }
-
       .pronoun:active {
-        background-color: #fff;
+        background: #fff;
       }
     `;
   }
@@ -93,11 +71,12 @@ class TOSCdrop extends LitElement {
       <div id="choosen" @click=${this.toggle}>
         ${this.choosen === '' ? 'pronoun' : this.choosen}
       </div>
-      <div id="drop-down">
+      <ul class="list" role="menu">
         ${pronouns.map(
-          (pr) => html` <span class="pronoun" @click=${() => this.changePr(pr)}>${pr}</span> `
+          (pr) =>
+            html`<li class="pronoun" @click=${() => this.changePr(pr)} role="menuitem">${pr}</li>`
         )}
-      </div>
+      </ul>
     `;
   }
 
@@ -122,8 +101,6 @@ class TOSCdrop extends LitElement {
 
     const changeEv = new CustomEvent<TOSCdropChange>('change', {
       detail: { pronoun: this.choosen },
-      bubbles: true,
-      composed: true,
     });
     this.dispatchEvent(changeEv);
   }

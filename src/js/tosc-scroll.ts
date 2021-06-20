@@ -1,6 +1,8 @@
 import { LitElement, property, css, html } from 'lit-element';
 import { LetterColor, TOSC } from './tosc';
 
+import './tosc-button';
+
 export class ToscScroll extends LitElement {
   static get styles() {
     return css`
@@ -8,99 +10,62 @@ export class ToscScroll extends LitElement {
         --red: #b02323;
         --blue: #5523f0;
         --green: #23b033;
-        --holder-bg-color: #ccc;
-
-        --font-size: inherit;
 
         width: 100%;
-        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         position: relative;
         padding: 10px 0;
-      }
 
-      :host::before {
-        content: '';
-        --holder-width: calc(2.35 * var(--font-size));
-        --holder-height: calc(1.35 * var(--font-size));
-
-        position: absolute;
-        left: calc(50% - var(--holder-width) / 2);
-        top: calc(50% - var(--holder-height) / 2);
-
-        width: var(--holder-width);
-        height: var(--holder-height);
-
-        background-color: var(--holder-bg-color);
-        border-radius: 5px;
-        box-sizing: border-box;
+        --pick-size: 1.5em;
       }
 
       #scroll {
-        height: 100%;
-        width: 100%;
-
+        height: calc(var(--pick-size) * 3);
         overflow-y: scroll;
         scrollbar-width: none;
       }
-
       #scroll::-webkit-scrollbar {
         display: none;
       }
-
-      #scroll.extra .pick::before {
-        content: '';
-        width: calc(1.2 * var(--font-size));
-        height: calc(1.2 * var(--font-size));
-        border: 5px solid transparent;
-        position: absolute;
-        border-radius: 100%;
-        top: calc(50% - 1.2 * var(--font-size) / 2);
-        left: calc(50% - 1.2 * var(--font-size) / 2);
-        box-sizing: border-box;
+      #scroll.extra .pick {
+        border-color: var(--pick-color);
       }
 
-      #scroll.extra .pick#red::before {
-        border-color: var(--red);
+      .void-pick {
+        height: var(--pick-size);
       }
-
-      #scroll.extra .pick#blue::before {
-        border-color: var(--blue);
-      }
-
-      #scroll.extra .pick#green::before {
-        border-color: var(--green);
-      }
-
-      .pick.void {
-        height: calc((100% - var(--font-size)) / 2);
-      }
-
       .pick {
+        color: var(--pick-color);
         user-select: none;
         position: relative;
-        font-size: var(--font-size);
-        height: var(--font-size);
 
+        width: var(--pick-size);
+        height: var(--pick-size);
         display: flex;
         justify-content: center;
         align-items: center;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        box-sizing: border-box;
       }
-
       .pick#red {
-        color: var(--red);
+        --pick-color: var(--red);
       }
-
       .pick#blue {
-        color: var(--blue);
+        --pick-color: var(--blue);
         margin: var(--font-size) 0;
       }
-
       .pick#green {
-        color: var(--green);
+        --pick-color: var(--green);
+      }
+
+      .extra-btn {
+        margin-top: 10px;
+        width: 100%;
+        height: 30px;
       }
     `;
   }
@@ -113,9 +78,17 @@ export class ToscScroll extends LitElement {
   block = false;
   scrollEl: HTMLElement | null = null;
 
-  letterSize = 0;
   bottom = 0;
   stabletm = -1;
+
+  get letterSize(): number {
+    const style = getComputedStyle(this);
+
+    const fontSize = Number(style.getPropertyValue('font-size').replace('px', ''));
+    const pickSize = Number(style.getPropertyValue('--pick-size').replace('em', ''));
+
+    return fontSize * pickSize;
+  }
 
   constructor() {
     super();
@@ -174,27 +147,12 @@ export class ToscScroll extends LitElement {
       };
     });
 
-    this.letterSize = parseInt(getComputedStyle(this).getPropertyValue('--font-size'), 10);
     this.bottom = this.scrollEl.scrollHeight;
 
     this.cur = this.letterPos(this.active);
     this.updateScroll(this.cur);
     // add smooth scrolling AFTER the initial scroll position was set
     this.scrollEl.style.setProperty('scroll-behavior', 'smooth');
-  }
-
-  render() {
-    return html`
-      <div id="scroll" class=${this.extra ? 'extra' : ''}>
-        <div class="pick void"></div>
-        ${['red', 'blue', 'green'].map(
-          (color) => html`
-            <div class="pick" id=${color} @click=${() => this.chooseMe(color)}>${this.letter}</div>
-          `
-        )}
-        <div class="pick void"></div>
-      </div>
-    `;
   }
 
   letterPos(color: string): number {
@@ -230,6 +188,11 @@ export class ToscScroll extends LitElement {
     this.dispatchEvent(new CustomEvent('update'));
   }
 
+  toggleExtra() {
+    this.extra = !this.extra;
+    this.dispatchEvent(new CustomEvent('update'));
+  }
+
   //because !
   getLetterId(pos: number): number {
     const { letterSize } = this;
@@ -257,6 +220,21 @@ export class ToscScroll extends LitElement {
       this.updateScroll(stablePos);
       this.updateValue();
     }, 600);
+  }
+
+  render() {
+    return html`
+      <div id="scroll" class=${this.extra ? 'extra' : ''}>
+        <div class="void-pick"></div>
+        ${['red', 'blue', 'green'].map(
+          (color) => html`
+            <div class="pick" id=${color} @click=${() => this.chooseMe(color)}>${this.letter}</div>
+          `
+        )}
+        <div class="void-pick"></div>
+      </div>
+      <tosc-button class="extra-btn" .state=${this.extra} @toggle=${this.toggleExtra}></tosc-button>
+    `;
   }
 }
 

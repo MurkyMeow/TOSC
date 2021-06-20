@@ -12,12 +12,9 @@ class TOSCPageRoom extends LitElement {
   static get styles() {
     return css`
       :host {
-        display: grid;
-        grid-template-rows: fit-content(100px) auto 200px;
+        display: block;
         width: 100%;
-        height: 100%;
-        border-radius: inherit;
-        gap: 20px;
+        min-height: 100%;
       }
 
       #me {
