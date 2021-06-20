@@ -96,6 +96,7 @@ class TOSCPageRoom extends LitElement {
         this.roomData = res.room;
         this.userToken = res.token;
         storage.setUserToken(res.token);
+        this._startSync();
       })
       .catch(() => {
         alert("Couldn't join that room");
@@ -115,6 +116,7 @@ class TOSCPageRoom extends LitElement {
           this.roomData = res.room;
         })
         .catch(() => {
+          alert("Couldn't retreive room info, try refreshing the page");
           this._stopSync();
         });
     };
@@ -135,7 +137,11 @@ class TOSCPageRoom extends LitElement {
 
     if (this.isEditing) {
       return html`
-        <tosc-create .me=${this.me} @button=${this.switch} @update=${this.updateMe}></tosc-create>
+        <tosc-create
+          .me=${this.me}
+          @close=${this.toggleEdit}
+          @update=${this.updateMe}
+        ></tosc-create>
       `;
     }
 
@@ -148,23 +154,25 @@ class TOSCPageRoom extends LitElement {
           ([_, ex]) => html`<tosc-person class="person" .me=${ex}></tosc-person>`
         )}
       </div>
-      <push-button class="edit-btn" @click=${this.switch}>Edit</push-button>
+      <push-button class="edit-btn" @click=${this.toggleEdit}>Edit</push-button>
     `;
   }
 
-  switch() {
+  toggleEdit() {
+    if (this.isEditing) {
+      const { roomId, userToken } = this;
+
+      if (userToken) {
+        api.updateUser({ roomId, token: userToken, user: this.me });
+      }
+    }
+
     this.isEditing = !this.isEditing;
   }
 
   updateMe(e: CustomEvent<Person>) {
-    const { roomId, userToken } = this;
-
     this.me = e.detail;
     storage.setUserData(this.me);
-
-    if (userToken) {
-      api.updateUser({ roomId, token: userToken, user: this.me });
-    }
   }
 }
 

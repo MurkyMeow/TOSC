@@ -147,7 +147,7 @@ class TOSCcreate extends LitElement {
         </div>
       </div>
 
-      <push-button id="button" @click=${this.switch}>Go back</push-button>
+      <push-button id="button" @click=${this.close}>Go back</push-button>
     `;
   }
 
@@ -198,8 +198,8 @@ class TOSCcreate extends LitElement {
     this.updateHint(letter, color, state);
   }
 
-  switch() {
-    this.dispatchEvent(new CustomEvent('button'));
+  close() {
+    this.dispatchEvent(new CustomEvent('close'));
   }
 }
 
