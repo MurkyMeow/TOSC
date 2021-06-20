@@ -94,22 +94,22 @@ class TOSCPageRoom extends LitElement {
   };
 
   @property({ attribute: false }) roomData?: Room;
-  userToken?: string;
-
   @property({ attribute: false }) isEditing = false;
 
   _syncInterval = -1;
+  userToken = storage.getUserToken() || '';
 
   connectedCallback() {
     super.connectedCallback();
 
-    const { roomId, me } = this;
+    const { roomId, userToken, me } = this;
 
     api
-      .joinRoom({ roomId, user: me })
+      .joinRoom({ roomId, token: userToken, user: me })
       .then((res) => {
         this.roomData = res.room;
         this.userToken = res.token;
+        storage.setUserToken(res.token);
       })
       .catch(() => {
         alert("Couldn't join that room");

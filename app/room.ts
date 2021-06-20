@@ -59,11 +59,12 @@ const user = st.record({
 
 const joinBody = st.record({
   user,
+  token: st.optional(st.string()),
 });
 
 router.post('/room/:id/join', (req, res) => {
   const { id } = roomIdParams(req.params);
-  const { user } = joinBody(req.body);
+  const { user, token } = joinBody(req.body);
 
   const room = rooms[id];
 
@@ -71,7 +72,17 @@ router.post('/room/:id/join', (req, res) => {
     return res.status(400).json({ message: 'Room not found' });
   }
 
-  const token = Math.random().toString(36).slice(2);
+  if (!token) {
+    const newToken = Math.random().toString(36).slice(2);
+
+    room.users[newToken] = user;
+
+    return res.json({ token: newToken, room });
+  }
+
+  if (!room.users[token]) {
+    return res.status(400).json({ message: 'Invalid token' });
+  }
 
   room.users[token] = user;
 
