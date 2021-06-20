@@ -1,4 +1,6 @@
 import { LitElement, css, html, property } from 'lit-element';
+
+import './tosc-avatar';
 import './just-button';
 
 export interface ToscAvatarUploadNewAvatar {
@@ -12,20 +14,6 @@ class TOSCAvatarUpload extends LitElement {
         display: inline-block;
         width: 100%;
         height: 100%;
-      }
-
-      .avatar-wrap {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        display: flex;
-      }
-
-      #avatar {
-        border-radius: 50%;
-        object-fit: cover;
-        width: 100%;
-        background-color: #bdf0ff;
       }
 
       #popup {
@@ -138,9 +126,7 @@ class TOSCAvatarUpload extends LitElement {
 
   render() {
     return html`
-      <div class="avatar-wrap" @click=${this.showPopup}>
-        <img id="avatar" src=${this.src || '/img/noavatar.png'} />
-      </div>
+      <tosc-avatar src=${this.src} @click=${this.showPopup}></tosc-avatar>
       <div id="popup" @click=${this.mbHidePopup} ?hidden=${!this.popup}>
         <div id="container">
           <div id="avatar-preview">
