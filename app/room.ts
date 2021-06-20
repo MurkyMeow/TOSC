@@ -72,16 +72,13 @@ router.post('/room/:id/join', (req, res) => {
     return res.status(400).json({ message: 'Room not found' });
   }
 
-  if (!token) {
+  // give new token if the current one is not provided or invalid
+  if (!token || !room.users[token]) {
     const newToken = Math.random().toString(36).slice(2);
 
     room.users[newToken] = user;
 
     return res.json({ token: newToken, room });
-  }
-
-  if (!room.users[token]) {
-    return res.status(400).json({ message: 'Invalid token' });
   }
 
   room.users[token] = user;
