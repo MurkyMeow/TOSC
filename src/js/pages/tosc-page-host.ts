@@ -1,4 +1,4 @@
-import { LitElement, property, css, html } from 'lit-element';
+import { LitElement, property, css, html, query } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import * as QRCode from 'qrcode';
 
@@ -18,6 +18,7 @@ class TOSCPageHost extends LitElement {
       }
 
       .title {
+        font-size: 20px;
         background: #00000025;
         text-align: center;
         padding: 8px;
@@ -118,20 +119,19 @@ class TOSCPageHost extends LitElement {
   @property({ attribute: false }) roomData?: Room;
 
   _syncInterval = -1;
+  _qrcode?: HTMLCanvasElement;
 
   firstUpdated() {
-    const qrcode = this.renderRoot.querySelector('#qrcode');
+    const qrcode = document.createElement('canvas');
+    qrcode.id = 'qrcode';
 
-    if (!qrcode) {
-      console.warn('could not find #qrcode');
-    } else {
-      const link = `${window.location.href}room?id=${this.roomId}`;
+    const link = `${window.location.href}room/${this.roomId}`;
 
-      QRCode.toCanvas(qrcode, link, (error) => {
-        if (error) console.error(error);
-        console.log(`Link for room ${this.roomId} generated!`);
-      });
-    }
+    QRCode.toCanvas(qrcode, link, (error) => {
+      if (error) console.error(error);
+      console.log(`Link for room ${this.roomId} generated!`);
+      this._qrcode = qrcode;
+    });
   }
 
   connectedCallback() {
@@ -188,7 +188,7 @@ class TOSCPageHost extends LitElement {
           `
         )}
       </div>
-      <canvas id="qrcode"></canvas>
+      ${this._qrcode}
     `;
   }
 }
