@@ -122,7 +122,7 @@ class TOSCPageHost extends LitElement {
     const qrcode = document.createElement('canvas');
     qrcode.id = 'qrcode';
 
-    const link = `${window.location.href}room/${this.roomId}`;
+    const link = `${window.location.origin}/room/${this.roomId}`;
 
     QRCode.toCanvas(qrcode, link, (error) => {
       if (error) console.error(error);
