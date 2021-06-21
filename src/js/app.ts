@@ -15,10 +15,9 @@ export class TOSCapp extends LitElement {
 
         display: block;
         margin: 0;
-        background-color: #ddd;
         color: #222;
 
-        min-height: 100vh;
+        height: 100%;
         width: 100%;
       }
     `;
