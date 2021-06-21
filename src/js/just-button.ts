@@ -10,13 +10,14 @@ class JustButton extends LitElement {
       button {
         font-size: inherit;
         outline: none;
+        cursor: pointer;
         border: none;
         border-radius: 5px;
 
         background-color: #ccc;
         padding: 10px 50px;
         transition: background-color 0.2s;
-        width: inherit;
+        width: 100%;
       }
 
       button:active {

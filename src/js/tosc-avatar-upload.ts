@@ -17,12 +17,12 @@ class TOSCAvatarUpload extends LitElement {
       }
 
       #popup {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #000000a0;
+        right: 0;
+        bottom: 0;
+        background: #000000a0;
         z-index: 5;
         display: flex;
         justify-content: center;
@@ -35,23 +35,19 @@ class TOSCAvatarUpload extends LitElement {
 
       #container {
         background-color: #eee;
-        width: 80%;
-        border-radius: 10px;
       }
 
       #avatar-preview {
         position: relative;
-        width: 80vw;
-        height: 80vw;
         overflow: hidden;
         display: flex;
-        border-top-left-radius: inherit;
-        border-top-right-radius: inherit;
       }
 
       #avatar-preview img {
         object-fit: cover;
         width: 100%;
+        height: 100%;
+        max-height: 400px;
       }
 
       #error {
@@ -85,15 +81,14 @@ class TOSCAvatarUpload extends LitElement {
       }
 
       #controls {
-        padding: 50px 30px;
+        padding: 25px;
         display: flex;
         justify-content: space-between;
-        gap: 100px;
       }
 
       .button {
-        flex: 1 1 0;
-        width: 100%;
+        flex: 1;
+        margin: 0 15px;
       }
 
       .upload {
@@ -114,7 +109,6 @@ class TOSCAvatarUpload extends LitElement {
   @property({ type: String }) previewAvatar = '';
   @property({ type: String }) src = '';
   @property({ type: Boolean }) popup = false;
-  @property({ type: Boolean }) errorHide = true;
   @property({ type: String }) error = '';
 
   file: File | undefined;
@@ -130,8 +124,8 @@ class TOSCAvatarUpload extends LitElement {
       <div id="popup" @click=${this.mbHidePopup} ?hidden=${!this.popup}>
         <div id="container">
           <div id="avatar-preview">
-            <div id="error" ?hidden=${this.errorHide}>${this.error}</div>
-            <img src=${this.previewAvatar} />
+            ${this.error ? html` <div id="error">${this.error}</div> ` : html``}
+            <img src=${this.previewAvatar} alt="" />
           </div>
 
           <form id="controls">
@@ -204,8 +198,7 @@ class TOSCAvatarUpload extends LitElement {
 
   showError(error: string) {
     this.error = error;
-    this.errorHide = false;
-    setTimeout(() => (this.errorHide = true), 2000);
+    setTimeout(() => (this.error = ''), 2000);
   }
 }
 

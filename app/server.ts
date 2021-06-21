@@ -34,7 +34,7 @@ app.get(['/', '/room/:id', '/host/:id'], (req, res) => {
 app.post('/uploadAvatar', uploadHandler, (req, res) => {
   const { file } = req;
 
-  res.end(`${uploadsDir}/${file.filename}`);
+  res.end(`/${uploadsDir}/${file.filename}`);
 });
 
 app.use(express.json());
