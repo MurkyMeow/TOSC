@@ -18,6 +18,7 @@
     "prettier": "^2.2.1",
     "rollup": "^2.52.1",
     "rollup-plugin-copy": "^3.4.0",
+    "rollup-plugin-css-only": "^3.1.0",
     "ts-lit-plugin": "^1.2.1",
     "tslib": "^2.3.0"
   },
@@ -27,6 +28,8 @@
     "@types/qrcode": "^1.4.0",
     "@vaadin/router": "^1.7.4",
     "express": "^4.17.1",
+    "filepond": "^4.28.2",
+    "filepond-plugin-image-preview": "^4.6.6",
     "lit-element": "^2.4.0",
     "multer": "^1.4.2",
     "qrcode": "^1.4.4",

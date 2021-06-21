@@ -3,6 +3,7 @@ import path from 'path';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
+import css from 'rollup-plugin-css-only';
 import copy from 'rollup-plugin-copy';
 
 const outDir = path.resolve(__dirname, 'app', 'public');
@@ -19,6 +20,7 @@ export default {
       preferBuiltins: false,
     }),
     commonjs(),
+    css({ output: 'index.css' }),
     typescript({
       incremental: true,
       tsBuildInfoFile: outDir,

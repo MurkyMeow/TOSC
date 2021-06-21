@@ -1,4 +1,8 @@
 import { LitElement, css, html, property } from 'lit-element';
+import * as FilePond from 'filepond';
+import 'filepond/dist/filepond.css';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 
 import './tosc-avatar';
 import './just-button';
@@ -37,19 +41,6 @@ class TOSCAvatarUpload extends LitElement {
         background-color: #eee;
       }
 
-      #avatar-preview {
-        position: relative;
-        overflow: hidden;
-        display: flex;
-      }
-
-      #avatar-preview img {
-        object-fit: cover;
-        width: 100%;
-        height: 100%;
-        max-height: 400px;
-      }
-
       #error {
         display: block;
         position: absolute;
@@ -69,17 +60,6 @@ class TOSCAvatarUpload extends LitElement {
         top: -100%;
       }
 
-      #avatar-preview::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        box-shadow: 0px 0px 0px 400px #000000a0;
-        width: 100%;
-        height: 100%;
-        border-radius: 100%;
-      }
-
       #controls {
         padding: 25px;
         display: flex;
@@ -91,17 +71,8 @@ class TOSCAvatarUpload extends LitElement {
         margin: 0 15px;
       }
 
-      .upload {
-        position: relative;
-      }
-
-      .upload-input {
-        opacity: 0;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
+      .filepond--credits {
+        display: none;
       }
     `;
   }
@@ -110,31 +81,34 @@ class TOSCAvatarUpload extends LitElement {
   @property({ type: String }) src = '';
   @property({ type: Boolean }) popup = false;
   @property({ type: String }) error = '';
+  @property({ attribute: false }) pondEl = document.createElement('div');
 
   file: File | undefined;
-  form: HTMLFormElement | null = null;
 
   firstUpdated() {
-    this.form = this.renderRoot.querySelector('#controls');
+    FilePond.registerPlugin(FilePondPluginImagePreview);
+    const filePond = FilePond.create(this.pondEl, {
+      name: 'file',
+    });
+    filePond.onaddfile = () => {
+      this.file = filePond.getFile()?.file;
+    };
+    filePond.onremovefile = () => {
+      this.file = undefined;
+    };
   }
 
   render() {
     return html`
+      <link rel="stylesheet" href="/index.css" />
       <tosc-avatar class="avatar" src=${this.src} @click=${this.showPopup}></tosc-avatar>
       <div id="popup" @click=${this.mbHidePopup} ?hidden=${!this.popup}>
         <div id="container">
-          <div id="avatar-preview">
-            ${this.error ? html` <div id="error">${this.error}</div> ` : html``}
-            <img src=${this.previewAvatar} alt="" />
-          </div>
+          ${this.pondEl}
 
           <form id="controls">
-            <just-button class="button upload">
-              <input class="upload-input" name="file" type="file" @change=${this.previewFile} />
-              Upload
-            </just-button>
-
             <just-button class="button" @click=${this.saveAvatar}>Save</just-button>
+            <just-button class="button" @click=${this.mbHidePopup}>Close</just-button>
           </form>
         </div>
       </div>
@@ -154,25 +128,19 @@ class TOSCAvatarUpload extends LitElement {
     this.popup = false;
   }
 
-  tryFreeAvatar() {
-    if (this.src.startsWith('blob:')) URL.revokeObjectURL(this.src);
-  }
-
   saveAvatar() {
-    if (!this.form) {
-      throw new Error('could not find form');
+    if (!this.file) {
+      return;
     }
 
-    this.tryFreeAvatar();
     this.src = this.previewAvatar;
 
-    const formdata = new FormData(this.form);
-    console.log(formdata);
+    const formdata = new FormData();
+    formdata.append('file', this.file);
 
     fetch('/uploadAvatar', { method: 'POST', body: formdata })
       .then((res) => res.text())
       .then((avatar) => {
-        this.tryFreeAvatar();
         this.src = avatar;
 
         this.hidePopup();
@@ -181,19 +149,10 @@ class TOSCAvatarUpload extends LitElement {
             detail: { avatar },
           })
         );
+      })
+      .catch(() => {
+        this.showError("Couldn't load your image");
       });
-  }
-
-  previewFile(e: { target: HTMLInputElement }) {
-    const [file] = e.target.files || [];
-    if (file.type === 'image/jpeg' || file.type === 'image/png') {
-      if (this.src !== this.previewAvatar && this.previewAvatar.startsWith('blob:'))
-        URL.revokeObjectURL(this.previewAvatar);
-      this.previewAvatar = URL.createObjectURL(file);
-      this.file = file;
-    } else {
-      this.showError('Unsupported file type!');
-    }
   }
 
   showError(error: string) {
