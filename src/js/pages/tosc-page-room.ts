@@ -36,7 +36,7 @@ class TOSCPageRoom extends LitElement {
         flex: 1;
         overflow: auto;
       }
-      .list::after {
+      .list:not(.list-empty)::after {
         content: ' ';
         position: absolute;
         bottom: 0;
@@ -91,18 +91,44 @@ class TOSCPageRoom extends LitElement {
 
     const { roomId, userToken, me } = this;
 
+    if (!userToken) {
+      this._joinRoom()
+        .then(() => {
+          this._startSync();
+        })
+        .catch(() => {
+          alert("Couldn't join that room");
+        });
+      return;
+    }
+
+    // token exists, try to post an update
     api
-      .joinRoom({ roomId, token: userToken, user: me })
+      .updateUser({ roomId, token: userToken, user: me })
       .then((res) => {
         this.me = res.user;
-        this.roomData = res.room;
-        this.userToken = res.token;
-        storage.setUserToken(res.token);
+      })
+      .catch(() => {
+        // token possibly invalid, try to retreive a new one
+        return this._joinRoom();
+      })
+      .then(() => {
         this._startSync();
       })
       .catch(() => {
         alert("Couldn't join that room");
       });
+  }
+
+  _joinRoom() {
+    const { roomId, me } = this;
+
+    return api.joinRoom({ roomId, user: me }).then((res) => {
+      this.me = res.user;
+      this.roomData = res.room;
+      this.userToken = res.token;
+      storage.setUserToken(res.token);
+    });
   }
 
   disconnectedCallback() {
@@ -149,12 +175,15 @@ class TOSCPageRoom extends LitElement {
     }
 
     return html`
-      <div class="list">
+      <div class="list ${roomData.users.length > 1 ? '' : 'list-empty'}">
         <tosc-person class="person me" .me=${me}></tosc-person>
         ${repeat(
           roomData.users,
           (user) => user.id,
-          (user) => html`<tosc-person class="person" .me=${user}></tosc-person>`
+          (user) =>
+            user.id === me.id
+              ? html``
+              : html`<tosc-person class="person" .me=${user}></tosc-person>`
         )}
       </div>
       <push-button class="edit-btn" @click=${this.toggleEdit}>Edit</push-button>

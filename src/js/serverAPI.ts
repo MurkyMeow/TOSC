@@ -42,7 +42,6 @@ export function getRoomInfo({ roomId }: GetRoomInfoParams): Promise<GetRoomInfoR
 export interface JoinRoomParams {
   roomId: string;
   user: Person;
-  token?: string;
 }
 export interface JoinRoomResponse {
   token: string;
@@ -50,8 +49,8 @@ export interface JoinRoomResponse {
   user: Person;
 }
 
-export function joinRoom({ roomId, token, user }: JoinRoomParams): Promise<JoinRoomResponse> {
-  return req(`/room/${roomId}/join`, 'POST', { user, token });
+export function joinRoom({ roomId, user }: JoinRoomParams): Promise<JoinRoomResponse> {
+  return req(`/room/${roomId}/join`, 'POST', { user });
 }
 
 export interface LeaveRoomParams {

@@ -77,7 +77,7 @@ const joinBody = st.record({
 
 router.post('/room/:id/join', (req, res) => {
   const { id } = roomIdParams(req.params);
-  const { user, token } = joinBody(req.body);
+  const { user } = joinBody(req.body);
 
   const room = rooms[id];
 
@@ -85,22 +85,12 @@ router.post('/room/:id/join', (req, res) => {
     return res.status(400).json({ message: 'Room not found' });
   }
 
-  // give new token if the current one is not provided or invalid
-  if (!token || !room.users[token]) {
-    const newToken = Math.random().toString(36).slice(2);
-    // also provide an id, since initially the user won't have one
-    const newId = Math.random().toString(36).slice(2);
+  const userId = Math.random().toString(36).slice(2);
+  const token = Math.random().toString(36).slice(2);
+  const newUser = { ...user, id: userId };
+  room.users[token] = newUser;
 
-    const newUser = { ...user, id: newId };
-
-    room.users[newToken] = newUser;
-
-    return res.json({ user: newUser, token: newToken, room: formatRoom(room) });
-  }
-
-  room.users[token] = user;
-
-  res.json({ user, token, room: formatRoom(room) });
+  return res.json({ user: newUser, token, room: formatRoom(room) });
 });
 
 const updateUserBody = st.record({
@@ -118,13 +108,22 @@ router.post('/room/:id/update_user', (req, res) => {
     return res.status(400).json({ message: 'Room not found' });
   }
 
-  if (!room.users[token]) {
+  const existingUser = room.users[token];
+
+  if (!existingUser) {
     return res.status(400).json({ message: 'Invalid token' });
   }
 
-  room.users[token] = user;
+  // update everything, except for id
+  const newUser = {
+    ...existingUser,
+    ...user,
+    id: existingUser.id,
+  };
 
-  res.json({ user });
+  room.users[token] = newUser;
+
+  res.json({ user: newUser });
 });
 
 const removeUserBody = st.record({
