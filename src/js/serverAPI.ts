@@ -47,6 +47,7 @@ export interface JoinRoomParams {
 export interface JoinRoomResponse {
   token: string;
   room: Room;
+  user: Person;
 }
 
 export function joinRoom({ roomId, token, user }: JoinRoomParams): Promise<JoinRoomResponse> {
@@ -87,4 +88,21 @@ export interface UpdateUserResponse {
 
 export function updateUser({ roomId, token, user }: UpdateUserParams): Promise<UpdateUserResponse> {
   return req(`/room/${roomId}/update_user`, 'POST', { token, user });
+}
+
+export interface RemoveUserParams {
+  roomId: string;
+  userId: string;
+  token: string;
+}
+export interface RemoveUserResponse {
+  ok: true;
+}
+
+export function removeUser({
+  roomId,
+  userId,
+  token,
+}: RemoveUserParams): Promise<RemoveUserResponse> {
+  return req(`/room/${roomId}/remove_user`, 'POST', { token, userId });
 }

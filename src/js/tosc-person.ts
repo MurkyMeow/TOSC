@@ -53,6 +53,7 @@ class TOSCPerson extends LitElement {
   }
 
   @property({ type: Object }) me: Person = {
+    id: '',
     name: 'Unnamed',
     avatar: '',
     pronoun: '',

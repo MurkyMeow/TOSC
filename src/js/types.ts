@@ -1,6 +1,7 @@
 import { TOSC } from './tosc';
 
 export interface Person {
+  id: string;
   avatar: string;
   name: string;
   pronoun: string;
@@ -10,5 +11,5 @@ export interface Person {
 export interface Room {
   id: string;
   name: string;
-  users: Record<string, Person>;
+  users: Person[];
 }

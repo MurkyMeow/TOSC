@@ -2,6 +2,7 @@ import { LitElement, property, css, html, query } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import * as QRCode from 'qrcode';
 
+import * as storage from '../storage';
 import * as api from '../serverAPI';
 import { Room } from '../types';
 
@@ -42,6 +43,7 @@ class TOSCPageHost extends LitElement {
       }
 
       .person {
+        position: relative;
         background-color: #eee;
         border-radius: 10px;
         padding: 10px;
@@ -49,6 +51,14 @@ class TOSCPageHost extends LitElement {
       }
       .person-info {
         display: flex;
+      }
+      .person-remove {
+        font: inherit;
+        cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border: none;
       }
 
       .avatar {
@@ -104,6 +114,7 @@ class TOSCPageHost extends LitElement {
 
   @property({ attribute: false }) roomData?: Room;
 
+  _roomToken = storage.getRoomToken();
   _syncInterval = -1;
   _qrcode?: HTMLCanvasElement;
 
@@ -149,6 +160,19 @@ class TOSCPageHost extends LitElement {
     window.clearInterval(this._syncInterval);
   }
 
+  _removeUser(id: string) {
+    const { roomId, _roomToken } = this;
+
+    if (!_roomToken) {
+      alert(`Room token not found`);
+      return;
+    }
+
+    api.removeUser({ roomId, userId: id, token: _roomToken }).catch(() => {
+      alert("Couldn't remove the user");
+    });
+  }
+
   render() {
     const { roomData } = this;
 
@@ -160,18 +184,19 @@ class TOSCPageHost extends LitElement {
       <div class="title">Today at ${roomData.name}</div>
       <div id="people">
         ${repeat(
-          Object.entries(roomData.users),
-          ([key]) => key,
-          ([_, person]) => html`
+          roomData.users,
+          (user) => user.id,
+          (user) => html`
             <div class="person">
+              <button class="person-remove" @click=${() => this._removeUser(user.id)}>x</button>
               <div class="person-info">
-                <tosc-avatar class="avatar" src=${person.avatar}></tosc-avatar>
+                <tosc-avatar class="avatar" src=${user.avatar}></tosc-avatar>
                 <div class="wrap">
-                  <span class="name">${person.name}</span>
-                  <span class="pronoun">${person.pronoun}</span>
+                  <span class="name">${user.name}</span>
+                  <span class="pronoun">${user.pronoun}</span>
                 </div>
               </div>
-              <tosc-inline class="tosc" .tosc=${person.tosc}></tosc-inline>
+              <tosc-inline class="tosc" .tosc=${user.tosc}></tosc-inline>
             </div>
           `
         )}

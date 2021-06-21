@@ -45,6 +45,9 @@ export function setUserData(userData: Person) {
 export function setRoomToken(token: string) {
   safeSet(ROOM_TOKEN_KEY, token);
 }
+export function getRoomToken(): string | null {
+  return safeGet(ROOM_TOKEN_KEY);
+}
 
 export function getUserToken(): string | null {
   return safeGet(USER_TOKEN_KEY);

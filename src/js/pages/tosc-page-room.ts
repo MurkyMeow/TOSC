@@ -73,6 +73,7 @@ class TOSCPageRoom extends LitElement {
   }
 
   @property({ attribute: false }) me: Person = storage.getUserData() || {
+    id: '',
     name: 'Guest',
     pronoun: '',
     avatar: '',
@@ -93,6 +94,7 @@ class TOSCPageRoom extends LitElement {
     api
       .joinRoom({ roomId, token: userToken, user: me })
       .then((res) => {
+        this.me = res.user;
         this.roomData = res.room;
         this.userToken = res.token;
         storage.setUserToken(res.token);
@@ -129,7 +131,7 @@ class TOSCPageRoom extends LitElement {
   }
 
   render() {
-    const { roomData } = this;
+    const { me, roomData } = this;
 
     if (!roomData) {
       return html`<div>Loading...</div>`;
@@ -137,21 +139,22 @@ class TOSCPageRoom extends LitElement {
 
     if (this.isEditing) {
       return html`
-        <tosc-create
-          .me=${this.me}
-          @close=${this.toggleEdit}
-          @update=${this.updateMe}
-        ></tosc-create>
+        <tosc-create .me=${me} @close=${this.toggleEdit} @update=${this.updateMe}></tosc-create>
       `;
+    }
+
+    if (!roomData.users.some((user) => user.id === me.id)) {
+      alert('You have been removed from this room');
+      return html``;
     }
 
     return html`
       <div class="list">
-        <tosc-person class="person me" .me=${this.me}></tosc-person>
+        <tosc-person class="person me" .me=${me}></tosc-person>
         ${repeat(
-          Object.entries(roomData.users),
-          ([id]) => id,
-          ([_, ex]) => html`<tosc-person class="person" .me=${ex}></tosc-person>`
+          roomData.users,
+          (user) => user.id,
+          (user) => html`<tosc-person class="person" .me=${user}></tosc-person>`
         )}
       </div>
       <push-button class="edit-btn" @click=${this.toggleEdit}>Edit</push-button>
